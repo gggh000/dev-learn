@@ -6,6 +6,8 @@ typedef struct sNode
     struct sNode * ptrNext;
 } node; 
 
+typedef node * ptrNode;
+
 void printNode(node * pNode) {
     if (pNode == NULL) {
         printf("Error. Pointer is null.");
@@ -30,6 +32,10 @@ void printLinkedList(node * pNode) {
     }
 }
 
+void insertNodeFront(node * ptrNode) {
+    return; 
+}
+
 int main()
 {
     node * n1;
@@ -38,7 +44,6 @@ int main()
     n1->value = 100;
     n1->ptrNext = NULL;
 
-    //printNode(n1);        
     printLinkedList(n1);
     printf("done.\n");
     return 0;
