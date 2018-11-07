@@ -5,7 +5,6 @@ typedef struct sNode
     int value;
     struct sNode * ptrNext;
 } node; 
-
 typedef node * ptrNode;
 
 void printNode(node * pNode) {
@@ -32,6 +31,27 @@ void printLinkedList(node * pNode) {
     }
 }
 
+int insertNodeTail(node * pNode, int pValue) {
+    node * lNode; 
+    lNode = malloc(sizeof(node));
+    lNode->value = pValue;
+    lNode->ptrNext = NULL;
+
+    node * lNodeTmp; 
+    lNodeTmp = pNode;
+
+    if (lNodeTmp == NULL) {
+        printf("insertNodeTail: list is empty! (head ptr is NULL).\n");
+        return 1;
+    }    
+    while (lNodeTmp->ptrNext != NULL) {
+        lNodeTmp = lNodeTmp->ptrNext;
+    }
+
+    lNodeTmp->ptrNext = lNode;
+    return 0;
+}
+
 //  Inserts node at the front of linked list.
 //  input:
 //  - node * ptrNode - pointer to the node pointer. Note that since head pointer of the list is changin
@@ -39,7 +59,6 @@ void printLinkedList(node * pNode) {
 //  - int value - node value to be inserted as new node.
 
 int insertNodeFront(ptrNode * pNode, int pValue) {
-
     node * lNode;
     lNode = malloc(sizeof(node));
     lNode->value = pValue;
@@ -54,7 +73,6 @@ int insertNodeFront(ptrNode * pNode, int pValue) {
 
     lNode->ptrNext = * pNode;
     * pNode = lNode;
-
     return 0; 
 }
 
@@ -68,15 +86,20 @@ int main()
 
     printf("\nBefore insert...\n");
     printLinkedList(n1);
-
     insertNodeFront(&n1, 101);
-
     insertNodeFront(&n1, 150);
     insertNodeFront(&n1, 222);
     insertNodeFront(&n1, 455);
 
-    printf("\nAfter insert...\n");
+    printf("\nAfter insert front...\n");
     printLinkedList(n1);
+    insertNodeTail(n1, 1000);
+    insertNodeTail(n1, 1330);
+    insertNodeTail(n1, 5000);
+
+    printf("\nAfter insert back...\n");
+    printLinkedList(n1);
+
     printf("done.\n");
     return 0;
 }
