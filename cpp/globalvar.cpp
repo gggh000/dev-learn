@@ -1,3 +1,8 @@
+/*
+This program exemplifies the use of global variable, firstNumber and secondNumber declared
+outside the main(). Once it is declared outside main() function, it is global and can be
+used both inside main and multiplyNumber functions. 
+*/
 #include <iostream>
 using namespace std;
 
