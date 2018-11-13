@@ -1,5 +1,8 @@
 /*
 Simple example of public inheritance.
+The Fish method is also overridden in derived class.
+main calls both Fish overriden method and explicitly calling the base class Fish() using scope
+resolution operator ::.
 */
 #include <iostream>
 using namespace std;
@@ -44,8 +47,12 @@ public:
         {
             cout << "Tuna::Tuna constructor called." << endl;
         }
-
     }
+
+    void Swim()
+    {
+        cout << "Tuna swims very fast." << endl;
+    }    
 };
 
 class Carp : public Fish
@@ -58,6 +65,11 @@ public:
             cout << "Carp::Carp constructor called." << endl;
         }
     }
+
+    void Swim()
+    {
+        cout << "Tuna swims real slow." << endl;
+    }    
 };
 
 int main()
@@ -66,8 +78,10 @@ int main()
     Tuna myDinner;
     cout << "About my food" << endl;
 
-    cout << "Lunch: " ;
+    cout << "Lunch: ";
     myLunch.Swim();
-    cout << "Dinner: " ;
+    myLunch.Fish::Swim();
+    cout << "Dinner: ";
     myDinner.Swim();
+    myDinner.Fish::Swim();
 }
