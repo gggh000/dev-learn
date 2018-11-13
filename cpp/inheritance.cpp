@@ -30,7 +30,16 @@ public:
     {
         if (DEBUG == true) 
         {
-            cout << "Fish::Swim method called." << endl;
+            cout << "Fish::Swim() method called." << endl;
+        }
+        cout << "Fish swims...!" << endl;
+    }
+
+    void Swim(bool isFreshWaterFish) 
+    {
+        if (DEBUG == true) 
+        {
+            cout << "Fish::Swim(bool) method called." << endl;
         }
 
         if (isFreshWaterFish) 
@@ -86,4 +95,5 @@ int main()
     myLunch.Swim();
     cout << "Dinner: ";
     myDinner.Swim();
+    myDinner.Fish::Swim(false);
 }
