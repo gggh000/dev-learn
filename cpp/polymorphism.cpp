@@ -4,6 +4,10 @@ as fish1. From main fish1.swim() invokes Tuna::swim() and passed onto copyFish f
 The copyFish function calls also Tuna::swim() thansk for Swim() declared as virtual in base class.
 If you erase the virtual keyword from base class Swim() function, it is no longer poliymorphism and Fish::swim()
 instead will be called. 
+
+Finally virtual destructor "virtual ~Fish()" ensures that the derived class destructor be called through
+polymorphism feature when pointer to fish is created and memory allocated and then finally be destroyed through
+DeleteFishMemory.
 */
 #include <iostream>
 using namespace std;
@@ -16,6 +20,12 @@ public:
     {
         if (DEBUG == 1) 
             cout << "Fish() constructor entered." << endl;
+    }
+
+    virtual ~Fish()
+    {
+        if (DEBUG == 1)
+            cout << "~Fish() destructor entered." << endl;
     }
 
     virtual void Swim()
@@ -34,6 +44,12 @@ public:
             cout << "Carp() constructor entered." << endl;
     }
 
+    ~Carp()
+    {
+        if (DEBUG == 1) 
+            cout << "~Carp() destructor called." << endl;
+    }
+
     void Swim()
     {
         if (DEBUG == 1)
@@ -50,6 +66,12 @@ public:
             cout << "Tuna() constructor entered." << endl;
     }
 
+    ~Tuna()
+    {
+        if (DEBUG == 1)
+            cout << "~Tuna() destructor called." << endl;
+    }
+
     void Swim()
     {
         if (DEBUG == 1)
@@ -62,10 +84,15 @@ void copyFish(Fish & pFish)
     pFish.Swim();
 }
 
+void deleteFishMemory(Fish * pFish)
+{
+    delete pFish;
+}
 int main()
 {
-    Tuna fish1;
-    fish1.Swim();
-    copyFish(fish1);
+    Tuna * fish1 = new Tuna();
+    fish1->Swim();
+    deleteFishMemory(fish1);
+    //copyFish(*fish1);
     return 0;
 }
