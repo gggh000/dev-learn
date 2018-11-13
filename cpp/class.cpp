@@ -9,20 +9,22 @@ private:
     int age;
 
 public:
-    Human();
+    //Human();
     Human(string name, int age);
     void introduceSelf();
 };
 
+/*
 Human::Human() {
-    name = "Default name";
-    age = 100;
+    //name = "Default name-1";
+    //age = 101;
     cout << "Default constructor set the name and age to " << name << ", " << age << endl;
 }
+*/
 
-Human::Human(string pName, int pAge)
+Human::Human(string pName = "default name", int pAge = 100)
 {
-    cout << "Overloaded constructor setting name and age by parameter to " << name << ", " << age << endl;
+    cout << "Overloaded constructor setting name and age by parameter to " << pName << ", " << pAge << endl;
     age = pAge;
     name = pName;
 }
@@ -35,6 +37,7 @@ void Human::introduceSelf() {
 int main() 
 {
     Human firstMan;
-
     firstMan.introduceSelf();
+    Human secondMan;
+    secondMan.introduceSelf();
 }
