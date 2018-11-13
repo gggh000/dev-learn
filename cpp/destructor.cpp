@@ -6,9 +6,9 @@ class myString
 {
 private:
     char * buffer;
-    int * num;
 public:
-    myString(const char * initString)
+    int * num;
+    myString(char * initString)
     {
         cout << "Constructor called." << endl;
 
@@ -17,23 +17,36 @@ public:
             buffer = new char [strlen(initString) + 1];
             strcpy(buffer, initString);
             num = new int(10);
+            cout << "buffer points to: 0x" << hex;
+            cout << (unsigned int*) buffer << endl;
+            cout << "num points to: 0x" << hex;
+            cout << (unsigned int*) num << endl;
         }
         else
             buffer = NULL;
     }    
 
-    myString(const myString& copySource)
+    myString(myString& copySource)
     {
         buffer = NULL;
+        num = NULL;
         cout << "Copy constructor: copying from copySource" << endl;
 
         if (copySource.buffer != NULL)
         {
-            buffer = new char [strlen(copySource.buffer) + 1];
+            buffer = new char [strlen(copySource.buffer) + 20];
             strcpy(buffer, copySource.buffer);
+            buffer = "str1 copied";
 
             cout << "buffer points to: 0x" << hex;
             cout << (unsigned int*) buffer << endl;
+            
+        }
+        if (copySource.num != NULL)
+        {
+            num = new int(10);
+            cout << "num points to: 0x" << hex;
+            cout << (unsigned int*) num << endl;
         }
     }
     
@@ -65,5 +78,9 @@ void useMyString(myString str)
 int main()
 {
     myString str1("str1");
-    useMyString(str1);    
+    // useMyString(str1);    
+    myString str2(str1);
+
+    cout << "str1: " << str1.getString() << " " << *(str1.num) << endl;
+    cout << "str2: " << str2.getString() << " " << *(str2.num) << endl;
 }
