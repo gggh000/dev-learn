@@ -1,3 +1,12 @@
+/*
+This example illustrates simple constructor, desctructor and copy constructor.
+For copy constructor, deep copy is performed on buffer string pointer when it is copied.
+However there is a glibc error on releasing memory pointed by buffer on copied one. 
+The int version: destructor-1, is working just fine.
+This crash appears to be a result of copy constructor, because of second instance
+str1 is not created, the crash does not occur. 
+*/
+
 #include <iostream>
 #include <string.h>
 using namespace std;
@@ -82,10 +91,10 @@ int main()
 {
     myString str1("str1");
     // useMyString(str1);    
-    myString str2(str1);
+    // myString str2(str1);
 
 //    cout << "str1: " << str1.getString() << " " << *(str1.num) << endl;
 //    cout << "str2: " << str2.getString() << " " << *(str2.num) << endl;
     cout << "str1: " << str1.getString() << " " << endl;
-    cout << "str2: " << str2.getString() << " " << endl;
+//    cout << "str2: " << str2.getString() << " " << endl;
 }

@@ -1,3 +1,10 @@
+/*
+This example illustrates simple constructor, desctructor and copy constructor.
+For copy constructor, deep copy is performed on buffer int pointer called num when it is copied.
+The string version of this example, implemented in destructor.cpp is crashing upon release
+of buffer for original one.
+*/
+
 #include <iostream>
 #include <string.h>
 using namespace std;
