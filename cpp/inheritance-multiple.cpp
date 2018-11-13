@@ -1,3 +1,9 @@
+/*
+Example of multiple inheritance where class Platypus is inherited from 3 classes Mammal,
+Reptile and Bird including its methods. Two of the classes, Reptile and Bird has 
+same function spitVenom which compiler complains unless explicitly called with
+scope resolution operator ::.
+*/
 #include <iostream>
 using namespace std;
 
@@ -22,6 +28,10 @@ public:
 class Bird 
 {
 public:
+    void spitVenom()
+    {
+        cout << "Bird: Spits venom?" << endl;
+    }
     void LayEggs()
     {
         cout << "Bird: lay eggs!" << endl;
@@ -42,6 +52,7 @@ int main()
     Platypus realFreak;
     realFreak.LayEggs();
     realFreak.feedMyMilk();
-    realFreak.spitVenom();
+    realFreak.Bird::spitVenom();
+    realFreak.Reptile::spitVenom();
     realFreak.Swim();
 }
