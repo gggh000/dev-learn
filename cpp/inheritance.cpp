@@ -3,14 +3,31 @@ Simple example of public inheritance.
 */
 #include <iostream>
 using namespace std;
+static bool DEBUG = 0;
 
 class Fish 
 {
-public:
+private:
+
+protected:
     bool isFreshWaterFish;
+
+public:
+    Fish(bool isFreshWater)
+    {
+        if (DEBUG == true) 
+        {
+            cout << "Fish::Fish constructor called." << endl;
+        }
+        isFreshWaterFish = isFreshWater;
+    }
 
     void Swim()
     {
+        if (DEBUG == true) 
+        {
+            cout << "Fish::Swim method called." << endl;
+        }
         if (isFreshWaterFish) 
             cout << "Can swim in lake." << endl;
         else
@@ -21,18 +38,25 @@ public:
 class Tuna : public Fish
 {
 public:
-    Tuna()
+    Tuna(): Fish(false) 
     {
-        isFreshWaterFish = false;
+        if (DEBUG == true) 
+        {
+            cout << "Tuna::Tuna constructor called." << endl;
+        }
+
     }
 };
 
 class Carp : public Fish
 {
 public:
-    Carp()
+    Carp(): Fish(true) 
     {
-        isFreshWaterFish = true;
+        if (DEBUG == true) 
+        {
+            cout << "Carp::Carp constructor called." << endl;
+        }
     }
 };
 
