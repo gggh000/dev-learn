@@ -24,6 +24,8 @@ public:
     Date (int inMonth, int inDay, int inYear)
         : month(inMonth), day(inDay), year(inYear) {};
 
+    // Unary operator implementations ++, --, const char*.
+
     // prefix increment.
 
     Date & operator ++ ()
@@ -49,6 +51,32 @@ public:
         return dateInString.c_str();
     }
 
+    // Binary operator implementations.
+
+    // Binary date addition / subtraction as well ass addition and subtraction assignment.
+
+    Date operator + (int daysToAdd)
+    {
+        Date newDate(month, day + daysToAdd, year);
+        return newDate;
+    }    
+    
+    Date operator - (int daysToSub)
+    {
+        Date newDate(month, day - daysToSub, year);
+        return newDate;
+    }
+
+    void operator+= (int daysToAdd)
+    {
+        day += daysToAdd;
+    }
+
+    void operator-= (int daysToSub)
+    {
+        day -= daysToSub;
+    }
+    
     void displayDate()
     { 
         cout << month << " / " << day << " / " << year << endl; 
@@ -61,6 +89,8 @@ int main()
     cout << "The date object is initialized to: ";
     holiday.displayDate();
     
+    cout << "---------UNARY OPERATOR OVERLOAD EXAMPLES---------" << endl;    
+
     ++holiday;
     cout << "Date after prefix-increment is: ";
     holiday.displayDate();
@@ -78,6 +108,24 @@ int main()
     cout << "Printing holiday: ";
     cout << strHoliday << endl;
 
+    cout << "---------BINARY OPERATOR OVERLOAD EXAMPLES---------" << endl;    
+
+    Date PreviousHoliday(holiday - 19);
+    cout << "Previous holiday on: " << endl;
+    PreviousHoliday.displayDate();
+
+    Date NextHoliday(holiday + 6);
+    cout << "Next holiday on: " << endl;
+    NextHoliday.displayDate();
+
+    cout << "holiday -= 19 gives: ";
+    holiday -= 19;
+    holiday.displayDate();
+
+    cout << "holiday ++ 25 gives: ";
+    holiday += 25;
+    holiday.displayDate();
+    
     // Implementation of smart pointer. 
     
     /*
