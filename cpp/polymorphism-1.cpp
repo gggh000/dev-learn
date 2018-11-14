@@ -1,13 +1,8 @@
 /*
-Simple polymorphism example. The Carp and Tuna is derived class from base class Fish and tuna is instantiated 
-as fish1. From main fish1.swim() invokes Tuna::swim() and passed onto copyFish function its reference.
-The copyFish function calls also Tuna::swim() thansk for Swim() declared as virtual in base class.
-If you erase the virtual keyword from base class Swim() function, it is no longer poliymorphism and Fish::swim()
-instead will be called. 
-
-Finally virtual destructor "virtual ~Fish()" ensures that the derived class destructor be called through
-polymorphism feature when pointer to fish is created and memory allocated and then finally be destroyed through
-DeleteFishMemory.
+Pure virtual function example. The Swim() method of base Fish class is declared as pure virtual
+function, there by rendering the Fish to be uninstantiable. 
+Because of this, if line: //    Fish myFish; 
+is commented out, the compiler error will result.
 */
 #include <iostream>
 using namespace std;
@@ -97,6 +92,7 @@ void deleteFishMemory(Fish * pFish)
 }
 int main()
 {
+//    Fish myFish;
     Carp myLunch;
     Tuna myDinner;
 
