@@ -76,6 +76,19 @@ public:
     {
         day -= daysToSub;
     }
+
+    bool operator==(Date & cmp)
+    {
+        if ((month == cmp.month) && (day == cmp.day) && (year == cmp.year))
+            return true;
+        else
+            return false;
+    }
+
+    bool operator != (Date & cmp)
+    {
+        return !(this->operator==(cmp));
+    }
     
     void displayDate()
     { 
@@ -125,7 +138,27 @@ int main()
     cout << "holiday ++ 25 gives: ";
     holiday += 25;
     holiday.displayDate();
+
+    Date holiday1 (12, 25, 2016);
+    Date holiday2 (12, 25, 2011);
     
+    cout << "holiday 1 is: ";
+    holiday1.displayDate();
+
+    cout << "holiday 2 is: ";
+    holiday2.displayDate();
+    
+    if (holiday1 == holiday2) 
+        cout << "holiday1 and 2 is equal using == operator." << endl;
+    else
+        cout << "holiday1 and 2 is NOT equal using == operator." << endl;
+
+    if (holiday1 != holiday2) 
+        cout << "holiday1 and 2 is NOT equal using != operator." << endl;
+    else
+        cout << "holiday1 and 2 is equal using != operator." << endl;
+        
+
     // Implementation of smart pointer. 
     
     /*
