@@ -19,6 +19,8 @@ public:
             buffer = NULL;
     }
 
+    // copy assignment constructor.
+
     MyString & operator=(const MyString & copySource)
     {
         if ((this != &copySource) && copySource.buffer != NULL)
@@ -32,15 +34,31 @@ public:
         return *this;
     }   
 
+    int GetLength() const
+    {
+        return strlen(buffer);
+    }
+
+    // copy constructor.
+
     operator const char*()
     {
         return buffer;
     }
 
+    // constructor
+
     ~MyString()
     {
         delete[] buffer;
     }    
+
+    const char & operator[] (int index) const
+    {
+        if (index < GetLength())        
+            return buffer[index];        
+    }
+
 };
 
 int main()
@@ -55,6 +73,25 @@ int main()
 
     cout << "After assignment: " << endl;
     cout << string1 << string2 << endl;
+
+    // Subscript operator.
+
+    cout << "Type a statement: ";
+    string strInput;
+    getline(cin, strInput);
+    
+    MyString youSaid(strInput.c_str());
+    
+    cout << "Using operator[] for displaying your input: " << endl;
+    
+    for (int index = 0; index < youSaid.GetLength(); ++index)
+    {
+        cout << youSaid[index] << " ";
+    }    
+    
+    cout << endl;
 }
 
 
+
+    
