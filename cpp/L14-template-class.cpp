@@ -2,7 +2,7 @@
 using namespace std;
 
 // template with default params; int & double;
-template <typename T1, typename T2>
+template <typename T1=int, typename T2=double>
 class holdsPair
 {
 private:
@@ -27,7 +27,7 @@ public:
 
 int main()
 {
-    holdsPair<int, double> pairIntDbl ( 6, 1.99 ); 
+    holdsPair<> pairIntDbl ( 6, 1.99 ); 
     holdsPair<short, const char *>pairShortStr (25, "Learn template, love C++");
 
     cout << "The first object contains..." << endl;
