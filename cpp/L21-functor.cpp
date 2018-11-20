@@ -1,3 +1,10 @@
+/*
+TO build, use -std=c++0x switch with g++: 
+i.e: g++ -std=c++0x  L21-functor.cpp -o a.out
+
+Implementation of functor class
+
+*/
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -24,7 +31,7 @@ int main()
     // Display the list of characters.
 
     list <char> charsInList{'a', 'b', 'f', 't'};
-    for_each (charsInList.begin(), chatsInList.end(), displayElement<char>());
+    for_each (charsInList.begin(), charsInList.end(), displayElement<char>());
 
     return 0;
 }
