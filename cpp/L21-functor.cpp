@@ -14,24 +14,41 @@ using namespace std;
 // struct that behaves as a unary function.
 
 template <typename elementType>
-struct displayElement
+struct displayElementKeepCount
 {
-    void operator () (const elementType & element) const
+    int count;
+
+    displayElementKeepCount() 
     {
-        cout << element << ' ';
+        count = 0;
+    }
+
+    elementType& operator=(const elementType & element)
+    {
+        vector <int> copy = new vector<int>;
+        copy = element;
+        return copy;
+    }
+
+    void operator()(const elementType & element)
+    {
+        ++count; 
+        cout << count << ": " << element << ' ' << endl;
     }
 };
 
 int main()
 {
-    vector <int> numsInVec{0, 1};
+    displayElementKeepCount<char>result; 
+    vector <int> numsInVec{0, 1, 2, 3, 4};
     cout << "Vector of integers contains: " << endl;
-    for_each (numsInVec.begin(), numsInVec.end(), displayElement<int>() );
+    for_each(numsInVec.begin(), numsInVec.end(), displayElementKeepCount<int>() );
     
     // Display the list of characters.
 
     list <char> charsInList{'a', 'b', 'f', 't'};
-    for_each (charsInList.begin(), charsInList.end(), displayElement<char>());
+    result = for_each (charsInList.begin(), charsInList.end(), displayElementKeepCount<char>());
 
+    cout << "displayElementKeepCount was invoked " << result.count << " times." << endl;
     return 0;
 }
