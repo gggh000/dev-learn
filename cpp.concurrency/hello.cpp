@@ -1,3 +1,7 @@
+/*Simple thread app which launches hello and waits.
+Use: g++ -std=gnu++0x -pthread hello.cpp to build.
+*/
+
 #include <iostream>
 #include <thread>
 
