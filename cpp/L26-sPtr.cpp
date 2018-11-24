@@ -7,44 +7,42 @@ class sPtr
 
 public:
 
-    // constructor. 
+    // Constructor. 
 
     sPtr (int pData = NULL) {
         cout << "sPtr constructor." << endl;
         data = new int(pData);
     }
 
-    // destructor.
+    // Destructor.
 
     ~sPtr () { 
         cout << "sPtr desctructor." << endl;
         delete data; 
     }
 
-    // copy assignment constructor.
+    // Copy assignment constructor.
     
     sPtr & operator = (sPtr & p) {
         cout << "sPtr copy assignment operator. " << endl;
-        sPtr * copy = new sPtr(p.getData());
+        data = new int(p.getData());
         delete &p;
-        return *copy; 
     }
 
-    // copy constructor.
+    // Copy constructor.
     
     sPtr(sPtr & p) {
         cout << "sPtr copy constructor. " << endl;
         data = new int(p.getData());
     }
 
-    // accessory.
+    // Accessory.
         
-    int getData() { return *data; } 
+    int getData() { return * data; } 
 
-    // print info
+    // Print info.
 
-    void printInfo()
-    {
+    void printInfo() {
         cout << "object addr:   " << hex << this << endl;
         cout << "data ptr addr: " << hex << data << endl;
 
@@ -61,20 +59,17 @@ private:
 
 int main()
 {
-    sPtr * int1;    
-    int1 = new sPtr(100);
-    sPtr * int2 ( int1 );
-    sPtr * int3;
-    int3 = int1;
-    cout << "int1 / 2 ptr: " << int1 << " / " << int2 << endl; 
+    sPtr int1(100);
+    sPtr int2 ( int1 );
+    //cout << "int1 / 2 ptr: " << &int1 << " / " << &int2 << endl; 
 
     cout << "---------------------" << endl;
-    int1->printInfo();
+    int1.printInfo();
     cout << "---------------------" << endl;
-    int2->printInfo();
+    int2.printInfo();
     cout << "---------------------" << endl;
-    int3->printInfo();
+    sPtr int3 = int1;
+    int3.printInfo();
     cout << "---------------------" << endl;
-    delete int1;
     return 0;
 }
