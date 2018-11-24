@@ -9,90 +9,104 @@ Finally virtual destructor "virtual ~Fish()" ensures that the derived class dest
 polymorphism feature when pointer to fish is created and memory allocated and then finally be destroyed through
 DeleteFishMemory.
 */
+
 #include <iostream>
 using namespace std;
 static int DEBUG = 1;
 
-class Fish
-{
+class Fish {
 public:
-    Fish()
-    {
+    Fish() {
         if (DEBUG == 1) 
             cout << "Fish() constructor entered." << endl;
     }
 
-    virtual ~Fish()
-    {
+    virtual ~Fish() {
         if (DEBUG == 1)
             cout << "~Fish() destructor entered." << endl;
     }
 
-    virtual void Swim()
-    {
+    virtual void Swim() {
         if (DEBUG == 1)
             cout << "Fish::Swim() entered." << endl;
     }
 };
 
-class Carp : public Fish
-{
+class Carp : public Fish {
 public:
-    Carp()
-    {
+    Carp() {
         if (DEBUG == 1)
             cout << "Carp() constructor entered." << endl;
     }
 
-    ~Carp()
-    {
+    ~Carp() {
         if (DEBUG == 1) 
             cout << "~Carp() destructor called." << endl;
     }
 
-    void Swim()
-    {
+    void Swim() {
         if (DEBUG == 1)
             cout << "Carp::Swim() entered." << endl;
     }
 };
 
-class Tuna : public Fish
-{
+class Tuna : public Fish {
 public:
-    Tuna()
-    {
+    Tuna() {
         if (DEBUG == 1) 
             cout << "Tuna() constructor entered." << endl;
     }
 
-    ~Tuna()
-    {
+    ~Tuna() {
         if (DEBUG == 1)
             cout << "~Tuna() destructor called." << endl;
     }
 
-    void Swim()
-    {
+    void Swim() {
         if (DEBUG == 1)
             cout << "Tuna::Swim() entered." << endl;
     }
 };
 
-void copyFish(Fish & pFish)
-{
-    pFish.Swim();
+void copyFish(Fish & pFish) {
+   pFish.Swim();
 }
 
-void deleteFishMemory(Fish * pFish)
-{
+void deleteFishMemory(Fish * pFish) {
     delete pFish;
 }
-int main()
-{
+
+template <typename T>
+class deepcopy_smart_ptr {
+private:
+    T* object;
+
+public:
+
+    // constructor 
+
+    deepcopy_smart_ptr (T * pData) : object(pData) {}        
+
+    // destructor 
+
+    ~deepcopy_smart_ptr () { delete object; };
+
+    // copy constructor 
+
+    deepcopy_smart_ptr (const deepcopy_smart_ptr & anotherSp)  {
+        object = new T();
+        return object;
+    }
+    deepcopy_smart_ptr& operator=(const_pointer & anotherSp) {
+
+    }
+    // deref and member selector operator overload.
+
+    T& operator * () const { return *object; }
+    T& operator -> () const { return object; }
+}
+
+int main() {
     Tuna * fish1 = new Tuna();
-    fish1->Swim();
-    deleteFishMemory(fish1);
-    //copyFish(*fish1);
     return 0;
 }
