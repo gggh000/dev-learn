@@ -1,19 +1,19 @@
 #include <iostream>
 using namespace std;
 
-class sPtr
-{
-    int * data;
+template <typename T>
+class sPtr {
+    T * data;
 
 public:
 
     // Constructor. 
 
-    sPtr (int pData = NULL) {
+    sPtr (T pData = NULL) {
         cout << "sPtr constructor." << endl;
 
         if (pData != NULL) {
-            data = new int(pData);
+            data = new T(pData);
         } else {
             cout << "Data initialized to NULL." << endl;
             data = NULL;
@@ -35,7 +35,7 @@ public:
     
     sPtr & operator = (sPtr & p) {
         cout << "sPtr copy assignment operator. in: " << p.getData() << endl;
-        data = new int(p.getData());
+        data = new T(p.getData());
         delete &p;
     }
 
@@ -43,12 +43,12 @@ public:
     
     sPtr(sPtr & p) {
         cout << "sPtr copy constructor. in: " << p.getData() << endl;
-        data = new int(p.getData());
+        data = new T(p.getData());
     }
 
     // Accessory.
         
-    int getData() { return * data; } 
+    T getData() { return * data; } 
 
     // Print info.
 
@@ -66,11 +66,10 @@ public:
 private:
 };
 
-int main()
-{
-    sPtr int1(100);
-    sPtr int2 ( int1 );
-    sPtr int3 = int1;
+int main() {
+    sPtr <int>int1(100);
+    sPtr <int>int2( int1 );
+    sPtr <int>int3 = int1;
 
     //cout << "int1 / 2 ptr: " << &int1 << " / " << &int2 << endl; 
 
