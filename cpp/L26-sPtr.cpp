@@ -11,20 +11,30 @@ public:
 
     sPtr (int pData = NULL) {
         cout << "sPtr constructor." << endl;
-        data = new int(pData);
+
+        if (pData != NULL) {
+            data = new int(pData);
+        } else {
+            cout << "Data initialized to NULL." << endl;
+            data = NULL;
+        }
     }
 
     // Destructor.
 
     ~sPtr () { 
         cout << "sPtr desctructor." << endl;
-        delete data; 
+
+        if ( data != NULL)
+            delete data; 
+        else
+            cout << " sPtr destructor: data is NULL, not deleting the pointer. " << endl;
     }
 
     // Copy assignment constructor.
     
     sPtr & operator = (sPtr & p) {
-        cout << "sPtr copy assignment operator. " << endl;
+        cout << "sPtr copy assignment operator. in: " << p.getData() << endl;
         data = new int(p.getData());
         delete &p;
     }
@@ -32,7 +42,7 @@ public:
     // Copy constructor.
     
     sPtr(sPtr & p) {
-        cout << "sPtr copy constructor. " << endl;
+        cout << "sPtr copy constructor. in: " << p.getData() << endl;
         data = new int(p.getData());
     }
 
@@ -54,13 +64,14 @@ public:
     }
 
 private:
-    
 };
 
 int main()
 {
     sPtr int1(100);
     sPtr int2 ( int1 );
+    sPtr int3 = int1;
+
     //cout << "int1 / 2 ptr: " << &int1 << " / " << &int2 << endl; 
 
     cout << "---------------------" << endl;
@@ -68,7 +79,6 @@ int main()
     cout << "---------------------" << endl;
     int2.printInfo();
     cout << "---------------------" << endl;
-    sPtr int3 = int1;
     int3.printInfo();
     cout << "---------------------" << endl;
     return 0;
