@@ -25,6 +25,20 @@ public:
         
     int getData() { return *data; } 
 
+    // print info
+
+    void printInfo()
+    {
+        cout << "object addr:   " << hex << this << endl;
+        cout << "data ptr addr: " << hex << data << endl;
+
+        if (data != NULL) {
+            cout << "data value:            " << dec << *data << endl; 
+        } else { 
+            cout << "data value is NULL.    " << endl;
+        }
+    }
+
 private:
     
 };
@@ -35,6 +49,7 @@ int main()
     int1 = new sPtr(100);
 
     cout << "int1: " << int1->getData() << endl;
+    int1->printInfo();
     delete int1;
     return 0;
 }
