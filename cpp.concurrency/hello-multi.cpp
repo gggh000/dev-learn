@@ -12,11 +12,11 @@ using namespace std;
 
 void hello(int pId, int pStat[])
 {
-    int sleep_duration = rand() % 5 + 10;
-	std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl; 
+    int sleep_duration = rand() % 30 + 20;
+	std::cout << "(" << hex << this_thread::get_id() << ")" << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl; 
     sleep(sleep_duration);
     pStat[pId]  = 1;
-    std::cout << pId << ": done sleeping exiting now..." << endl;
+    std::cout << pId << ": Done sleeping exiting now..." << endl;
 }
 
 int main()
@@ -34,7 +34,7 @@ int main()
 
     cout << "Checking thread status-s..." << endl;
 
-     while (sum != 10)  {
+     while (sum != CONFIG_THREAD_COUNT)  {
         sum = 0;
 
         for (i = 0; i < CONFIG_THREAD_COUNT; i++) {
