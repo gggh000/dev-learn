@@ -13,7 +13,7 @@ void hello(int pId, int pStat[])
 {
     int pNum = rand() % 4 + 2;
     int sleep_duration = rand() % 30 + 20;
-    std::cout << "(" << hex << this_thread::get_id() << ")" << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
+    std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
     sleep(sleep_duration);
 
     // Create lock guard.
