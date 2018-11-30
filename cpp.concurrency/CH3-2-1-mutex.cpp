@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <thread> 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -12,17 +14,22 @@ int sum = 0;
 void hello(int pId, int pStat[])
 {
     int pNum = rand() % 4 + 2;
-    int sleep_duration = rand() % 30 + 20;
+    int sleep_duration = rand() % 2 + 0;
+    sleep_duration = 0;
     std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
     sleep(sleep_duration);
 
     // Create lock guard.
+    // std::lock_guard<std::mutex> sum_guard(mutex_sum);
 
-    std::lock_guard<std::mutex> sum_guard(mutex_sum);
-    cout << "thread: " << pId << ": R0: " << sum;
+    ofstream myfile;
+    ostringstream oss;
+    oss << pId;
+    myfile.open(oss.str());
+    myfile << "thread: " << pId << ": R0: " << sum;
     sum += pNum;
-    cout << " + " << pNum << " = " << sum << endl;
-
+    myfile << " + " << pNum << " = " << sum << endl;
+    myfile.close();
     pStat[pId]  = 1;
     std::cout << pId << ": Done sleeping exiting now..." << endl;
 }
@@ -60,7 +67,7 @@ int main()
     // Declare, initialize variables.
 
     int i;
-    const int CONFIG_THREAD_COUNT = 10;
+    const int CONFIG_THREAD_COUNT = 20;
     int stat[CONFIG_THREAD_COUNT];
     int sum = 0;
 
