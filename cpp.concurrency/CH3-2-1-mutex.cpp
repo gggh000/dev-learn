@@ -24,7 +24,7 @@ void hello(int pId, int pStat[])
 
     ofstream myfile;
     ostringstream oss;
-    oss << pId;
+    oss << "file-" << pId;
     myfile.open(oss.str());
     myfile << "thread: " << pId << ": R0: " << sum;
     sum += pNum;
