@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -14,10 +15,10 @@ int sum = 0;
 void hello(int pId, int pStat[])
 {
     int pNum = rand() % 4 + 2;
-    int sleep_duration = rand() % 2 + 0;
+    int sleep_duration = 1000000 * (rand() % 2 + 0);
     sleep_duration = 0;
     std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
-    sleep(sleep_duration);
+    usleep(sleep_duration);
 
     // Create lock guard.
     // std::lock_guard<std::mutex> sum_guard(mutex_sum);
@@ -90,7 +91,7 @@ int main()
         }
 
         cout << "main(): sum: " << sum << ". waiting for all threads to finish..." << endl;
-        sleep(5);
+        usleep(5 * 1000000);
     }
 
     return 0;
