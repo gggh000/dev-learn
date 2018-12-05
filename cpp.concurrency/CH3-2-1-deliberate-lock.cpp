@@ -21,7 +21,7 @@ void hello(int pId, int pStat[])
     usleep(sleep_duration);
 
     // Create lock guard.
-    std::lock_guard<std::mutex> sum_guard(mutex_sum);
+    //std::lock_guard<std::mutex> sum_guard(mutex_sum);
 
     ofstream myfile;
     ostringstream oss;
@@ -68,7 +68,7 @@ int main()
     // Declare, initialize variables.
 
     int i;
-    const int CONFIG_THREAD_COUNT = 20;
+    const int CONFIG_THREAD_COUNT = 2;
     int stat[CONFIG_THREAD_COUNT];
     int sum = 0;
 
