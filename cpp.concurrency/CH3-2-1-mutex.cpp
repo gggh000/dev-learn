@@ -14,24 +14,37 @@ int sum = 0;
 
 void hello(int pId, int pStat[])
 {
-    int pNum = rand() % 4 + 2;
-    int sleep_duration = 1000000 * (rand() % 2 + 0);
-    sleep_duration = 0;
-    std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
-    usleep(sleep_duration);
+    int pNum;
+    int i;
 
-    // Create lock guard.
-    std::lock_guard<std::mutex> sum_guard(mutex_sum);
+    std::cout << pId << ": Hello CONCURRENT WORLD " << endl;
 
-    ofstream myfile;
-    ostringstream oss;
-    oss << "file-" << pId;
-    myfile.open(oss.str());
-    myfile << "thread: " << pId << ": R0: " << sum;
-    sum += pNum;
-    myfile << " + " << pNum << " = " << sum << endl;
-    myfile.close();
-    pStat[pId]  = 1;
+    for (int i = 0; i < 1000000; i++ ) {
+        pNum  = rand() % 4 + 2;
+        
+        cout << pId << ": " << ", loop: " << i << endl;
+
+        // Sleep is disabled for now. 
+        //int sleep_duration = 1000000 * (rand() % 2 + 0);
+        // sleep_duration = 0;
+        //std::cout << pId << ": Hello CONCURRENT WORLD, sleeping for " << sleep_duration << endl;
+        //usleep(sleep_duration);
+    
+        // Create lock guard.
+        // std::lock_guard<std::mutex> sum_guard(mutex_sum);
+
+        // read + sum + read and write to file.
+    
+        ofstream myfile;
+        ostringstream oss;
+        oss << "file-" << pId << "-" << i;
+        myfile.open(oss.str());
+        myfile << "threadNo. " << pId << ":" << sum;
+        sum += pNum;
+        myfile << ":" << pNum << ":" << sum << endl;
+        pStat[pId]  = 1;
+        myfile.close();
+    }
     std::cout << pId << ": Done sleeping exiting now..." << endl;
 }
 
@@ -68,7 +81,7 @@ int main()
     // Declare, initialize variables.
 
     int i;
-    const int CONFIG_THREAD_COUNT = 20;
+    const int CONFIG_THREAD_COUNT = 2;
     int stat[CONFIG_THREAD_COUNT];
     int sum = 0;
 
@@ -91,7 +104,7 @@ int main()
         }
 
         cout << "main(): sum: " << sum << ". waiting for all threads to finish..." << endl;
-        usleep(5 * 1000000);
+        usleep(2 * 1000000);
     }
 
     return 0;
