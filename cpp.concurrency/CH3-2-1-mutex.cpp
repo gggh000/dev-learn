@@ -19,7 +19,7 @@ void hello(int pId, int pStat[])
 
     std::cout << pId << ": Hello CONCURRENT WORLD " << endl;
 
-    for (int i = 0; i < 1000000; i++ ) {
+    for (int i = 0; i < 10000; i++ ) {
         pNum  = rand() % 4 + 2;
         
         cout << pId << ": " << ", loop: " << i << endl;
@@ -81,7 +81,7 @@ int main()
     // Declare, initialize variables.
 
     int i;
-    const int CONFIG_THREAD_COUNT = 2;
+    const int CONFIG_THREAD_COUNT = 20;
     int stat[CONFIG_THREAD_COUNT];
     int sum = 0;
 
