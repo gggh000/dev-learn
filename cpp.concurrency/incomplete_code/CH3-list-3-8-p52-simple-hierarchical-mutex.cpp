@@ -14,6 +14,9 @@ class hierarchical_mutex {
     std::mutex internal_mutex;
     unsigned long const hierarchy value;
     unsigned long previous_hierarchy_value;
+
+    // thread_local keyword specifies storage duration.
+
     static thread_local unsigned long this_thread_hierarchy_value;
 
     void check_for_hierarchy_violation() {
