@@ -2,6 +2,10 @@
 Waiting for data to be proessed with a std::condition_variable
 Chapter 4
 Listing 4.1
+std::condition_variable
+std::condition_variable::notify_one()
+std::condition_variable::wait()
+
 */
 
 
