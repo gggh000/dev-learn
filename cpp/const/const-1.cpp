@@ -3,10 +3,31 @@
 
 using namespace std;
 
+const int f1a () {
+    const int i = 100;
+
+    cout << "f1a: returning 100..." << endl;
+    return i;
+}
 int f1 ( const int & j) {
     cout << "f1: j: " << j << endl;
 
-    // Following is not allowed since passed as const.
+    /* Following is not allowed since passed as const.
+    const-1.cpp:18:7: error: assignment of read-only reference ‘j’
+    */
+
+    //j = 10;
+    return j;
+}
+
+int f1b ( int const & j) {
+    cout << "f1b: j: " << j << endl;
+    /* Following is not allowed since passed as const.
+    Uncomment to see following compile error:
+    const-1.cpp:25:7: error: assignment of read-only reference ‘j’
+     j = 10;
+
+    */
     //j = 10;
 
     return j;
@@ -46,6 +67,7 @@ public:
 
 int main() {
     const int i = 0; 
+    int p;
 
     cF2 cf2;
     cf2.f2();
@@ -54,7 +76,17 @@ int main() {
     // i = 1;
 
     cout << "const int i: " << i << endl;    
+
+    p = f1a ();    
+    cout << "f1a: return: " << p << endl;
+    p = 200;
+    cout << "f1a: return modded: " << p << endl;
+
     cout <<  "Done... " << endl;
+
+    f1 ( 200 );
+    f1b ( 250 );
+
     return 0;
 
 }
