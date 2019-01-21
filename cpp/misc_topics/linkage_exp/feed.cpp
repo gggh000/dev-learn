@@ -2,6 +2,7 @@
 // C code to illustrate Internal Linkage 
 
 #include <stdio.h> 
+#include "animals.cpp"
   
 int main() 
 { 

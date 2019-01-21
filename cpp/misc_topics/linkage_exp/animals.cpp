@@ -3,6 +3,7 @@
 // This code implements static linkage on identifier animals
 
 #include <stdio.h> 
+#include "animals.h"
   
 static int animals = 8; 
 const int i = 5; 
