@@ -7,20 +7,18 @@ using namespace std;
 int main() {
     shared_ptr<int> valuePtr (new int (222) );
     cout << "valuePtr: " << *valuePtr << endl;
-    shared_ptr<int> valuePtrNow(valuePtr);
-    cout << "valuePtrNow: " << *valuePtrNow << endl;
+    cout << "valuePtr.use_count() " << valuePtr.use_count() << endl;
 
-    /*
-    if (valuePtr != NULL)
-        printf("0x%x", valuePtr);
-    else    
-        printf("valuePtr is null now.")
+    shared_ptr<int> valuePtrNow (valuePtr);
+    shared_ptr<int> valuePtrNow2 (valuePtrNow);
+    shared_ptr<int> valuePtrNow3 (valuePtr);
 
-    if (valuePtrNow != NULL)
-        printf("0x%x", valuePtrNow);
-    else
-        printf("valuePtrNow is null now.")
-    */
+    cout << "valuePtr.get() " << valuePtr.get() << endl;
+    cout << "valuePtrNow.get() " << valuePtrNow.get() << endl;
+
+    cout << "valuePtr.use_count() " << valuePtr.use_count() << endl;
+    cout << "valuePtrNow.use_count() " << valuePtrNow.use_count() << endl;
+    
     return 0;
 }
 
