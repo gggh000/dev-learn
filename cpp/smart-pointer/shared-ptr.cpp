@@ -7,9 +7,10 @@ using namespace std;
 int main() {
     shared_ptr<int> valuePtr (new int (222) );
     cout << "valuePtr: " << *valuePtr << endl;
-    shared_ptr<int> valuePtrNow(move(valuePtr));
+    shared_ptr<int> valuePtrNow(valuePtr);
     cout << "valuePtrNow: " << *valuePtrNow << endl;
 
+    /*
     if (valuePtr != NULL)
         printf("0x%x", valuePtr);
     else    
@@ -19,6 +20,7 @@ int main() {
         printf("0x%x", valuePtrNow);
     else
         printf("valuePtrNow is null now.")
+    */
     return 0;
 }
 
