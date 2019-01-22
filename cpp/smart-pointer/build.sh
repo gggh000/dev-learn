@@ -9,5 +9,5 @@ $SHARED_PTR \
 for (( i = 0 ; i < ${#FILES[@]} ; i ++ ))
 do
     echo building ${FILES[$i]} ...
-    g++ ${FILES[$i]}.cpp  -std=c++0x -o ${FILES[$i]}.out
+    g++ ${FILES[$i]}.cpp  -std=c++0x -o ${FILES[$i]}.out && echo "done building ${FILES[$i]} " &
 done
