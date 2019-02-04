@@ -34,7 +34,6 @@ print("y_test shape: {}".format(y_test.shape))
 
 print_k("(OPTIONAL): SHOW PLOT.")
 pd.plotting.scatter_matrix(iris_dataframe, c=y_train, figsize=(15,15), marker='o', hist_kwds={'bins': 20}, s=60, alpha=.8, cmap=mglearn.cm3)
-#plt.show()
 
 print_k("CREATE PREDICTION OBJECT BASED ON K-NEIGHTBOUR CLASSIFIER, KNN OBJECT.")
 knn = KNeighborsClassifier(n_neighbors=1) 
