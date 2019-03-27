@@ -197,8 +197,6 @@ axes[0].legend(["Model predictions", "Training data/target",
  "Test data/target"], loc="best")
 plt.show()
 
- '''
-
 print_k("Generating dataset for linear model.")
- 
 mglearn.plots.plot_linear_regression_wave()
+ 
