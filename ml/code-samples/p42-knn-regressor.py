@@ -17,4 +17,5 @@ reg = KNeighborsRegressor(n_neighbors=3)
 reg.fit(X_train, y_train)
 
 print("Test set predictions:\n{}".format(reg.predict(X_test)))
+print("Train set R^2: {:.2f}".format(reg.score(X_train, y_train)))
 print("Test set R^2: {:.2f}".format(reg.score(X_test, y_test)))
