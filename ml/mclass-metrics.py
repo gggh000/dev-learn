@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_digits
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 import mglearn
 
@@ -21,4 +22,6 @@ scores_image = mglearn.tools.heatmap(
  yticklabels=digits.target_names, cmap=plt.cm.gray_r, fmt="%d")
 plt.title("Confusion matrix")
 plt.gca().invert_yaxis()
-plt.show()
+#plt.show()
+
+print(classification_report(y_test, pred))
