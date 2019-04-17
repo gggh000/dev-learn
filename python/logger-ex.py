@@ -18,6 +18,8 @@ logger.addHandler(fh)
 logger.addHandler(ch)
 
 logger.info("test-app-log emitted.")
+logger.error("ERROR: test-app-log emitted.")
+logger.critical("CRITICAL: test-app-log emitted.")
 
 
 

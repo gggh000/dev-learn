@@ -1,1 +1,11 @@
 2019-04-17 13:51:43,142 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:52:41,640 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:53:27,805 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:53:27,806 - test-app - ERROR - test-app-log emitted.
+2019-04-17 13:53:38,141 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:53:38,141 - test-app - ERROR - ERROR: test-app-log emitted.
+2019-04-17 13:53:39,811 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:53:39,811 - test-app - ERROR - ERROR: test-app-log emitted.
+2019-04-17 13:53:59,211 - test-app - INFO - test-app-log emitted.
+2019-04-17 13:53:59,211 - test-app - ERROR - ERROR: test-app-log emitted.
+2019-04-17 13:53:59,211 - test-app - CRITICAL - CRITICAL: test-app-log emitted.
