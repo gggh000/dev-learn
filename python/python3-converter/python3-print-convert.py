@@ -43,8 +43,11 @@ try:
 except Exception as msg:
 	print(msg)
  
-#fp.close()
-#fp1.close()
+fp.close()
+fp1.close()
+
+os.system("mv " + sys.argv[1] + " " + sys.argv[1][:-3] + "2.py".strip())
+os.system("mv " + outputFile + " " + sys.argv[1])
 
 	
 
