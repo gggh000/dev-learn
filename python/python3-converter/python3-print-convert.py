@@ -16,6 +16,10 @@ try:
 	if not re.search("\.py$", sys.argv[1]):
 		print("Does not end with .py, Please input python file.")	
 		sys.exit(1)
+
+	if re.search("3\.py$", sys.argv[1]):
+		print("It is likely already a converted file as ending with 3.py. If you are sure, please rename so that it does not end with 3.py")
+		sys.exit(1)
 	
 	fp = open(sys.argv[1])
 	if not fp:
