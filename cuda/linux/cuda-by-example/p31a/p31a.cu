@@ -23,13 +23,14 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 
 //#define N 1025
 
-__global__ void add( int * a, int * b, int * c, int N) {
+__global__ void add( long int * a, long int * b, long int * c, int N) {
 	int tid = threadIdx.x;
 	if ( tid < N )
 		c[tid] = a[tid] + b[tid];
+		c[tid] = (long int)&c[tid];
 }
 int main ( void ) {
-	int *dev_a, *dev_b, *dev_c;
+	long int *dev_a, *dev_b, *dev_c;
 	int errors, N;
 
         cudaDeviceProp prop;
@@ -40,7 +41,9 @@ int main ( void ) {
                 cudaGetDeviceProperties ( &prop, i);
 
 	N = prop.maxThreadsPerBlock;
+	N = 10;
 	printf("Max threads per block for device 0: %d", N);
+	
 
 	int a[N], b[N], c[N];
 
@@ -64,10 +67,14 @@ int main ( void ) {
 
 	for (int i = 0; i < N; i++) {
 		if (c[i] != 6) {
-			printf("\n0x%x did not add correctly: %d", i, c[i]);
+			//printf("\n0x%x did not add correctly: %d", i, c[i]);
 			errors ++;
+			//continue;
 		}
+		printf("\n%d. GPU address: 0x%0x, host addr: 0x%0x", i, c[i], &c[i]);
 	}
+
+	printf("\nsize of int, long int: %d, %d", sizeof(int), sizeof(long int));
 	cudaFree(dev_a);
 	cudaFree(dev_b);
 	cudaFree(dev_c);
