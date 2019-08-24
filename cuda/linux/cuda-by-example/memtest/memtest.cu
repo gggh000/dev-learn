@@ -27,17 +27,20 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 #define N 1024*1024*1024
 #define DEBUG 0
 
-__global__ void add( long int * a, long int * b, long int * c) {
-	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+__global__ void memtrf(char * a) {
+	//int tid = threadIdx.x + blockIdx.x * blockDim.x;
 }
 int main ( void ) {
-	long int *dev_a, *dev_b, *dev_c;
-	int errors;
+	char *dev_a;
 	int blockDim;
+	cudaEvent_t start, stop;
+	//int errors;
+	char * a;
 
         cudaDeviceProp prop;
         int count, i;
         cudaGetDeviceCount ( &count);
+	float elapsedTime;
 
         for (i = 0 ; i < count ; i ++ )
                 cudaGetDeviceProperties ( &prop, i);
@@ -45,26 +48,25 @@ int main ( void ) {
 	blockDim = prop.maxThreadsPerBlock;
 	printf("Max threads per block for device 0: %d", blockDim);
 
-	int a[N], b[N], c[N];
+	//int a[N];
+	a = (char*) malloc(sizeof(char) * N);
+	printf("\nAllocated memory on the host ok: 0x%08x", N);
+	cudaMalloc( (void**) &dev_a, N * sizeof(char));
+	printf("\nAllocated memory on the GPU ok: 0x%08x", N);
 
-	cudaMalloc( (void**) &dev_a, N * sizeof(int));
-	cudaMalloc( (void**) &dev_b, N * sizeof(int));
-	cudaMalloc( (void**) &dev_c, N * sizeof(int));
 
-	errors = 0;
+	cudaEventCreate( &start);
+	cudaEventCreate( &stop);
+	cudaEventRecord( start, 0);
+	cudaMemcpy(dev_a, a, N * sizeof(char), cudaMemcpyHostToDevice);
+	cudaEventRecord( stop, 0);
+	cudaEventElapsedTime( &elapsedTime, start, stop);
+	printf("\nTime taken: %3.1f ms\n", elapsedTime);
+	
+	//memtrf <<<(N + blockDim - 1) / blockDim, blockDim>>>(dev_a);
+	//cudaMemcpy(c, dev_c, N * sizeof(char), cudaMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i++) {
-		a[i] = i;
-		b[i] = 1;
-	}
-
-	cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
-
-	add <<<(N + blockDim - 1) / blockDim, blockDim>>>(dev_a, dev_b, dev_c);
-
-	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
-
+	/*
 	for (int i = 0; i < N; i++) {
 		if (c[i] != 6) {
 			//printf("\n0x%x did not add correctly: %d", i, c[i]);
@@ -73,13 +75,14 @@ int main ( void ) {
 		}
 		//printf("\n%d. GPU address: a/b/c: 0x%08x, 0x%08x, 0x%08x, host addr: 0x%0x", i, a[i], b[i], c[i], &c[i]);
 	}
+	*/
 
-	printf("\nsize of int, long int: %d, %d", sizeof(int), sizeof(long int));
+	printf("\nsize of int, long int: %d, %d", sizeof(char), sizeof(long int));
 
+	printf("\nPress a key to release the cuda memory...");
+	getchar();
 	cudaFree(dev_a);
-	cudaFree(dev_b);
-	cudaFree(dev_c);
 
-	printf("\nNo. of errors in vector sum: %d.", errors);
+	//printf("\nNo. of errors in vector sum: %d.", errors);
 	printf("\n");
 }
