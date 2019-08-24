@@ -24,29 +24,11 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-#define N 65536
+#define N 1024*1024*1024
 #define DEBUG 0
 
 __global__ void add( long int * a, long int * b, long int * c) {
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	if ( tid < N ) {
-		c[tid] = a[tid] + b[tid];
-		b[tid] = (long int)&b[tid];
-		a[tid] = (long int)&a[tid];
-		c[tid] = (long int)&c[tid];
-
-		printf("\na/b/c: 0x%08x, 0x%08x, 0x%08x", &a[tid], &b[tid], &c[tid]);
-
-		if (tid < N && DEBUG == 1) {
-			printf("\ntid: %d, blockDim.x: 0x%0x", tid,  blockDim.x);
-			printf("\ntid: %d, blockDim.y: 0x%0x", tid,  blockDim.y);
-			printf("\ntid: %d, blockDim.z: 0x%0x", tid,  blockDim.z);
-			printf("\ntid: %d, gridDim.x:  0x%0x", tid,  gridDim.x);
-			printf("\ntid: %d, gridDim.y:  0x%0x", tid,  gridDim.y);
-	}
-		tid += blockDim.x * gridDim.x;
-	}
-
 }
 int main ( void ) {
 	long int *dev_a, *dev_b, *dev_c;
