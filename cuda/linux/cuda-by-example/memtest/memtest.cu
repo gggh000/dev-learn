@@ -28,7 +28,12 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 #define DEBUG 0
 
 __global__ void memtrf(char * a) {
-	//int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+
+	if (tid > N){
+		a[tid] = 'A';
+	}
+	tid += blockDim.x * gridDim.x;
 }
 int main ( void ) {
 	char *dev_a;
