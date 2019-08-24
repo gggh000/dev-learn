@@ -11,27 +11,43 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
  */
 
 // System includes
+
 #include <stdio.h>
 #include <assert.h>
 
 // CUDA runtime
+
 #include <cuda_runtime.h>
 
 // Helper functions and utilities to work with CUDA
+
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-//#define N 1025
+#define N 65536
 
-__global__ void add( long int * a, long int * b, long int * c, int N) {
+__global__ void add( long int * a, long int * b, long int * c) {
 	int tid = threadIdx.x;
-	if ( tid < N )
+	if ( tid < N ) {
 		c[tid] = a[tid] + b[tid];
-		c[tid] = (long int)&c[tid];
+		//c[tid] = (long int)&c[tid];
+		tid += blockDim.x * gridDim.x;
+	}
+
+	if (tid < N) {
+		printf("\n===================");
+		printf("\nN: %x", N);
+		printf("\nblockDim.x: 0x%0x", blockDim.x);
+		printf("\nblockDim.y: 0x%0x", blockDim.y);
+		printf("\nblockDim.z: 0x%0x", blockDim.z);
+		printf("\ngridDim.x:  0x%0x", gridDim.x);
+		printf("\ngridDim.y:  0x%0x", gridDim.y);
+	}
 }
 int main ( void ) {
 	long int *dev_a, *dev_b, *dev_c;
-	int errors, N;
+	int errors;
+	int blockDim;
 
         cudaDeviceProp prop;
         int count, i;
@@ -40,10 +56,8 @@ int main ( void ) {
         for (i = 0 ; i < count ; i ++ )
                 cudaGetDeviceProperties ( &prop, i);
 
-	N = prop.maxThreadsPerBlock;
-	N = 10;
-	printf("Max threads per block for device 0: %d", N);
-	
+	blockDim = prop.maxThreadsPerBlock;
+	printf("Max threads per block for device 0: %d", blockDim);
 
 	int a[N], b[N], c[N];
 
@@ -54,14 +68,14 @@ int main ( void ) {
 	errors = 0;
 
 	for (int i = 0; i < N; i++) {
-		a[i] = 2;
-		b[i] = 4;
+		a[i] = i;
+		b[i] = 1;
 	}
 
 	cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
 
-	add <<<1, N>>>(dev_a, dev_b, dev_c, N);
+	add <<<(N + blockDim - 1) / blockDim, blockDim>>>(dev_a, dev_b, dev_c);
 
 	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
@@ -71,7 +85,7 @@ int main ( void ) {
 			errors ++;
 			//continue;
 		}
-		printf("\n%d. GPU address: 0x%0x, host addr: 0x%0x", i, c[i], &c[i]);
+		printf("\n%d. GPU address: 0x%08x, host addr: 0x%0x", i, c[i], &c[i]);
 	}
 
 	printf("\nsize of int, long int: %d, %d", sizeof(int), sizeof(long int));
