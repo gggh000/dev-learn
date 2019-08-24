@@ -25,24 +25,24 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 #include <helper_cuda.h>
 
 #define N 65536
+#define DEBUG 0
 
 __global__ void add( long int * a, long int * b, long int * c) {
-	int tid = threadIdx.x;
+	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if ( tid < N ) {
 		c[tid] = a[tid] + b[tid];
 		//c[tid] = (long int)&c[tid];
+
+		if (tid < N && DEBUG == 1) {
+			printf("\ntid: %d, blockDim.x: 0x%0x", tid,  blockDim.x);
+			printf("\ntid: %d, blockDim.y: 0x%0x", tid,  blockDim.y);
+			printf("\ntid: %d, blockDim.z: 0x%0x", tid,  blockDim.z);
+			printf("\ntid: %d, gridDim.x:  0x%0x", tid,  gridDim.x);
+			printf("\ntid: %d, gridDim.y:  0x%0x", tid,  gridDim.y);
+	}
 		tid += blockDim.x * gridDim.x;
 	}
 
-	if (tid < N) {
-		printf("\n===================");
-		printf("\nN: %x", N);
-		printf("\nblockDim.x: 0x%0x", blockDim.x);
-		printf("\nblockDim.y: 0x%0x", blockDim.y);
-		printf("\nblockDim.z: 0x%0x", blockDim.z);
-		printf("\ngridDim.x:  0x%0x", gridDim.x);
-		printf("\ngridDim.y:  0x%0x", gridDim.y);
-	}
 }
 int main ( void ) {
 	long int *dev_a, *dev_b, *dev_c;
