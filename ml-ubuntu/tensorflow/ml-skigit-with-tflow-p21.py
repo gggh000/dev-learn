@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn
+import sys
+sys.path.append("/git.co/handson-ml") 
+print(sys.path)
+import import_ipynb
+import 01_the_machine_learning_landscape
+
 
 PATH_RESOURCE="/git.co/handson-ml/datasets/lifesat/"
 # Load the data
