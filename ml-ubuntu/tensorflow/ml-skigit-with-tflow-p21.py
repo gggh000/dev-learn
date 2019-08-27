@@ -6,9 +6,9 @@ import sklearn
 import sys
 sys.path.append("/git.co/handson-ml") 
 print(sys.path)
-import import_ipynb
-import 01_the_machine_learning_landscape
 
+#import import_ipynb
+import one
 
 PATH_RESOURCE="/git.co/handson-ml/datasets/lifesat/"
 # Load the data
