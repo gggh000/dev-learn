@@ -8,7 +8,7 @@ sys.path.append("/git.co/handson-ml")
 print(sys.path)
 
 #import import_ipynb
-import one
+from one import *
 
 PATH_RESOURCE="/git.co/handson-ml/datasets/lifesat/"
 # Load the data
@@ -25,7 +25,7 @@ country_stats.plot(kind='scatter',  x="GDP per capita", y='Life satisfaction')
 plt.show()
 
 # select a linear model
-model = sklean.linear_model.LinearRegression()
+model = sklearn.linear_model.LinearRegression()
 
 # Train the model.
 model.fit(X, y)
