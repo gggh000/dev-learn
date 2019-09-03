@@ -6,7 +6,10 @@ LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 VulkanTest: main.cpp
 	g++ $(CFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
 
-vulkanTutorial-p41:  vulkanTutorial-validation-layer.cpp
+vulkanTutorial-phys-dev:
+	g++ $(CFLAGS) -o vulkanTutorial-phys-dev vulkanTutorial-phys-dev.cpp $(LDFLAGS)
+
+vulkanTutorial-validation-layer:  vulkanTutorial-validation-layer.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-41 vulkanTutorial-validation-layer.cpp $(LDFLAGS)
 	
 .PHONY: test clean
