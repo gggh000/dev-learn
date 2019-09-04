@@ -10,7 +10,11 @@ vulkanTutorial-phys-dev:
 	g++ $(CFLAGS) -o vulkanTutorial-phys-dev vulkanTutorial-phys-dev.cpp $(LDFLAGS)
 
 vulkanTutorial-validation-layer:  vulkanTutorial-validation-layer.cpp
-	g++ $(CFLAGS) -o vulkanTutorial-41 vulkanTutorial-validation-layer.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -o vulkanTutorial-validation-layer vulkanTutorial-validation-layer.cpp $(LDFLAGS)
+
+vulkanTutorial-logical-dev:  vulkanTutorial-logical-dev.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-logical-dev vulkanTutorial-logical-dev.cpp $(LDFLAGS)
+
 	
 .PHONY: test clean
 
