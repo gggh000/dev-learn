@@ -15,6 +15,9 @@ vulkanTutorial-validation-layer:  vulkanTutorial-validation-layer.cpp
 vulkanTutorial-logical-dev:  vulkanTutorial-logical-dev.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-logical-dev vulkanTutorial-logical-dev.cpp $(LDFLAGS)
 
+vulkanTutorial-window-surface: vulkanTutorial-window-surface.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-window-surface vulkanTutorial-window-surface.cpp $(LDFLAGS)
+
 	
 .PHONY: test clean
 
