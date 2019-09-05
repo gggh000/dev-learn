@@ -18,6 +18,9 @@ vulkanTutorial-logical-dev:  vulkanTutorial-logical-dev.cpp
 vulkanTutorial-window-surface: vulkanTutorial-window-surface.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-window-surface vulkanTutorial-window-surface.cpp $(LDFLAGS)
 
+vulkanTutorial-swapchain: vulkanTutorial-swapchain.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-swapchain vulkanTutorial-swapchain.cpp $(LDFLAGS)
+		
 	
 .PHONY: test clean
 
