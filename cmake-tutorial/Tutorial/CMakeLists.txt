@@ -16,4 +16,4 @@ configure_file (
 include_directories("${PROJECT_BINARY_DIR}")
  
 # add the executable
-add_executable(Tutorial tutorial.cpp)
+add_executable(Tutorial Tutorial.cxx)
