@@ -21,6 +21,8 @@ vulkanTutorial-window-surface: vulkanTutorial-window-surface.cpp
 vulkanTutorial-swapchain: vulkanTutorial-swapchain.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-swapchain vulkanTutorial-swapchain.cpp $(LDFLAGS)
 		
+vulkanTutorial-imageview: vulkanTutorial-imageview.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-imageview vulkanTutorial-imageview.cpp $(LDFLAGS)
 	
 .PHONY: test clean
 
