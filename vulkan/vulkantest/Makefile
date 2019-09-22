@@ -23,6 +23,9 @@ vulkanTutorial-swapchain: vulkanTutorial-swapchain.cpp
 		
 vulkanTutorial-imageview: vulkanTutorial-imageview.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-imageview vulkanTutorial-imageview.cpp $(LDFLAGS)
+
+vulkanTutorial-pipeline: vulkanTutorial-pipeline.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-pipeline vulkanTutorial-pipeline.cpp $(LDFLAGS)
 	
 .PHONY: test clean
 
