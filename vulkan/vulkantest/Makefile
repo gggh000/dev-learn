@@ -32,6 +32,9 @@ vulkanTutorial-pipelin-1: vulkanTutorial-pipelin-1.cpp
 
 vulkanTutorial-renderpass: vulkanTutorial-renderpass.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-renderpass vulkanTutorial-renderpass.cpp $(LDFLAGS)
+
+vulkanTutorial-frameBuffer: vulkanTutorial-frameBuffer.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-frameBuffer vulkanTutorial-frameBuffer.cpp $(LDFLAGS)
 	
 .PHONY: test clean
 
