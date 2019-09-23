@@ -35,7 +35,10 @@ vulkanTutorial-renderpass: vulkanTutorial-renderpass.cpp
 
 vulkanTutorial-frameBuffer: vulkanTutorial-frameBuffer.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-frameBuffer vulkanTutorial-frameBuffer.cpp $(LDFLAGS)
-	
+
+vulkanTutorial-commandPool: vulkanTutorial-commandPool.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-commandPool  vulkanTutorial-commandPool.cpp $(LDFLAGS)
+
 .PHONY: test clean
 
 test: VulkanTest
