@@ -27,6 +27,9 @@ vulkanTutorial-imageview: vulkanTutorial-imageview.cpp
 vulkanTutorial-pipeline: vulkanTutorial-pipeline.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-pipeline vulkanTutorial-pipeline.cpp $(LDFLAGS)
 
+vulkanTutorial-pipelin-1: vulkanTutorial-pipelin-1.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-pipelin-1 vulkanTutorial-pipelin-1.cpp $(LDFLAGS)
+
 vulkanTutorial-renderpass: vulkanTutorial-renderpass.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-renderpass vulkanTutorial-renderpass.cpp $(LDFLAGS)
 	
