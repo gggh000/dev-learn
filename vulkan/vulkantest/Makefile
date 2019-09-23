@@ -26,6 +26,9 @@ vulkanTutorial-imageview: vulkanTutorial-imageview.cpp
 
 vulkanTutorial-pipeline: vulkanTutorial-pipeline.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-pipeline vulkanTutorial-pipeline.cpp $(LDFLAGS)
+
+vulkanTutorial-renderpass: vulkanTutorial-renderpass.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-renderpass vulkanTutorial-renderpass.cpp $(LDFLAGS)
 	
 .PHONY: test clean
 
