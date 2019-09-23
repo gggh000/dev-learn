@@ -39,6 +39,9 @@ vulkanTutorial-frameBuffer: vulkanTutorial-frameBuffer.cpp
 vulkanTutorial-commandPool: vulkanTutorial-commandPool.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-commandPool  vulkanTutorial-commandPool.cpp $(LDFLAGS)
 
+vulkanTutorial-present: vulkanTutorial-present.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-present  vulkanTutorial-present.cpp $(LDFLAGS)
+
 .PHONY: test clean
 
 test: VulkanTest
