@@ -15,6 +15,8 @@
 const int WIDTH = 800;
 const int HEIGHT = 600;
 
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
@@ -96,6 +98,12 @@ private:
     VkCommandPool commandPool;
     std::vector<VkCommandBuffer> commandBuffers;
 
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+
+    std::vector<VkFence> inFlightFences;
+    size_t currentFrame = 0;
+
     void initWindow() {
         glfwInit();
 
@@ -118,7 +126,7 @@ private:
         createFramebuffers();
         createCommandPool();
         createCommandBuffers();
-        # createSemaphores();
+        // createSyncObjects();
         createSyncObjects();
     }
 
