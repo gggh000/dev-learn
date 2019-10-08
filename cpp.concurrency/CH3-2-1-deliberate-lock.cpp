@@ -12,8 +12,13 @@ using namespace std;
 std::mutex mutex_sum;
 int sum = 0;
 
+//  This function is called per thread and therefore duplicated for each threads
+//  that are spawned.  
+
 void hello(int pId, int pStat[])
 {
+    // Sleep random period.
+
     int pNum = rand() % 4 + 2;
     int sleep_duration = 1000000 * (rand() % 2 + 0);
     sleep_duration = 0;
@@ -22,6 +27,18 @@ void hello(int pId, int pStat[])
 
     // Create lock guard.
     //std::lock_guard<std::mutex> sum_guard(mutex_sum);
+    // myfile is used to  output the sum. It is named as file-<PID>.
+    // Sum is incremented by each thread's random number and gets published.
+    // Here is the idea of race condition being created deliberedly;
+    // - each line in the output file reflected 
+    //      1. sum before adding  pNum.
+    //      2. pNum being added to sum.
+    //      3. sum after adding pNum.
+    //  iF race condition occurs, it is likely due  to the after another thread has updated
+    // the sum causing sum (before add) + pNum != sum (after add).
+    // We run it enought number threads to increase the likelihood  of this happening.
+    // - We can proof of concept by now protecting the summation operation with mutex and 
+    // Verify it does not happen. 
 
     ofstream myfile;
     ostringstream oss;
@@ -72,7 +89,7 @@ int main()
     int stat[CONFIG_THREAD_COUNT];
     int sum = 0;
 
-    // launch threads.
+    // launch threads the CONFIG_THREAD_COUNT instance, with hello function, i index and stat array. 
 
     for ( i = 0; i < CONFIG_THREAD_COUNT; i ++ ) {
         stat[i] = 0;
@@ -81,6 +98,9 @@ int main()
     }
 
     cout << "Checking thread status-s..." << endl;
+
+    // Check thread statuses,  if sum is same as CONFIG_THREAD_COUNT, all thread has completed
+    // their job.
 
      while (sum != CONFIG_THREAD_COUNT)  {
         sum = 0;
