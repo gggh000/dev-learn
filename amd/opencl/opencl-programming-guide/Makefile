@@ -10,3 +10,6 @@ ex-code-1: $(FILE1).c
 ex-code-2: $(FILE2).c
 	g++ -o $(FILE2).o -c $(FILE2).c -I$(ROCMOPENCL)/include
 	g++ -o $(FILE2) $(FILE2).o -lOpenCL -L$(ROCMOPENCL)/lib/x86_64
+
+clean:
+	rm -rf *.o $(FILE1) $(FILE2)

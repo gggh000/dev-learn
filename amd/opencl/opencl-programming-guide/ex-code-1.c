@@ -7,6 +7,9 @@
 #include <CL/cl.h>
 #include <stdio.h>
 
+#define printDeviceInfo(X)   printf("\n%s: %s",  (X));
+#define declareDeviceInfo(X) char str(X)[] = "(X)";
+
 #define NWITEMS 512
 // A simple memset kernel
 const char *source =
@@ -19,7 +22,7 @@ int main(int argc, char ** argv)
 {
     int stat;
     char str1[100];
-    size_t  sizeClDeviceName;
+    size_t strLen;
 
     // 1. Get a platform.
     cl_platform_id platform;
@@ -27,18 +30,22 @@ int main(int argc, char ** argv)
 
     // 2. Find a gpu device.
     cl_device_id device;
+    cl_device_info deviceInfos[]={CL_DEVICE_NAME, CL_DEVICE_VENDOR, CL_DEVICE_VERSION, CL_DRIVER_VERSION, CL_DEVICE_EXTENSIONS};
+
     stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
 
-    clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(str1), str1, &sizeClDeviceName);
+    for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
+        clGetDeviceInfo(device, deviceInfos[i], sizeof(str1), str1, &strLen);
 
-    if (stat == 0)  {
-        printf("\nclGetDevicesIDs success.");
-        printf("\nFirst device found: %s. (namelen: %d)", str1, sizeClDeviceName);
-    } else {
-        printf("\nclGetDevicesIDs FAIL.");
+        if (stat == 0)  {
+            printf("\n%s.", str1);
+        } else {
+            printf("\nclGetDevicesIDs FAIL.");
         return 1;
     }    
 
+
+    }
 
     // 3. Create a context and command queue on that device.
     cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, NULL);
@@ -68,15 +75,14 @@ int main(int argc, char ** argv)
     ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
     int i;
-    int counter = 0;
 
     for(i=0; i < NWITEMS; i++)
-        printf("%d: %d. ", i, ptr[i]);
-        
-        if (counter % 10 == 0) {
+    {
+        if (i % 16 == 0) 
             printf("\n");
-        counter ++;
-        }
 
+        printf("%03d: %04d. ", i, ptr[i]);
+        
+    }
     return 0;
 }
