@@ -1,5 +1,6 @@
 FILE1=ex-code-1
 FILE2=ex-code-2
+FILE1C=ex-code-1-custom
 
 ROCMOPENCL=/opt/rocm/opencl/
 
@@ -10,3 +11,7 @@ ex-code-1: $(FILE1).c
 ex-code-2: $(FILE2).c
 	g++ -o $(FILE2).o -c $(FILE2).c -I$(ROCMOPENCL)/include
 	g++ -o $(FILE2) $(FILE2).o -lOpenCL -L$(ROCMOPENCL)/lib/x86_64
+
+ex-code-1c: $(FILE1C).c
+	g++ -o $(FILE1C).o -c $(FILE1C).c -I$(ROCMOPENCL)/include
+	g++ -o $(FILE1C) $(FILE1C).o -lOpenCL -L$(ROCMOPENCL)/lib/x86_64
