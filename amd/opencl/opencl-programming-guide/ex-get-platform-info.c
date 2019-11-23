@@ -13,7 +13,7 @@
 #define NWITEMS 10
 // A simple memset kernel
 const char *source =
-"kernel void memset(     global uint *l_global_id, *l_global_size)      \n"
+"kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
 "{                                                                      \n"
 "       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
 "       l_global_size[get_global_id(0)] = get_global_size(0);           \n"
