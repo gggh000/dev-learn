@@ -43,8 +43,25 @@ int main(int argc, char ** argv)
     cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
 
+    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_CHAR=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
+
+    enum enum_device_info_types device_info_types[] = {
+        DEVINFO_STRING, \
+        DEVINFO_STRING, \    
+        DEVINFO_STRING, \    
+        DEVINFO_STRING, \    
+        DEVINFO_ULONG, \    
+        DEVINFO_ULONG, \    
+        DEVINFO_CHAR, \    
+        DEVINFO_UINT, \    
+        DEVINFO_UINT, \    
+        DEVINFO_UINT, \    
+        DEVINFO_UINT, \    
+        DEVINFO_UINT, \    
+        DEVINFO_CHAR, \    
+        DEVINFO_STRING\    
+    };
     char *str_device_info[]={\
-        "Device name", \
         "CL_DEVICE_NAME", \
         "CL_DEVICE_VENDOR", \
         "CL_DEVICE_VERSION", \
@@ -85,7 +102,18 @@ int main(int argc, char ** argv)
             clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
 
             if (stat == 0)  {
-                printf("\n%40s: %30s (%d).", str_device_info[i], str1, sizeof(str1));
+                switch (device_info_types[i]) {
+                    case  DEVINFO_STRING:
+                        printf("\n%40s: %30s.", str_device_info[i], str1);
+                        break;
+                    case  DEVINFO_CHAR:
+                    case  DEVINFO_UINT:
+                    case  DEVINFO_ULONG:
+                        printf("\n%40s: %30x.", str_device_info[i], str1);
+                        break;
+                    
+                }
+                //enum device_info_types={DEVINFO_STRING=1, DEVINFO_CHAR=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
             } else {
                 printf("\nclGetDevicesIDs FAIL.");
             return 1;
@@ -126,12 +154,7 @@ int main(int argc, char ** argv)
 
     for(i=0; i < NWITEMS; i++)
     {
-        /*
-        if (i % 16 == 0) 
-            printf("\n");
-        printf("\n%03d: global_id_buffer: 0x%08x. global_size_buffer: 0x%08x", i, ((cl_int*)int_global_id)[i], ((cl_int*)int_global_size)[i]);
-        printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
-        */
+
         printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
         
     }
