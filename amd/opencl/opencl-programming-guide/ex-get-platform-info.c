@@ -17,8 +17,6 @@ const char *source =
 "{                                                                      \n"
 "       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
 "       l_global_size[get_global_id(0)] = get_global_size(0);           \n"
-"       l_global_id[get_global_id(0)] = 1;                              \n"
-"       l_global_size[get_global_id(0)] = 2;                            \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv)
@@ -134,7 +132,7 @@ int main(int argc, char ** argv)
         printf("\n%03d: global_id_buffer: 0x%08x. global_size_buffer: 0x%08x", i, ((cl_int*)int_global_id)[i], ((cl_int*)int_global_size)[i]);
         printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
         */
-        printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_id[i]);
+        printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
         
     }
 
