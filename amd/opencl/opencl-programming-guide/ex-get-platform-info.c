@@ -23,6 +23,9 @@ int main(int argc, char ** argv)
 {
     int stat;
     char str1[100];
+    ushort ushort1;
+    uint uint1;
+    ulong ulong1;
     size_t strLen;
 
     // 1. Get a platform.
@@ -43,7 +46,7 @@ int main(int argc, char ** argv)
     cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
 
-    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_CHAR=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
+    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
 
     enum enum_device_info_types device_info_types[] = {
         DEVINFO_STRING, \
@@ -52,13 +55,13 @@ int main(int argc, char ** argv)
         DEVINFO_STRING, \    
         DEVINFO_ULONG, \    
         DEVINFO_ULONG, \    
-        DEVINFO_CHAR, \    
+        DEVINFO_USHORT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
-        DEVINFO_CHAR, \    
+        DEVINFO_USHORT, \    
         DEVINFO_STRING\    
     };
     char *str_device_info[]={\
@@ -99,21 +102,28 @@ int main(int argc, char ** argv)
 
     for (int j = 0 ; j <  devices_available; j++) {
         for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
-            clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
 
             if (stat == 0)  {
                 switch (device_info_types[i]) {
                     case  DEVINFO_STRING:
+		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
                         printf("\n%40s: %30s.", str_device_info[i], str1);
                         break;
-                    case  DEVINFO_CHAR:
+                    case  DEVINFO_USHORT:
+		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ushort), (void*)&ushort1, &strLen);
+                        printf("\n%40s: %02u (%02x).", str_device_info[i], ushort1, ushort1);
+			break;
                     case  DEVINFO_UINT:
+		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(uint), (void*)&uint1, &strLen);
+                        printf("\n%40s: %04u (%04x).", str_device_info[i], uint1, uint1);
+			break;
                     case  DEVINFO_ULONG:
-                        printf("\n%40s: %30x.", str_device_info[i], str1);
+		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
+                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
                         break;
                     
                 }
-                //enum device_info_types={DEVINFO_STRING=1, DEVINFO_CHAR=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
+                //enum device_info_types={DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
             } else {
                 printf("\nclGetDevicesIDs FAIL.");
             return 1;
@@ -146,6 +156,7 @@ int main(int argc, char ** argv)
     clFinish( queue );
 
     // 7. Look at the results via synchronous buffer map.
+
     cl_uint *int_global_id, *int_global_size;
     int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
     int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
