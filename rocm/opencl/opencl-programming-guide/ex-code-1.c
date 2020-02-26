@@ -12,7 +12,7 @@
 const char *source =
 "kernel void memset(   global uint *dst )             \n"
 "{                                                    \n"
-"    dst[get_global_id(0)] = get_global_id(0);        \n"
+"    dst[get_global_id(0)] = get_local_id(0);         \n"
 "}                                                    \n";
 
 int main(int argc, char ** argv)
@@ -56,6 +56,8 @@ int main(int argc, char ** argv)
 
   // 6. Launch the kernel. Let OpenCL pick the local work size.
   size_t global_work_size = NWITEMS;
+  size_t local_work_size = 32;
+
   clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
 
   clEnqueueNDRangeKernel( queue,
@@ -63,7 +65,7 @@ int main(int argc, char ** argv)
                           1,
                           NULL,
                           &global_work_size,
-                          NULL,
+                          &local_work_size,
                           0,
                           NULL, NULL);
 
