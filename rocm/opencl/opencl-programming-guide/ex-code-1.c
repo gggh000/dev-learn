@@ -13,82 +13,76 @@
 #define NWITEMS 512
 // A simple memset kernel
 const char *source =
-
-"kernel void memset(   global uint *dst )             \n"
-"{                                                    \n"
-"    dst[get_global_id(0)] = get_local_id(0);         \n"
-"}                                                    \n";
+"kernel void memset(     global uint *dst )                         \n"
+"{                                                                                                        \n"
+"        dst[get_global_id(0)] = get_global_id(0);                \n"
+"}                                                                                                        \n";
 
 int main(int argc, char ** argv)
 {
-  // 1. Get a platform.
-  cl_platform_id platform;
-  clGetPlatformIDs( 1, &platform, NULL );
+    int stat;
+    char str1[100];
+    size_t strLen;
 
-  // 2. Find a gpu device.
-  cl_device_id device;
-  clGetDeviceIDs( platform,
-                  CL_DEVICE_TYPE_GPU,
-                  1,
-                  &device, NULL);
+    // 1. Get a platform.
+    cl_platform_id platform;
+    clGetPlatformIDs( 1, &platform, NULL );
 
-  // 3. Create a context and command queue on that device.
-  cl_context context = clCreateContext( NULL,
-                                        1,
-                                        &device,
-                                        NULL, NULL, NULL);
+    // 2. Find a gpu device.
+    cl_device_id device;
+    cl_device_info deviceInfos[]={CL_DEVICE_NAME, CL_DEVICE_VENDOR, CL_DEVICE_VERSION, CL_DRIVER_VERSION, CL_DEVICE_EXTENSIONS};
 
-  cl_command_queue queue = clCreateCommandQueue( context,
-                                                 device,
-                                                 0, NULL );
+    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
 
-  // 4. Perform runtime source compilation, and obtain kernel entry point.
-  cl_program program = clCreateProgramWithSource( context,
-                                                  1,
-                                                  &source,
-                                                  NULL, NULL );
+    for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
+        clGetDeviceInfo(device, deviceInfos[i], sizeof(str1), str1, &strLen);
 
-  clBuildProgram( program, 1, &device, NULL, NULL, NULL );
+        if (stat == 0)  {
+            printf("\n%s.", str1);
+        } else {
+            printf("\nclGetDevicesIDs FAIL.");
+        return 1;
+    }    
 
-  cl_kernel kernel = clCreateKernel( program, "memset", NULL );
 
-  // 5. Create a data buffer.
-  cl_mem buffer = clCreateBuffer( context,
-                                  CL_MEM_WRITE_ONLY,
-                                  NWITEMS * sizeof(cl_uint),
-                                  NULL, NULL );
+    }
 
-  // 6. Launch the kernel. Let OpenCL pick the local work size.
-  size_t global_work_size = NWITEMS;
-  size_t local_work_size = 32;
+    // 3. Create a context and command queue on that device.
+    cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, NULL);
 
-  clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
+    cl_command_queue queue = clCreateCommandQueue( context, device, 0, NULL );
 
-  clEnqueueNDRangeKernel( queue,
-                          kernel,
-                          1,
-                          NULL,
-                          &global_work_size,
-                          &local_work_size,
-                          0,
-                          NULL, NULL);
+    // 4. Perform runtime source compilation, and obtain kernel entry point.
+    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
 
-  clFinish( queue );
+    clBuildProgram( program, 1, &device, NULL, NULL, NULL );
 
-  // 7. Look at the results via synchronous buffer map.
-  cl_uint *ptr;
-  ptr = (cl_uint *) clEnqueueMapBuffer( queue,
-                                        buffer,
-                                        CL_TRUE,
-                                        CL_MAP_READ,
-                                        0,
-                                        NWITEMS * sizeof(cl_uint),
-                                        0, NULL, NULL, NULL );
+    cl_kernel kernel = clCreateKernel( program, "memset", NULL );
 
-  int i;
+    // 5. Create a data buffer.
+    cl_mem buffer = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
-  for(i=0; i < NWITEMS; i++)
-      printf("%d %d\n", i, ptr[i]);
+    // 6. Launch the kernel. Let OpenCL pick the local work size.
+    size_t global_work_size = NWITEMS;
+    clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
 
-  return 0;
+    clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
+
+    clFinish( queue );
+
+    // 7. Look at the results via synchronous buffer map.
+    cl_uint *ptr;
+    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
+
+    int i;
+
+    for(i=0; i < NWITEMS; i++)
+    {
+        if (i % 16 == 0) 
+            printf("\n");
+
+        printf("%03d: %04d. ", i, ptr[i]);
+        
+    }
+    return 0;
 }
