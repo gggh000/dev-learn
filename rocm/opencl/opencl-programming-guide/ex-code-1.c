@@ -7,9 +7,13 @@
 #include <CL/cl.h>
 #include <stdio.h>
 
+#define printDeviceInfo(X)   printf("\n%s: %s",  (X));
+#define declareDeviceInfo(X) char str(X)[] = "(X)";
+
 #define NWITEMS 512
 // A simple memset kernel
 const char *source =
+
 "kernel void memset(   global uint *dst )             \n"
 "{                                                    \n"
 "    dst[get_global_id(0)] = get_local_id(0);         \n"
