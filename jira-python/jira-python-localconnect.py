@@ -25,8 +25,8 @@ issue=jira.issue("issue-1000-1001")
 print(issue)
 '''
 
-#issue=jira.issue("issue-1000-1001")
+issue=jira.issue("issue-1000-1001")
 #print(issue)
 
-issues_in_proj = jira.search_issues('project=gg-proj-1001')
+#issues_in_proj = jira.search_issues('project=gg-proj-1001')
 
