@@ -5,6 +5,7 @@ import re
 # By default, the client will connect to a JIRA instance started from the Atlassian Plugin SDK
 # (see https://developer.atlassian.com/display/DOCS/Installing+the+Atlassian+Plugin+SDK for details).
 # Override this with the options parameter.
+#options = {"server": "https://jira.atlassian.com"}
 options = {"server": "https://jira.atlassian.com"}
 jira = JIRA(options)
 
@@ -54,3 +55,4 @@ jira.add_remote_link(issue, issue2)
 '''
 print(issue)
 
+print(issue.fields.comments.comments)
