@@ -7,7 +7,8 @@ import os
 import sys
 
 debug=1
-
+proj_qualifier_amd_jira="ontrack-internal.amd.com"
+proj_qualified_ggjira000="https://ggjira000.atlassian.net"   
 os.system("clear")
 
 print(len(sys.argv))
@@ -32,7 +33,14 @@ print(jira)
 
 print("===================")
 print("obtaining projects...")
-projects=jira.projects()
+
+if jira_url == proj_qualifier_amd_jira:
+    print("AMD jira...")
+    project=jira.project('SWDEV')
+elif jira_url == proj_qualified_ggjira000:
+    project=jira.project('GP0')
+else:
+    projects=jira.projects()
 print(projects)
 print(len(projects))
 #keys = sorted([project.key for project in projects])[2:5]
