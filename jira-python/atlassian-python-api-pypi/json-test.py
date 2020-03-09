@@ -38,7 +38,7 @@ for i in issue1.items():
 		if type(i[1]) == dict:
 			innerData=i[1]
 			for j in innerData.items():
-				print(j)
+				print(" - ", j)
 	except Exception as msg:
 		print(msg)
 		print("Idx error")
