@@ -26,11 +26,11 @@ jira_server={\
 
     JIRA_SERVER_AMD_CLOUD: [\
     'https://ggjira000.atlassian.net', 'ggjira100','8981555aaa', \
-    'project = gg-proj-000 AND status IN ("To Do", "In Progress"\) ORDER BY issuekey'\
+    'project = gg-proj-000 AND status IN ("To Do", "In Progress") ORDER BY issuekey'\
     ],
     JIRA_SERVER_AMD_LOCAL: [\
     'http://10.217.73.243:8080', 'ggjira200','8981555aaa', \
-    'project = gg-proj-400 AND status IN ("To Do", "In Progress"\) ORDER BY issuekey'\
+    'project = gg-proj-400 AND status IN ("To Do", "In Progress") ORDER BY issuekey'\
     ]
 }
 
@@ -51,6 +51,7 @@ JQL = jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_PROJECT]
 
 data = jira.jql(JQL)
 
+print(data)
 '''
 # print(data)
 print(type(data))
