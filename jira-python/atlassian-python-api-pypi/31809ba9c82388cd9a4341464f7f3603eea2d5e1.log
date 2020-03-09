@@ -1,0 +1,280 @@
+[{'expand': 'operations,versionedRepresentations,editmeta,changelog,renderedFields', 'id': '10000', 'self': 'http://10.0.0.100:8080/rest/api/2/issue/10000', 'key': 'GGPROJ-1', 'fields': {'issuetype': {'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001', 'id': '10001', 'description': 'A task that needs to be done.', 'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype', 'name': 'Task', 'subtask': False, 'avatarId': 10318}, 'components': [], 'timespent': None, 'timeoriginalestimate': None, 'description': 'description-proj-mgmt-issue-001', 'project': {'self': 'http://10.0.0.100:8080/rest/api/2/project/10000', 'id': '10000', 'key': 'GGPROJ', 'name': 'gg-proj-mgmt', 'projectTypeKey': 'business', 'avatarUrls': {'48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324', '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324', '16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324', '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324'}}, 'fixVersions': [], 'aggregatetimespent': None, 'resolution': None, 'timetracking': {}, 'attachment': [], 'aggregatetimeestimate': None, 'resolutiondate': None, 'workratio': -1, 'summary': 'proj-mgmt-issue-001', 'lastViewed': '2020-03-05T12:15:15.286-0800', 'watches': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-1/watchers', 'watchCount': 1, 'isWatching': True}, 'creator': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'subtasks': [], 'created': '2020-03-05T12:08:34.000-0800', 'reporter': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'customfield_10000': [], 'aggregateprogress': {'progress': 0, 'total': 0}, 'priority': {'self': 'http://10.0.0.100:8080/rest/api/2/priority/3', 'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg', 'name': 'Medium', 'id': '3'}, 'customfield_10001': None, 'customfield_10100': None, 'customfield_10002': None, 'customfield_10101': None, 'customfield_10102': None, 'labels': [], 'environment': None, 'timeestimate': None, 'aggregatetimeoriginalestimate': None, 'versions': [], 'duedate': '2020-03-31', 'progress': {'progress': 0, 'total': 0}, 'comment': {'comments': [], 'maxResults': 0, 'total': 0, 'startAt': 0}, 'issuelinks': [], 'votes': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-1/votes', 'votes': 0, 'hasVoted': False}, 'worklog': {'startAt': 0, 'maxResults': 20, 'total': 0, 'worklogs': []}, 'assignee': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'updated': '2020-03-05T12:09:18.000-0800', 'status': {'self': 'http://10.0.0.100:8080/rest/api/2/status/10000', 'description': '', 'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif', 'name': 'To Do', 'id': '10000', 'statusCategory': {'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2', 'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}}}}, {'expand': 'operations,versionedRepresentations,editmeta,changelog,renderedFields', 'id': '10002', 'self': 'http://10.0.0.100:8080/rest/api/2/issue/10002', 'key': 'GGPROJ-3', 'fields': {'issuetype': {'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001', 'id': '10001', 'description': 'A task that needs to be done.', 'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype', 'name': 'Task', 'subtask': False, 'avatarId': 10318}, 'components': [], 'timespent': None, 'timeoriginalestimate': None, 'description': None, 'project': {'self': 'http://10.0.0.100:8080/rest/api/2/project/10000', 'id': '10000', 'key': 'GGPROJ', 'name': 'gg-proj-mgmt', 'projectTypeKey': 'business', 'avatarUrls': {'48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324', '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324', '16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324', '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324'}}, 'fixVersions': [], 'aggregatetimespent': None, 'resolution': None, 'timetracking': {}, 'attachment': [], 'aggregatetimeestimate': None, 'resolutiondate': None, 'workratio': -1, 'summary': 'proj-mgmt-issue-002', 'lastViewed': '2020-03-08T19:52:10.254-0700', 'watches': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/watchers', 'watchCount': 1, 'isWatching': True}, 'creator': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'subtasks': [], 'created': '2020-03-05T12:15:26.000-0800', 'reporter': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'customfield_10000': [], 'aggregateprogress': {'progress': 0, 'total': 0}, 'priority': {'self': 'http://10.0.0.100:8080/rest/api/2/priority/3', 'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg', 'name': 'Medium', 'id': '3'}, 'customfield_10001': None, 'customfield_10100': None, 'customfield_10002': None, 'customfield_10101': None, 'customfield_10102': None, 'labels': [], 'environment': None, 'timeestimate': None, 'aggregatetimeoriginalestimate': None, 'versions': [], 'duedate': '2020-03-13', 'progress': {'progress': 0, 'total': 0}, 'comment': {'comments': [], 'maxResults': 0, 'total': 0, 'startAt': 0}, 'issuelinks': [], 'votes': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/votes', 'votes': 0, 'hasVoted': False}, 'worklog': {'startAt': 0, 'maxResults': 20, 'total': 0, 'worklogs': []}, 'assignee': None, 'updated': '2020-03-05T12:15:26.000-0800', 'status': {'self': 'http://10.0.0.100:8080/rest/api/2/status/10000', 'description': '', 'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif', 'name': 'To Do', 'id': '10000', 'statusCategory': {'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2', 'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}}}}]
+{'expand': 'operations,versionedRepresentations,editmeta,changelog,renderedFields',
+ 'fields': {'aggregateprogress': {'progress': 0, 'total': 0},
+            'aggregatetimeestimate': None,
+            'aggregatetimeoriginalestimate': None,
+            'aggregatetimespent': None,
+            'assignee': {'active': True,
+                         'avatarUrls': {'16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16',
+                                        '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24',
+                                        '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32',
+                                        '48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48'},
+                         'displayName': 'guyen000@gmail.com',
+                         'emailAddress': 'guyen000@gmail.com',
+                         'key': 'JIRAUSER10000',
+                         'name': 'ggjira000',
+                         'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000',
+                         'timeZone': 'America/Los_Angeles'},
+            'attachment': [],
+            'comment': {'comments': [],
+                        'maxResults': 0,
+                        'startAt': 0,
+                        'total': 0},
+            'components': [],
+            'created': '2020-03-05T12:08:34.000-0800',
+            'creator': {'active': True,
+                        'avatarUrls': {'16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16',
+                                       '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24',
+                                       '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32',
+                                       '48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48'},
+                        'displayName': 'guyen000@gmail.com',
+                        'emailAddress': 'guyen000@gmail.com',
+                        'key': 'JIRAUSER10000',
+                        'name': 'ggjira000',
+                        'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000',
+                        'timeZone': 'America/Los_Angeles'},
+            'customfield_10000': [],
+            'customfield_10001': None,
+            'customfield_10002': None,
+            'customfield_10100': None,
+            'customfield_10101': None,
+            'customfield_10102': None,
+            'description': 'description-proj-mgmt-issue-001',
+            'duedate': '2020-03-31',
+            'environment': None,
+            'fixVersions': [],
+            'issuelinks': [],
+            'issuetype': {'avatarId': 10318,
+                          'description': 'A task that needs to be done.',
+                          'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype',
+                          'id': '10001',
+                          'name': 'Task',
+                          'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001',
+                          'subtask': False},
+            'labels': [],
+            'lastViewed': '2020-03-05T12:15:15.286-0800',
+            'priority': {'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg',
+                         'id': '3',
+                         'name': 'Medium',
+                         'self': 'http://10.0.0.100:8080/rest/api/2/priority/3'},
+            'progress': {'progress': 0, 'total': 0},
+            'project': {'avatarUrls': {'16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324',
+                                       '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324',
+                                       '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324',
+                                       '48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324'},
+                        'id': '10000',
+                        'key': 'GGPROJ',
+                        'name': 'gg-proj-mgmt',
+                        'projectTypeKey': 'business',
+                        'self': 'http://10.0.0.100:8080/rest/api/2/project/10000'},
+            'reporter': {'active': True,
+                         'avatarUrls': {'16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16',
+                                        '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24',
+                                        '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32',
+                                        '48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48'},
+                         'displayName': 'guyen000@gmail.com',
+                         'emailAddress': 'guyen000@gmail.com',
+                         'key': 'JIRAUSER10000',
+                         'name': 'ggjira000',
+                         'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000',
+                         'timeZone': 'America/Los_Angeles'},
+            'resolution': None,
+            'resolutiondate': None,
+            'status': {'description': '',
+                       'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif',
+                       'id': '10000',
+                       'name': 'To Do',
+                       'self': 'http://10.0.0.100:8080/rest/api/2/status/10000',
+                       'statusCategory': {'colorName': 'blue-gray',
+                                          'id': 2,
+                                          'key': 'new',
+                                          'name': 'To Do',
+                                          'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2'}},
+            'subtasks': [],
+            'summary': 'proj-mgmt-issue-001',
+            'timeestimate': None,
+            'timeoriginalestimate': None,
+            'timespent': None,
+            'timetracking': {},
+            'updated': '2020-03-05T12:09:18.000-0800',
+            'versions': [],
+            'votes': {'hasVoted': False,
+                      'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-1/votes',
+                      'votes': 0},
+            'watches': {'isWatching': True,
+                        'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-1/watchers',
+                        'watchCount': 1},
+            'worklog': {'maxResults': 20,
+                        'startAt': 0,
+                        'total': 0,
+                        'worklogs': []},
+            'workratio': -1},
+ 'id': '10000',
+ 'key': 'GGPROJ-1',
+ 'self': 'http://10.0.0.100:8080/rest/api/2/issue/10000'}
+{'expand': 'operations,versionedRepresentations,editmeta,changelog,renderedFields',
+ 'fields': {'aggregateprogress': {'progress': 0, 'total': 0},
+            'aggregatetimeestimate': None,
+            'aggregatetimeoriginalestimate': None,
+            'aggregatetimespent': None,
+            'assignee': None,
+            'attachment': [],
+            'comment': {'comments': [],
+                        'maxResults': 0,
+                        'startAt': 0,
+                        'total': 0},
+            'components': [],
+            'created': '2020-03-05T12:15:26.000-0800',
+            'creator': {'active': True,
+                        'avatarUrls': {'16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16',
+                                       '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24',
+                                       '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32',
+                                       '48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48'},
+                        'displayName': 'guyen000@gmail.com',
+                        'emailAddress': 'guyen000@gmail.com',
+                        'key': 'JIRAUSER10000',
+                        'name': 'ggjira000',
+                        'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000',
+                        'timeZone': 'America/Los_Angeles'},
+            'customfield_10000': [],
+            'customfield_10001': None,
+            'customfield_10002': None,
+            'customfield_10100': None,
+            'customfield_10101': None,
+            'customfield_10102': None,
+            'description': None,
+            'duedate': '2020-03-13',
+            'environment': None,
+            'fixVersions': [],
+            'issuelinks': [],
+            'issuetype': {'avatarId': 10318,
+                          'description': 'A task that needs to be done.',
+                          'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype',
+                          'id': '10001',
+                          'name': 'Task',
+                          'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001',
+                          'subtask': False},
+            'labels': [],
+            'lastViewed': '2020-03-08T19:52:10.254-0700',
+            'priority': {'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg',
+                         'id': '3',
+                         'name': 'Medium',
+                         'self': 'http://10.0.0.100:8080/rest/api/2/priority/3'},
+            'progress': {'progress': 0, 'total': 0},
+            'project': {'avatarUrls': {'16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324',
+                                       '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324',
+                                       '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324',
+                                       '48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324'},
+                        'id': '10000',
+                        'key': 'GGPROJ',
+                        'name': 'gg-proj-mgmt',
+                        'projectTypeKey': 'business',
+                        'self': 'http://10.0.0.100:8080/rest/api/2/project/10000'},
+            'reporter': {'active': True,
+                         'avatarUrls': {'16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16',
+                                        '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24',
+                                        '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32',
+                                        '48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48'},
+                         'displayName': 'guyen000@gmail.com',
+                         'emailAddress': 'guyen000@gmail.com',
+                         'key': 'JIRAUSER10000',
+                         'name': 'ggjira000',
+                         'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000',
+                         'timeZone': 'America/Los_Angeles'},
+            'resolution': None,
+            'resolutiondate': None,
+            'status': {'description': '',
+                       'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif',
+                       'id': '10000',
+                       'name': 'To Do',
+                       'self': 'http://10.0.0.100:8080/rest/api/2/status/10000',
+                       'statusCategory': {'colorName': 'blue-gray',
+                                          'id': 2,
+                                          'key': 'new',
+                                          'name': 'To Do',
+                                          'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2'}},
+            'subtasks': [],
+            'summary': 'proj-mgmt-issue-002',
+            'timeestimate': None,
+            'timeoriginalestimate': None,
+            'timespent': None,
+            'timetracking': {},
+            'updated': '2020-03-05T12:15:26.000-0800',
+            'versions': [],
+            'votes': {'hasVoted': False,
+                      'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/votes',
+                      'votes': 0},
+            'watches': {'isWatching': True,
+                        'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/watchers',
+                        'watchCount': 1},
+            'worklog': {'maxResults': 20,
+                        'startAt': 0,
+                        'total': 0,
+                        'worklogs': []},
+            'workratio': -1},
+ 'id': '10002',
+ 'key': 'GGPROJ-3',
+ 'self': 'http://10.0.0.100:8080/rest/api/2/issue/10002'}
+=============================
+type:  <class 'tuple'> ('expand', 'operations,versionedRepresentations,editmeta,changelog,renderedFields')
+-----------------------------
+inner type:  <class 'str'>
+=============================
+type:  <class 'tuple'> ('id', '10002')
+-----------------------------
+inner type:  <class 'str'>
+=============================
+type:  <class 'tuple'> ('self', 'http://10.0.0.100:8080/rest/api/2/issue/10002')
+-----------------------------
+inner type:  <class 'str'>
+=============================
+type:  <class 'tuple'> ('key', 'GGPROJ-3')
+-----------------------------
+inner type:  <class 'str'>
+=============================
+type:  <class 'tuple'> ('fields', {'issuetype': {'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001', 'id': '10001', 'description': 'A task that needs to be done.', 'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype', 'name': 'Task', 'subtask': False, 'avatarId': 10318}, 'components': [], 'timespent': None, 'timeoriginalestimate': None, 'description': None, 'project': {'self': 'http://10.0.0.100:8080/rest/api/2/project/10000', 'id': '10000', 'key': 'GGPROJ', 'name': 'gg-proj-mgmt', 'projectTypeKey': 'business', 'avatarUrls': {'48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324', '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324', '16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324', '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324'}}, 'fixVersions': [], 'aggregatetimespent': None, 'resolution': None, 'timetracking': {}, 'attachment': [], 'aggregatetimeestimate': None, 'resolutiondate': None, 'workratio': -1, 'summary': 'proj-mgmt-issue-002', 'lastViewed': '2020-03-08T19:52:10.254-0700', 'watches': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/watchers', 'watchCount': 1, 'isWatching': True}, 'creator': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'subtasks': [], 'created': '2020-03-05T12:15:26.000-0800', 'reporter': {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'}, 'customfield_10000': [], 'aggregateprogress': {'progress': 0, 'total': 0}, 'priority': {'self': 'http://10.0.0.100:8080/rest/api/2/priority/3', 'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg', 'name': 'Medium', 'id': '3'}, 'customfield_10001': None, 'customfield_10100': None, 'customfield_10002': None, 'customfield_10101': None, 'customfield_10102': None, 'labels': [], 'environment': None, 'timeestimate': None, 'aggregatetimeoriginalestimate': None, 'versions': [], 'duedate': '2020-03-13', 'progress': {'progress': 0, 'total': 0}, 'comment': {'comments': [], 'maxResults': 0, 'total': 0, 'startAt': 0}, 'issuelinks': [], 'votes': {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/votes', 'votes': 0, 'hasVoted': False}, 'worklog': {'startAt': 0, 'maxResults': 20, 'total': 0, 'worklogs': []}, 'assignee': None, 'updated': '2020-03-05T12:15:26.000-0800', 'status': {'self': 'http://10.0.0.100:8080/rest/api/2/status/10000', 'description': '', 'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif', 'name': 'To Do', 'id': '10000', 'statusCategory': {'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2', 'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}}})
+-----------------------------
+inner type:  <class 'dict'>
+('issuetype', {'self': 'http://10.0.0.100:8080/rest/api/2/issuetype/10001', 'id': '10001', 'description': 'A task that needs to be done.', 'iconUrl': 'http://10.0.0.100:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype', 'name': 'Task', 'subtask': False, 'avatarId': 10318})
+('components', [])
+('timespent', None)
+('timeoriginalestimate', None)
+('description', None)
+('project', {'self': 'http://10.0.0.100:8080/rest/api/2/project/10000', 'id': '10000', 'key': 'GGPROJ', 'name': 'gg-proj-mgmt', 'projectTypeKey': 'business', 'avatarUrls': {'48x48': 'http://10.0.0.100:8080/secure/projectavatar?avatarId=10324', '24x24': 'http://10.0.0.100:8080/secure/projectavatar?size=small&avatarId=10324', '16x16': 'http://10.0.0.100:8080/secure/projectavatar?size=xsmall&avatarId=10324', '32x32': 'http://10.0.0.100:8080/secure/projectavatar?size=medium&avatarId=10324'}})
+('fixVersions', [])
+('aggregatetimespent', None)
+('resolution', None)
+('timetracking', {})
+('attachment', [])
+('aggregatetimeestimate', None)
+('resolutiondate', None)
+('workratio', -1)
+('summary', 'proj-mgmt-issue-002')
+('lastViewed', '2020-03-08T19:52:10.254-0700')
+('watches', {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/watchers', 'watchCount': 1, 'isWatching': True})
+('creator', {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'})
+('subtasks', [])
+('created', '2020-03-05T12:15:26.000-0800')
+('reporter', {'self': 'http://10.0.0.100:8080/rest/api/2/user?username=ggjira000', 'name': 'ggjira000', 'key': 'JIRAUSER10000', 'emailAddress': 'guyen000@gmail.com', 'avatarUrls': {'48x48': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=48', '24x24': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=24', '16x16': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=16', '32x32': 'https://www.gravatar.com/avatar/39c693ba3c9e5f6dc14f00ae203f4e58?d=mm&s=32'}, 'displayName': 'guyen000@gmail.com', 'active': True, 'timeZone': 'America/Los_Angeles'})
+('customfield_10000', [])
+('aggregateprogress', {'progress': 0, 'total': 0})
+('priority', {'self': 'http://10.0.0.100:8080/rest/api/2/priority/3', 'iconUrl': 'http://10.0.0.100:8080/images/icons/priorities/medium.svg', 'name': 'Medium', 'id': '3'})
+('customfield_10001', None)
+('customfield_10100', None)
+('customfield_10002', None)
+('customfield_10101', None)
+('customfield_10102', None)
+('labels', [])
+('environment', None)
+('timeestimate', None)
+('aggregatetimeoriginalestimate', None)
+('versions', [])
+('duedate', '2020-03-13')
+('progress', {'progress': 0, 'total': 0})
+('comment', {'comments': [], 'maxResults': 0, 'total': 0, 'startAt': 0})
+('issuelinks', [])
+('votes', {'self': 'http://10.0.0.100:8080/rest/api/2/issue/GGPROJ-3/votes', 'votes': 0, 'hasVoted': False})
+('worklog', {'startAt': 0, 'maxResults': 20, 'total': 0, 'worklogs': []})
+('assignee', None)
+('updated', '2020-03-05T12:15:26.000-0800')
+('status', {'self': 'http://10.0.0.100:8080/rest/api/2/status/10000', 'description': '', 'iconUrl': 'http://10.0.0.100:8080/images/icons/status_generic.gif', 'name': 'To Do', 'id': '10000', 'statusCategory': {'self': 'http://10.0.0.100:8080/rest/api/2/statuscategory/2', 'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}})
