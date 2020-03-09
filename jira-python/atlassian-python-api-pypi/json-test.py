@@ -11,6 +11,7 @@ JIRA_SERVER_HOME_LOCAL=1
 JIRA_SERVER_AMD_CLOUD=2
 JIRA_SERVER_AMD_LOCAL=3
 JIRA_SERVER_AMD_ONTRACK=4
+JIRA_SERVER_TO_USE=JIRA_SERVER_AMD_CLOUD
 
 JIRA_SERVER_IDX_URL=0
 JIRA_SERVER_IDX_USER=1
@@ -30,9 +31,9 @@ jira_server={\
 }
 
 jira = Jira(
-    url=jira_server[JIRA_SERVER_AMD_CLOUD][JIRA_SERVER_IDX_URL],
-    username=jira_server[JIRA_SERVER_AMD_CLOUD][JIRA_SERVER_IDX_USER],
-    password=jira_server[JIRA_SERVER_AMD_CLOUD][JIRA_SERVER_IDX_PASS])
+    url=jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_URL],
+    username=jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_USER],
+    password=jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_PASS])
 
 '''
  jira = Jira(
@@ -41,7 +42,7 @@ jira = Jira(
 -    password='8981555aaa')
 '''
 
-JQL = jira_server[JIRA_SERVER_AMD_CLOUD][JIRA_SERVER_IDX_PROJECT]
+JQL = jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_PROJECT]
 #JQL = 'project = gg-proj-mgmt AND status IN ("To Do", "In Progress") ORDER BY issuekey'
 
 data = jira.jql(JQL)
