@@ -11,7 +11,7 @@ JIRA_SERVER_HOME_LOCAL=1
 JIRA_SERVER_AMD_CLOUD=2
 JIRA_SERVER_AMD_LOCAL=3
 JIRA_SERVER_AMD_ONTRACK=4
-JIRA_SERVER_TO_USE=JIRA_SERVER_AMD_CLOUD
+JIRA_SERVER_TO_USE=JIRA_SERVER_AMD_LOCAL
 
 JIRA_SERVER_IDX_URL=0
 JIRA_SERVER_IDX_USER=1
@@ -27,6 +27,10 @@ jira_server={\
     JIRA_SERVER_AMD_CLOUD: [\
     'https://ggjira000.atlassian.net', 'ggjira100','8981555aaa', \
     'project = gg-proj-000 AND status IN ("To Do", "In Progress"\) ORDER BY issuekey'\
+    ],
+    JIRA_SERVER_AMD_LOCAL: [\
+    'http://10.217.73.243:8080', 'ggjira200','8981555aaa', \
+    'project = gg-proj-400 AND status IN ("To Do", "In Progress"\) ORDER BY issuekey'\
     ]
 }
 
@@ -56,7 +60,8 @@ for i in range(0, len(data)):
 	print("-----------------------------")
 	print(list(data.values())[i])
 '''
-if re.search("Basic auth with password is not allowed on this instance", data):
+
+if type(data) == str and re.search("Basic auth with password is not allowed on this instance", data):
     print(data)
     quit(1)
 
@@ -66,6 +71,7 @@ print(issues)
 for i in issues:
 	pprint(i)
 
+'''
 issue1=issues[1]
 for i in issue1.items():
 	print("=============================")
@@ -82,3 +88,4 @@ for i in issue1.items():
 		print(msg)
 		print("Idx error")
 
+'''
