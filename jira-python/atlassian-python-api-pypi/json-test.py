@@ -2,6 +2,7 @@
 
 from atlassian import Jira
 from pprint import pprint
+from collections import OrderedDict 
 import sys
 import os
 import re
@@ -17,6 +18,32 @@ JIRA_SERVER_IDX_URL=0
 JIRA_SERVER_IDX_USER=1
 JIRA_SERVER_IDX_PASS=2
 JIRA_SERVER_IDX_PROJECT=3
+
+def convertToOD(dict):
+    sortedKeys = sorted(dict)
+    od = OrderedDict() 
+    for i in sortedKeys:
+        od[i] = dict[i]
+    return od
+
+def printListRecur(list, indent):
+    debug = 0
+
+    if debug:
+        print("printListRecur: entered: ", type(list))
+
+    for i in list.items():
+        if type(i[1]) == dict:
+
+            if debug:
+                print("dict encountered...", i[0])
+    
+            print(" --- ", indent, i[0], ": ")
+            i1od=convertToOD(i[1])
+            printListRecur(i1od, indent + "  ")
+        else:
+            print(" --- ", indent, i)
+        
 
 jira_server={\
     JIRA_SERVER_HOME_CLOUD: ['',''],
@@ -39,54 +66,23 @@ jira = Jira(
     username=jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_USER],
     password=jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_PASS])
 
-'''
- jira = Jira(
--    url='http://10.0.0.100:8080',
--    username='ggjira000',
--    password='8981555aaa')
-'''
-
 JQL = jira_server[JIRA_SERVER_TO_USE][JIRA_SERVER_IDX_PROJECT]
-#JQL = 'project = gg-proj-mgmt AND status IN ("To Do", "In Progress") ORDER BY issuekey'
-
 data = jira.jql(JQL)
-
-print(data)
-'''
-# print(data)
-print(type(data))
-for i in range(0, len(data)):
-	print("=============================")
-	print(list(data.keys())[i])
-	print("-----------------------------")
-	print(list(data.values())[i])
-'''
 
 if type(data) == str and re.search("Basic auth with password is not allowed on this instance", data):
     print(data)
     quit(1)
 
 issues=list(data.values())[-1]
-print(issues)
+
 
 for i in issues:
 	pprint(i)
 
-'''
-issue1=issues[1]
-for i in issue1.items():
-	print("=============================")
-	print("type: ", type(i), i)
-	print("-----------------------------")
-	try:
-		print("inner type: ", type(i[1]))
+print("==============================================")
 
-		if type(i[1]) == dict:
-			innerData=i[1]
-			for j in innerData.items():
-				print(" - ", j)
-	except Exception as msg:
-		print(msg)
-		print("Idx error")
+issue1=issues[0]
+indent = ""
 
-'''
+issue1Od=convertToOD(issue1)
+printListRecur(issue1Od, indent)
