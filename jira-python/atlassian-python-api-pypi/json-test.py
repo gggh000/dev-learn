@@ -19,30 +19,45 @@ JIRA_SERVER_IDX_USER=1
 JIRA_SERVER_IDX_PASS=2
 JIRA_SERVER_IDX_PROJECT=3
 
-def convertToOD(dict):
-    sortedKeys = sorted(dict)
+debug = 0
+
+#   Converts to orderedDict type
+#   input:
+#   - dict - unordered dictionary.
+#   return:
+#       ordered dictionary
+#       null - on any error.
+
+def convertToOD(pDict):
+
+    if type(pDict) != dict:
+        print("ConvertToOD() Error: parameter is not dictionary type!.")
+    sortedKeys = sorted(pDict)
     od = OrderedDict() 
+
     for i in sortedKeys:
-        od[i] = dict[i]
+        od[i] = pDict[i]
     return od
 
-def printListRecur(list, indent):
+#   print dictionary recursively.
+
+def printDictRecur(pDict, pIndent):
     debug = 0
 
     if debug:
-        print("printListRecur: entered: ", type(list))
+        print("printDictRecur: entered: ", type(pDict))
 
-    for i in list.items():
+    for i in pDict.items():
         if type(i[1]) == dict:
 
             if debug:
                 print("dict encountered...", i[0])
     
-            print(" --- ", indent, i[0], ": ")
+            print(" --- ", pIndent, i[0], ": ")
             i1od=convertToOD(i[1])
-            printListRecur(i1od, indent + "  ")
+            printDictRecur(i1od, pIndent + "  ")
         else:
-            print(" --- ", indent, i)
+            print(" --- ", pIndent, i)
         
 
 jira_server={\
@@ -76,13 +91,22 @@ if type(data) == str and re.search("Basic auth with password is not allowed on t
 issues=list(data.values())[-1]
 
 
-for i in issues:
-	pprint(i)
+if debug:
+    for i in issues:
+    	pprint(i)
 
 print("==============================================")
 
 issue1=issues[0]
 indent = ""
 
+#   convert to ordered dictionary (by keys).
+
 issue1Od=convertToOD(issue1)
-printListRecur(issue1Od, indent)
+
+#   Recursively iterate over dictionary and print out.
+#   The dictionary can be either
+#   - key value pairs in which pair will be printed.
+#   - key dictionary pair in which it recurs.
+
+printDictRecur(issue1Od, indent)
