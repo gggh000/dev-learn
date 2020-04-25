@@ -24,7 +24,8 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 //#include <helper_functions.h>
 //#include <helper_cuda.h>
 
-#define N 1024*1024*1024
+#define N 512
+
 #define DEBUG 0
 
 __global__ void memtrf(char * a) {
@@ -68,19 +69,19 @@ int main ( void ) {
 	cudaEventElapsedTime( &elapsedTime, start, stop);
 	printf("\nTime taken: %3.1f ms\n", elapsedTime);
 	
-	//memtrf <<<(N + blockDim - 1) / blockDim, blockDim>>>(dev_a);
-	//cudaMemcpy(c, dev_c, N * sizeof(char), cudaMemcpyDeviceToHost);
+	memtrf <<<(N + blockDim - 1) / blockDim, blockDim>>>(dev_a);
+	cudaMemcpy(c, dev_c, N * sizeof(char), cudaMemcpyDeviceToHost);
 
-	/*
+	
 	for (int i = 0; i < N; i++) {
 		if (c[i] != 6) {
 			//printf("\n0x%x did not add correctly: %d", i, c[i]);
 			errors ++;
 			//continue;
 		}
-		//printf("\n%d. GPU address: a/b/c: 0x%08x, 0x%08x, 0x%08x, host addr: 0x%0x", i, a[i], b[i], c[i], &c[i]);
+		printf("\n%d. GPU address: a/b/c: 0x%08x, 0x%08x, 0x%08x, host addr: 0x%0x", i, a[i], b[i], c[i], &c[i]);
 	}
-	*/
+	
 
 	printf("\nsize of int, long int: %d, %d", sizeof(char), sizeof(long int));
 

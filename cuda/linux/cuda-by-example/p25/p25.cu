@@ -12,8 +12,8 @@
 #include <cuda_runtime.h>
 
 // Helper functions and utilities to work with CUDA
-#include <helper_functions.h>
-#include <helper_cuda.h>
+//#include <helper_functions.h>
+//#include <helper_cuda.h>
 
 __global__ void add( int a, int b, int * c) {
 	*c  = a + b;
