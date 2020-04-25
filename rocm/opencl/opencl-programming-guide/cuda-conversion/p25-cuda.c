@@ -10,12 +10,13 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 1
+#define NWITEMS 10
 // A simple simple_add kernel
 const char *source =
 "kernel void simple_add(     global uint *c, global uint a, global uint b)  \n"
 "{                                                                      \n"
 "        *c = a + b;                                                    \n"
+"        *c = 20;                                                    \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv) {
@@ -35,6 +36,13 @@ int main(int argc, char ** argv) {
     // 2. Find a gpu device.
 
     cl_device_id device;
+	
+  	clGetDeviceIDs( platform,
+                  CL_DEVICE_TYPE_GPU,
+                  1,
+                  &device, NULL);
+	
+	/*
     cl_device_info deviceInfos[]={CL_DEVICE_NAME, CL_DEVICE_VENDOR, CL_DEVICE_VERSION, CL_DRIVER_VERSION, CL_DEVICE_EXTENSIONS};
 
     stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
@@ -48,7 +56,8 @@ int main(int argc, char ** argv) {
             printf("\nclGetDevicesIDs FAIL.");
         return 1;
         }
-    }    
+    } 
+	*/   
 
     // 3. Create a context and command queue on that device.
 
@@ -63,7 +72,8 @@ int main(int argc, char ** argv) {
 
     // 5. Create a data buffer.
 
-    cl_mem buffer = clCreateBuffer( context, CL_MEM_READ_WRITE, sizeof(cl_uint), NULL, NULL );
+//  cl_mem buffer = clCreateBuffer( context, CL_MEM_READ_WRITE, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem buffer = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
@@ -80,11 +90,13 @@ int main(int argc, char ** argv) {
     ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
     for(i=0; i < NWITEMS; i++) {
-        if (i % 16 == 0) 
+        if (i % 2 == 0) 
             printf("\n");
 
-        printf("%03d: %04d. ", i, ptr[i]);
+        printf("%02u: %04x. ", i, ptr[i]);
         
     }
+
+    printf("\n");
     return 0;
 }
