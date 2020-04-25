@@ -1,90 +1,207 @@
-//
-// Copyright (c) 2010 Advanced Micro Devices, Inc. All rights reserved.
-//
+#define __CL_ENABLE_EXCEPTIONS
 
-// A minimalist OpenCL program.
+#include <CL/cl.hpp>
+#include <string>
+#include <iostream>
+#include <string>
 
-#include <CL/cl.h>
-#include <stdio.h>
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
 
-#define NWITEMS 16
-// A simple memset kernel
-const char *source =
-"kernel void memset(   global uint *dst )             \n"
-"{                                                    \n"
-"    dst[get_global_id(0)] = get_global_id(0);        \n"
-"    dst[get_global_id(0)] = 10;        \n"
-"}                                                    \n";
-
-int main(int argc, char ** argv)
+/////////////////////////////////////////////////////////////////
+// Helper function to print vector elements
+/////////////////////////////////////////////////////////////////
+void printVector(const std::string arrayName,
+                                 const cl_float * arrayData,
+                                 const unsigned int length)
 {
-  // 1. Get a platform.
-  cl_platform_id platform;
-  clGetPlatformIDs( 1, &platform, NULL );
-
-  // 2. Find a gpu device.
-  cl_device_id device;
-  clGetDeviceIDs( platform,
-                  CL_DEVICE_TYPE_GPU,
-                  1,
-                  &device, NULL);
-
-  // 3. Create a context and command queue on that device.
-  cl_context context = clCreateContext( NULL,
-                                        1,
-                                        &device,
-                                        NULL, NULL, NULL);
-
-  cl_command_queue queue = clCreateCommandQueue( context,
-                                                 device,
-                                                 0, NULL );
-
-  // 4. Perform runtime source compilation, and obtain kernel entry point.
-  cl_program program = clCreateProgramWithSource( context,
-                                                  1,
-                                                  &source,
-                                                  NULL, NULL );
-
-  clBuildProgram( program, 1, &device, NULL, NULL, NULL );
-
-  cl_kernel kernel = clCreateKernel( program, "memset", NULL );
-
-  // 5. Create a data buffer.
-  cl_mem buffer = clCreateBuffer( context,
-                                  CL_MEM_WRITE_ONLY,
-                                  NWITEMS * sizeof(cl_uint),
-                                  NULL, NULL );
-
-  // 6. Launch the kernel. Let OpenCL pick the local work size.
-  size_t global_work_size = NWITEMS;
-  clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
-
-  clEnqueueNDRangeKernel( queue,
-                          kernel,
-                          1,
-                          NULL,
-                          &global_work_size,
-                          NULL,
-                          0,
-                          NULL, NULL);
-
-  clFinish( queue );
-
-  // 7. Look at the results via synchronous buffer map.
-  cl_uint *ptr;
-  ptr = (cl_uint *) clEnqueueMapBuffer( queue,
-                                        buffer,
-                                        CL_TRUE,
-                                        CL_MAP_READ,
-                                        0,
-                                        NWITEMS * sizeof(cl_uint),
-                                        0, NULL, NULL, NULL );
-
-  int i;
-
-  for(i=0; i < NWITEMS; i++)
-      printf("%d %d\n", i, ptr[i]);
-
-  return 0;
+    int numElementsToPrint = (256 < length) ? 256 : length;
+    cout << endl << arrayName << ":" << endl;
+    for(int i = 0; i < numElementsToPrint; ++i) {
+        if (i % 4 == 0)
+            cout << endl;
+            
+        cout << arrayData[i] << " ";
+    }
+    cout << endl;
 }
 
+/////////////////////////////////////////////////////////////////
+// Globals
+/////////////////////////////////////////////////////////////////
+int length            = 64;
+cl_float * pX     = NULL;
+cl_float * pY     = NULL;
+cl_float a            = 2.f;
+
+std::vector<cl::Platform> platforms;
+cl::Context context;
+std::vector<cl::Device> devices;
+cl::CommandQueue queue;
+cl::Program program;
+
+cl::Kernel kernel;
+cl::Buffer bufX;
+cl::Buffer bufY;
+
+/////////////////////////////////////////////////////////////////
+// The saxpy kernel
+/////////////////////////////////////////////////////////////////
+string kernelStr            =
+        "__kernel void saxpy(const global float * x,\n"
+        "                                        __global float * y,\n"
+        "                                        const float a)\n"
+        "{\n"
+        "     uint gid = get_global_id(0);\n"
+        "     y[gid] = a* x[gid] + y[gid];\n"
+        "}\n";
+
+/////////////////////////////////////////////////////////////////
+// Allocate and initialize memory on the host
+/////////////////////////////////////////////////////////////////
+void initHost()
+{
+    size_t sizeInBytes = length * sizeof(cl_float);
+    pX = (cl_float *) malloc(sizeInBytes);
+    if(pX == NULL)
+        throw(string("Error: Failed to allocate input memory on host\n"));
+
+    pY = (cl_float *) malloc(sizeInBytes);
+    if(pY == NULL)
+        throw(string("Error: Failed to allocate input memory on host\n"));
+
+    for(int i = 0; i < length; i++)
+    {
+        pX[i] = cl_float(i);
+        pY[i] = cl_float(length-1-i);
+    }
+
+    printVector("X", pX, length);
+    printVector("Y", pY, length);
+}
+
+/////////////////////////////////////////////////////////////////
+// Release host memory
+/////////////////////////////////////////////////////////////////
+void cleanupHost()
+{
+    if(pX)
+    {
+        free(pX);
+        pX = NULL;
+    }
+    if(pY != NULL)
+    {
+        free(pY);
+        pY = NULL;
+    }
+}
+
+int main(int argc, char * argv[])
+{
+    try
+    {
+        /////////////////////////////////////////////////////////////////
+        // Allocate and initialize memory on the host
+        /////////////////////////////////////////////////////////////////
+        initHost();
+
+        /////////////////////////////////////////////////////////////////
+        // Find the platform
+        /////////////////////////////////////////////////////////////////
+        cl::Platform::get(&platforms);
+        std::vector<cl::Platform>::iterator iter;
+        for(iter = platforms.begin(); iter != platforms.end(); ++iter)
+        {
+            if( !strcmp((*iter).getInfo<CL_PLATFORM_VENDOR>().c_str(), "Advanced Micro Devices, Inc.") )
+            {
+                break;
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////
+        // Create an OpenCL context
+        /////////////////////////////////////////////////////////////////
+        cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM,
+                                                                         (cl_context_properties)(*iter)(), 0 };
+        context = cl::Context(CL_DEVICE_TYPE_GPU, cps);
+
+        /////////////////////////////////////////////////////////////////
+        // Detect OpenCL devices
+        /////////////////////////////////////////////////////////////////
+        devices = context.getInfo<CL_CONTEXT_DEVICES>();
+
+        /////////////////////////////////////////////////////////////////
+        // Create an OpenCL command queue
+        /////////////////////////////////////////////////////////////////
+        queue = cl::CommandQueue(context, devices[0]);
+
+        /////////////////////////////////////////////////////////////////
+        // Create OpenCL memory buffers
+        /////////////////////////////////////////////////////////////////
+        bufX = cl::Buffer(context,
+                                            CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                                            sizeof(cl_float) * length,
+                                            pX);
+        bufY = cl::Buffer(context,
+                                            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+                                            sizeof(cl_float) * length,
+                                            pY);
+
+        /////////////////////////////////////////////////////////////////
+        // Load CL file, build CL program object, create CL kernel object
+        /////////////////////////////////////////////////////////////////
+        cl::Program::Sources sources(1, std::make_pair(kernelStr.c_str(),
+                                                                 kernelStr.length()));
+        program = cl::Program(context, sources);
+        program.build(devices);
+        kernel = cl::Kernel(program, "saxpy");
+
+        /////////////////////////////////////////////////////////////////
+        // Set the arguments that will be used for kernel execution
+        /////////////////////////////////////////////////////////////////
+        kernel.setArg(0, bufX);
+        kernel.setArg(1, bufY);
+        kernel.setArg(2, a);
+
+        /////////////////////////////////////////////////////////////////
+        // Enqueue the kernel to the queue
+        // with appropriate global and local work sizes
+        /////////////////////////////////////////////////////////////////
+        queue.enqueueNDRangeKernel(kernel, cl::NDRange(),
+        cl::NDRange(length), cl::NDRange(64));
+
+        /////////////////////////////////////////////////////////////////
+        // Enqueue blocking call to read back buffer Y
+        /////////////////////////////////////////////////////////////////
+        queue.enqueueReadBuffer(bufY, CL_TRUE, 0, length *
+        sizeof(cl_float), pY);
+
+        printVector("Y", pY, length);
+
+        /////////////////////////////////////////////////////////////////
+        // Release host resources
+        /////////////////////////////////////////////////////////////////
+        cleanupHost();
+    }
+    catch (cl::Error err)
+    {
+        /////////////////////////////////////////////////////////////////
+        // Catch OpenCL errors and print log if it is a build error
+        /////////////////////////////////////////////////////////////////
+        cerr << "ERROR: " << err.what() << "(" << err.err() << ")" << endl;
+        if (err.err() == CL_BUILD_PROGRAM_FAILURE)
+        {
+            string str = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
+            cout << "Program Info: " << str << endl;
+        }
+        cleanupHost();
+    }
+    catch(string msg)
+    {
+        cerr << "Exception caught in main(): " << msg << endl;
+        cleanupHost();
+    }
+}
