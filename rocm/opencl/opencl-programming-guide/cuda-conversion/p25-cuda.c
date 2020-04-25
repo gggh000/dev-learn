@@ -10,7 +10,7 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 512
+#define NWITEMS 1
 // A simple simple_add kernel
 const char *source =
 "kernel void simple_add(     global uint *c, global uint a, global uint b)  \n"
