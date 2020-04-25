@@ -63,7 +63,7 @@ int main(int argc, char ** argv)
     cl_mem buffer = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
-    size_t global_work_size = 1;
+    size_t global_work_size = NWITEMS;
     clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
 
     clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
