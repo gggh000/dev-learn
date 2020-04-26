@@ -1,6 +1,6 @@
 FILE1=ex-code-1
 FILE2=p25-cuda
-FILE_GET_PLATFORM_INFO=ex-get-platform-info
+FILE_GET_PLATFORM_INFO=p31-cuda
 ROCMOPENCL=/opt/rocm/opencl/
 
 ex-code-1: $(FILE1).c
@@ -14,6 +14,6 @@ p25-cuda: $(FILE2).c
 clean:
 	rm -rf *.o $(FILE1) $(FILE2) $(FILE3)
 
-ex-get-platform-info: $(FILE_GET_PLATFORM_INFO).c
+p31-cuda: $(FILE_GET_PLATFORM_INFO).c
 	g++ -o $(FILE_GET_PLATFORM_INFO).o -c $(FILE_GET_PLATFORM_INFO).c -I$(ROCMOPENCL)/include
 	g++ -o $(FILE_GET_PLATFORM_INFO) $(FILE_GET_PLATFORM_INFO).o -lOpenCL -L$(ROCMOPENCL)/lib/x86_64
