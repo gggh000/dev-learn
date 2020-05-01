@@ -10,7 +10,7 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 4096
+#define NWITEMS 2048
 // A simple k_get_global_id kernel
 const char *src_get_global_id =
 "kernel void k_get_global_id(     global uint *l_global_id, global uint *l_global_size)      \n"
@@ -39,7 +39,7 @@ int main(int argc, char ** argv)
     int i;
     int inc;
     int result;
-    inc = 64;
+    inc =128;
 
     // 1. Get a platform.
 
@@ -170,6 +170,8 @@ int main(int argc, char ** argv)
     // 5. Create a data buffer.
     cl_mem global_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
     cl_mem global_size_buffer  = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem local_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem local_size_buffer  = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
@@ -194,16 +196,20 @@ int main(int argc, char ** argv)
 
     printf("\n");
 
-    size_t local_work_size = NWITEMS;
-    clSetKernelArg(kernel2, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
-    clSetKernelArg(kernel2, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
-    clEnqueueNDRangeKernel( queue, kernel2,  1,  NULL, &local_work_size, NULL, 0,  NULL, NULL);
+    size_t local_work_size = 256;
+    clSetKernelArg(kernel2, 0, sizeof(local_id_buffer), (void*) &local_id_buffer);
+    clSetKernelArg(kernel2, 1, sizeof(local_size_buffer), (void*) &local_size_buffer);
+    clEnqueueNDRangeKernel( queue, kernel2,  1,  NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
     clFinish( queue );
+
+    cl_uint *int_local_id, *int_local_size;
+    int_local_id  = (cl_uint *) clEnqueueMapBuffer( queue, local_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
+    int_local_size  = (cl_uint *) clEnqueueMapBuffer( queue, local_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
     for(i=0; i < NWITEMS; i+=inc)
     {
 
-        printf("\n%2d: global_id: 0x%08x. local_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
+        printf("\n%2d: local_id: 0x%08x. local_size: 0x%08x", i, int_local_id[i], int_local_size[i]);
         
     }
 
