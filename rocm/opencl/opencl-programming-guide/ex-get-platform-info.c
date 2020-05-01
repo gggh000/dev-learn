@@ -33,10 +33,12 @@ int main(int argc, char ** argv)
     ushort ushort1;
     uint uint1;
     ulong ulong1;
+    size_t sizet1;
+    size_t * sizetl1;
     size_t strLen;
     int i;
     int inc;
-
+    int result;
     inc = 64;
 
     // 1. Get a platform.
@@ -57,7 +59,7 @@ int main(int argc, char ** argv)
     cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
 
-    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
+    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4, DEVINFO_SIZET=5, DEVINFO_SIZETL=6};
 
     enum enum_device_info_types device_info_types[] = {
         DEVINFO_STRING, \
@@ -69,9 +71,9 @@ int main(int argc, char ** argv)
         DEVINFO_USHORT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
+        DEVINFO_SIZET, \    
         DEVINFO_UINT, \    
-        DEVINFO_UINT, \    
-        DEVINFO_UINT, \    
+        DEVINFO_SIZETL, \    
         DEVINFO_USHORT, \    
         DEVINFO_STRING\    
     };
@@ -117,20 +119,28 @@ int main(int argc, char ** argv)
             if (stat == 0)  {
                 switch (device_info_types[i]) {
                     case  DEVINFO_STRING:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
-                        printf("\n%40s: %30s.", str_device_info[i], str1);
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
+                        printf("\n[%04d] %40s: %30s.", result, str_device_info[i], str1);
                         break;
                     case  DEVINFO_USHORT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ushort), (void*)&ushort1, &strLen);
-                        printf("\n%40s: %02u (%02x).", str_device_info[i], ushort1, ushort1);
-			break;
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ushort), (void*)&ushort1, &strLen);
+                        printf("\n[%04d]%40s: %02u (%02x).", result, str_device_info[i], ushort1, ushort1);
+		               	break;
                     case  DEVINFO_UINT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(uint), (void*)&uint1, &strLen);
-                        printf("\n%40s: %04u (%04x).", str_device_info[i], uint1, uint1);
-			break;
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(uint), (void*)&uint1, &strLen);
+                        printf("\n[%04d]%40s: %04u (%04x).", result, str_device_info[i], uint1, uint1);
+			            break;
+                    case  DEVINFO_SIZET:
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(size_t), (void*)&sizet1, &strLen);
+                        printf("\n[%04d]%40s: %04u (%04x).", result, str_device_info[i], sizet1, sizet1);
+			            break;
+                    case  DEVINFO_SIZETL:
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(size_t), (void*)&sizetl1, &strLen);
+                        printf("\n[%04d]%40s: %04u (%04x).", result, str_device_info[i], sizetl1, sizetl1);
+			            break;
                     case  DEVINFO_ULONG:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
-                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
+		                result = clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
+                        printf("\n[%04d]%40s: %08u (%08x).", result, str_device_info[i], ulong1, ulong1);
                         break;
                     
                 }
