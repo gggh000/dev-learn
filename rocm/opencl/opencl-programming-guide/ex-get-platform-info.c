@@ -10,13 +10,20 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 10
-// A simple memset kernel
-const char *source =
-"kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
+#define NWITEMS 4096
+// A simple k_get_global_id kernel
+const char *src_get_global_id =
+"kernel void k_get_global_id(     global uint *l_global_id, global uint *l_global_size)      \n"
 "{                                                                      \n"
 "       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
 "       l_global_size[get_global_id(0)] = get_global_size(0);           \n"
+"}                                                                      \n";
+
+const char *src_get_local_id =
+"kernel void k_get_local_id(     global uint *l_local_id, global uint *l_local_size)      \n"
+"{                                                                      \n"
+"       l_local_id[get_local_id(0)] = get_local_id(0);                  \n"
+"       l_local_size[get_local_id(0)] = get_local_size(0);              \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv)
@@ -27,6 +34,10 @@ int main(int argc, char ** argv)
     uint uint1;
     ulong ulong1;
     size_t strLen;
+    int i;
+    int inc;
+
+    inc = 64;
 
     // 1. Get a platform.
 
@@ -137,11 +148,14 @@ int main(int argc, char ** argv)
     cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
-    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+    cl_program program1 = clCreateProgramWithSource( context, 1, &src_get_global_id,  NULL, NULL );
+    cl_program program2 = clCreateProgramWithSource( context, 1, &src_get_local_id,  NULL, NULL );
 
-    clBuildProgram( program, 1, device, NULL, NULL, NULL );
+    clBuildProgram( program1, 1, device, NULL, NULL, NULL );
+    clBuildProgram( program2, 1, device, NULL, NULL, NULL );
 
-    cl_kernel kernel = clCreateKernel( program, "memset", NULL );
+    cl_kernel kernel1 = clCreateKernel( program1, "k_get_global_id", NULL );
+    cl_kernel kernel2 = clCreateKernel( program2, "k_get_local_id", NULL );
 
     // 5. Create a data buffer.
     cl_mem global_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
@@ -150,9 +164,9 @@ int main(int argc, char ** argv)
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
     size_t global_work_size = NWITEMS;
-    clSetKernelArg(kernel, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
-    clSetKernelArg(kernel, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
-    clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
+    clSetKernelArg(kernel1, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
+    clSetKernelArg(kernel1, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
+    clEnqueueNDRangeKernel( queue, kernel1,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
     clFinish( queue );
 
     // 7. Look at the results via synchronous buffer map.
@@ -161,9 +175,7 @@ int main(int argc, char ** argv)
     int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
     int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
-    int i;
-
-    for(i=0; i < NWITEMS; i++)
+    for(i=0; i < NWITEMS; i+=inc)
     {
 
         printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
@@ -171,5 +183,19 @@ int main(int argc, char ** argv)
     }
 
     printf("\n");
+
+    size_t local_work_size = NWITEMS;
+    clSetKernelArg(kernel2, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
+    clSetKernelArg(kernel2, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
+    clEnqueueNDRangeKernel( queue, kernel2,  1,  NULL, &local_work_size, NULL, 0,  NULL, NULL);
+    clFinish( queue );
+
+    for(i=0; i < NWITEMS; i+=inc)
+    {
+
+        printf("\n%2d: global_id: 0x%08x. local_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
+        
+    }
+
     return 0;
 }
