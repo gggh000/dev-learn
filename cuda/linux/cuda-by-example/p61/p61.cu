@@ -23,6 +23,8 @@ int main (void) {
 	int a[N], b[N], c[N];
 	int *dev_a, *dev_b, *dev_c;
 
+	// allocate dev memory for N size for pointers declared earlier.
+
 	cudaMalloc( (void**)&dev_a, N * sizeof(int));
 	cudaMalloc( (void**)&dev_b, N * sizeof(int));
 	cudaMalloc( (void**)&dev_c, N * sizeof(int));
@@ -32,8 +34,14 @@ int main (void) {
 		b[i] = i * i;
 	}
 
+	// copy the initialized local memory values to device memory. 
+
 	cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
+
+	// invoke the kernel: 
+	// block count: (N+127)/128
+	// thread count: 128
 
 	add<<<(N+127)/128, 128>>> (dev_a, dev_b, dev_c);
 	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
