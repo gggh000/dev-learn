@@ -8,14 +8,15 @@
 // The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
 // (1+127) / 128.
 
-#define N 4096
+#define N 64
 
 __global__ void add( int * a, int * b, int * c ) {
-	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+//	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	int tid = threadIdx.x;
 
 	while (tid < N) {
 		c[tid] = a[tid] + b[tid];
-		tid += blockDim.x * gridDim.x;
+//		tid += blockDim.x * gridDim.x;
 	}
 }
 
@@ -31,7 +32,7 @@ int main (void) {
 
 	for (int i = 0; i < N; i++) {
 		a[i] = i;
-		b[i] = i * i;
+		b[i] = i*2;
 	}
 
 	// copy the initialized local memory values to device memory. 
@@ -43,10 +44,11 @@ int main (void) {
 	// block count: (N+127)/128
 	// thread count: 128
 
-	add<<<(N+127)/128, 128>>> (dev_a, dev_b, dev_c);
+	//add<<<(N+127)/128, 128>>> (dev_a, dev_b, dev_c);
+	add<<<1, N>>> (dev_a, dev_b, dev_c);
 	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i+=100) {
+	for (int i = 0; i < N; i+=10) {
 		printf("%d + %d = %d\n", a[i], b[i], c[i]);
 	}
 
