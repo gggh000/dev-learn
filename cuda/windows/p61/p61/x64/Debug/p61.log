@@ -1,0 +1,22 @@
+﻿Build started 6/6/2020 6:33:31 PM.
+     1>Project "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\p61.vcxproj" on node 2 (Build target(s)).
+     1>AddCudaCompileDeps:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /DWIN64 /D_DEBUG /D_CONSOLE /D_MBCS /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" /I. /FIcuda_runtime.h /c "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\kernel.cu" 
+     1>Project "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\p61.vcxproj" (1) is building "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\p61.vcxproj" (1:2) on node 2 (CudaBuildCore target(s)).
+     1>CudaBuildCore:
+         Compiling CUDA source file kernel.cu...
+         cmd.exe /C "C:\Users\CRIB\AppData\Local\Temp\tmp71535dd83a4a412a82c71444bf54cbb6.cmd"
+         "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc140.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\kernel.cu"
+         
+         c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc140.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\kernel.cu" 
+         kernel.cu
+     1>Done Building Project "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\p61.vcxproj" (CudaBuildCore target(s)).
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\lib\x64" cudart_static.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.lib" /MACHINE:X64 x64\Debug\kernel.cu.obj
+            Creating library c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.lib and object c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.exp
+         p61.vcxproj -> c:\Users\CRIB\documents\visual studio 2015\Projects\p61\x64\Debug\p61.exe
+     1>Done Building Project "c:\Users\CRIB\documents\visual studio 2015\Projects\p61\p61\p61.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.59
