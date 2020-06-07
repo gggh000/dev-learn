@@ -10,14 +10,30 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 10
+#define NWITEMS 4096
+#define GET_LOCAL_ID 0
+#define GET_GLOBAL_ID 1
+#define GET_ID_TYPE GET_LOCAL_ID
 // A simple memset kernel
 const char *source =
+
+#if GET_ID_TYPE == GET_GLOBAL_ID
+
 "kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
 "{                                                                      \n"
 "       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
-"       l_global_size[get_global_id(0)] = get_global_size(0);           \n"
+"       l_global_size[get_global_id(0)] = get_global_id(0);             \n"
 "}                                                                      \n";
+
+#else
+
+"kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
+"{                                                                      \n"
+"       l_global_id[get_global_id(0)] = get_local_id(0);               \n"
+"       l_global_size[get_global_id(0)] = get_local_size(0);           \n"
+"} \n";
+#endif
+
 
 int main(int argc, char ** argv)
 {
@@ -46,7 +62,7 @@ int main(int argc, char ** argv)
     cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
 
-    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
+    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4, DEVINFO_SIZE_T=5};
 
     enum enum_device_info_types device_info_types[] = {
         DEVINFO_STRING, \
@@ -58,11 +74,12 @@ int main(int argc, char ** argv)
         DEVINFO_USHORT, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
-        DEVINFO_UINT, \    
+        DEVINFO_SIZE_T, \    
         DEVINFO_UINT, \    
         DEVINFO_UINT, \    
         DEVINFO_USHORT, \    
-        DEVINFO_STRING\    
+        DEVINFO_STRING, \    
+	DEVINFO_SIZE_T \
     };
     char *str_device_info[]={\
         "CL_DEVICE_NAME", \
@@ -78,7 +95,9 @@ int main(int argc, char ** argv)
         "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS", \
         "CL_DEVICE_MAX_WORK_ITEM_SIZES", \
         "CL_DEVICE_TYPE", \
-        "CL_DEVICE_EXTENSIONS" \
+        "CL_DEVICE_EXTENSIONS", \
+	"CL_DEVICE_MAX_PARAMETER_SIZE" \
+
     };
     cl_device_id device[CONFIG_MAX_DEVICES];
     cl_device_info deviceInfos[]={\
@@ -95,7 +114,9 @@ int main(int argc, char ** argv)
         CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, \
         CL_DEVICE_MAX_WORK_ITEM_SIZES, \
         CL_DEVICE_TYPE, \
-        CL_DEVICE_EXTENSIONS};
+        CL_DEVICE_EXTENSIONS, \
+	CL_DEVICE_MAX_PARAMETER_SIZE \
+};
     stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
 
     printf("\nNo. of devices available: %d", devices_available);
@@ -121,7 +142,10 @@ int main(int argc, char ** argv)
 		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
                         printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
                         break;
-                    
+		    case DEVINFO_SIZE_T:
+		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
+                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
+                        break;
                 }
                 //enum device_info_types={DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
             } else {
@@ -163,10 +187,14 @@ int main(int argc, char ** argv)
 
     int i;
 
-    for(i=0; i < NWITEMS; i++)
+    for(i=0; i < NWITEMS; i+=100)
     {
 
-        printf("\n%2d: global_id: 0x%08x. global_size: 0x%08x", i, int_global_id[i], int_global_size[i]);
+#if GET_ID_TYPE == GET_GLOBAL_ID
+    printf("\n%2d: global_id: 0x%08u. global_size: 0x%08u", i, int_global_id[i], int_global_size[i]);
+#else
+    printf("\n%2d: local_id: 0x%08u. local_size: 0x%08u", i, int_global_id[i], int_global_size[i]);
+#endif
         
     }
 
