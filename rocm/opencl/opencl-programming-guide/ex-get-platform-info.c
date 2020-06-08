@@ -13,11 +13,12 @@
 #define NWITEMS 4096
 #define GET_LOCAL_ID 0
 #define GET_GLOBAL_ID 1
-#define GET_ID_TYPE GET_LOCAL_ID
+#define GET_ID_TYPE GET_GLOBAL_ID
+#define LOCAL_WORK_SIZE 128
 // A simple memset kernel
 const char *source =
 
-#if GET_ID_TYPE == GET_GLOBAL_ID
+#if GET_ID_TYPE == GET_LOCAL_ID
 
 "kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
 "{                                                                      \n"
@@ -174,9 +175,10 @@ int main(int argc, char ** argv)
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
     size_t global_work_size = NWITEMS;
+    size_t local_work_size = 128;
     clSetKernelArg(kernel, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
     clSetKernelArg(kernel, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
-    clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
+    clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
     clFinish( queue );
 
     // 7. Look at the results via synchronous buffer map.
