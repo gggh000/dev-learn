@@ -77,7 +77,7 @@ int main(int argc, char ** argv)
         DEVINFO_UINT, \    
         DEVINFO_SIZE_T, \    
         DEVINFO_UINT, \    
-        DEVINFO_UINT, \    
+        DEVINFO_SIZE_T, \    
         DEVINFO_USHORT, \    
         DEVINFO_STRING, \    
 	DEVINFO_SIZE_T \
