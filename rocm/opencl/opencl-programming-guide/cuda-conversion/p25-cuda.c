@@ -15,7 +15,8 @@
 const char *source =
 "kernel void simple_add(     global uint *c, global uint a, global uint b)  \n"
 "{                                                                      \n"
-"        *c = a + b;                                                    \n"
+//"        *c = a + b;                                                    \n"
+"        *c = get_global_id(0);                                           \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv) {
@@ -50,6 +51,8 @@ int main(int argc, char ** argv) {
         }
     }    
 
+    printf("\n");
+
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, NULL);
@@ -79,12 +82,15 @@ int main(int argc, char ** argv) {
     cl_uint *ptr;
     ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
-    for(i=0; i < NWITEMS; i++) {
-        if (i % 16 == 0) 
-            printf("\n");
-
-        printf("%03d: %04d. ", i, ptr[i]);
-        
-    }
-    return 0;
+    if (ptr) {
+        for(i=0; i < 4; i++) {
+  	        if (i % 16 == 0) 
+                printf("\n");
+            printf("%03d: %04d. ", i, ptr[i]);
+    	        
+        }
+        return 0;
+    } else {
+        printf("ERROR: clEnqueueMapBuffer returned error (ptr):%u ", ptr);
+    }       
 }
