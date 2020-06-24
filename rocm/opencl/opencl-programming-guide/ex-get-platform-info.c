@@ -187,6 +187,8 @@ int main(int argc, char ** argv)
     int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
     int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
+    printf("clEnqueueMapBuffer return (int_global_id):%x ", int_global_id);
+
     int i;
 
     for(i=0; i < NWITEMS; i+=100)
