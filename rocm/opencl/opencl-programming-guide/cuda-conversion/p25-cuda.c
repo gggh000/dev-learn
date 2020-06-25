@@ -61,9 +61,20 @@ int main(int argc, char ** argv) {
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
-    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, &ret);
+
+    if (ret) {
+	printf("Error: clCreateProgramWithSource returned non-zero: %s.\n", ret);
+	return 1;
+    }
+
     clBuildProgram( program, 1, &device, NULL, NULL, NULL );
-    cl_kernel kernel = clCreateKernel( program, "simple_add", NULL );
+    cl_kernel kernel = clCreateKernel( program, "simple_add", &ret);
+
+    if (ret) {
+	printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
+	return 1;
+    }
 
     // 5. Create a data buffer.
 
@@ -73,8 +84,8 @@ int main(int argc, char ** argv) {
 
     size_t global_work_size = NWITEMS;  
     clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
-    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)2);
-    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)7);
+//    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)2);
+//    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)7);
     clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
     ret = clFinish( queue );
 
