@@ -1,8 +1,11 @@
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-
+#include "book.h"
+#include "cpu_anim.h"
 #include <stdio.h>
+
+#define DIM 1024
 
 struct DataBlock {
 	unsigned char * dev_bitmap;
@@ -17,10 +20,11 @@ void generate_frame(DataBlock * d, int ticks);
 
 __global__ void kernel(unsigned char * ptr, int ticks) 
 {
+	
 	// map from threadidx/blockidxs to pixel position.
 
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
-	int y = threadIdy.y + blockIdy.y * blockDim.y;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
 	int offset = x + y * blockDim.x + gridDim.x;
 
 	// calculate the value at that position.
@@ -40,7 +44,7 @@ int main()
 	DataBlock data;
 	CPUAnimBitmap bitmap(DIM, DIM, &data);
 	data.bitmap = &bitmap;
-	cudaMalloc(viud **)&data.dev_bitmap, bitmap.image_size());
+	cudaMalloc((void **)&data.dev_bitmap, bitmap.image_size());
 	bitmap.anim_and_exit((void(*)(void *, int) )generate_frame, (void(*) (void*)) cleanup);
     return 0;
 }
@@ -48,9 +52,9 @@ int main()
 // Helper function for using CUDA to add vectors in parallel.
 void generate_frame(DataBlock * d, int ticks)
 {
-	dim3 blocks[DIM / 16, DIM / 16];
-	dim3 threads[16, 16];
-	kernel << <blocks, threads >> > (d->dev_bitmap, ticks);
+	dim3 blocks(DIM / 16, DIM / 16);
+	dim3 threads(16, 16);
+	kernel <<<blocks, threads>> > (d->dev_bitmap, ticks);
 	cudaMemcpy(d->bitmap->get_ptr(), d->dev_bitmap, d->bitmap->image_size(), cudaMemcpyDeviceToHost);
 
 }
