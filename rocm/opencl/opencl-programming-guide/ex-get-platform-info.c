@@ -44,6 +44,7 @@ int main(int argc, char ** argv)
     uint uint1;
     ulong ulong1;
     size_t strLen;
+    cl_int ret;
 
     // 1. Get a platform.
 
@@ -166,7 +167,15 @@ int main(int argc, char ** argv)
 
     clBuildProgram( program, 1, device, NULL, NULL, NULL );
 
-    cl_kernel kernel = clCreateKernel( program, "memset", NULL );
+    cl_kernel kernel = clCreateKernel( program, "memset", &ret);
+
+    if (ret) {
+        printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateKernel return OK. %d.\n", ret);
+        getchar();
+    }
 
     // 5. Create a data buffer.
     cl_mem global_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );

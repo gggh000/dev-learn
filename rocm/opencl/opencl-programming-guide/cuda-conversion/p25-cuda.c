@@ -1,4 +1,4 @@
-//
+    //
 // Copyright (c) 2010 Advanced Micro Devices, Inc. All rights reserved.
 //
 
@@ -11,13 +11,13 @@
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
 #define NWITEMS 512
-// A simple simple_add kernel
+// A simple memset kernel
 const char *source =
-"kernel void simple_add(     global uint *c, global uint a, global uint b)  \n"
-"{                                                                      \n"
-//"        *c = a + b;                                                    \n"
-"        *c = get_global_id(0);                                           \n"
-"}                                                                      \n";
+
+"kernel void memset(     global uint *c, )      \n"
+"{                                           \n"
+" *c = get_local_id(0);                      \n"
+"}                                           \n";
 
 int main(int argc, char ** argv) {
     int c;
@@ -56,20 +56,30 @@ int main(int argc, char ** argv) {
 
     // 3. Create a context and command queue on that device.
 
-    cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, NULL);
-    cl_command_queue queue = clCreateCommandQueue( context, device, 0, NULL );
+    cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, &ret);
 
+    if (ret) {
+    printf("Error: clCreateContext returned non-zero: %d.\n", ret);
+    return 1;
+    }
+
+    cl_command_queue queue = clCreateCommandQueue( context, device, 0, &ret );
+
+    if (ret) {
+    printf("Error: clCreateCommandQueue returned non-zero: %d.\n", ret);
+    return 1;
+    }
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
     cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, &ret);
 
     if (ret) {
-	printf("Error: clCreateProgramWithSource returned non-zero: %s.\n", ret);
+	printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
 	return 1;
     }
 
     clBuildProgram( program, 1, &device, NULL, NULL, NULL );
-    cl_kernel kernel = clCreateKernel( program, "simple_add", &ret);
+    cl_kernel kernel = clCreateKernel( program, "memset", &ret);
 
     if (ret) {
 	printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
