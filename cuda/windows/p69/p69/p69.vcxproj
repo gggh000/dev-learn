@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\git.co\dev-learn\cuda\windows\common;$(IncludePath)</IncludePath>
+    <IncludePath>C:\git.co\dev-learn\cuda\windows\freeglut-3.2.1\include\;C:\git.co\dev-learn\cuda\windows\common;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_L6ibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
