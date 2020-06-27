@@ -41,6 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\git.co\dev-learn\cuda\windows\glut\include;C:\git.co\dev-learn\cuda\windows\common;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\git.co\dev-learn\cuda\windows\glut\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

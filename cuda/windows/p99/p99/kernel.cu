@@ -1,8 +1,10 @@
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-
+#include "cuda.h"
 #include <stdio.h>
+#include "book.h"
+//#include "cpu_bitmap.h"
 
 cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
 
