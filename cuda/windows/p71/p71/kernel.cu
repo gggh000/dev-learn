@@ -1,9 +1,15 @@
 
 #include "cuda_runtime.h"
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+#include <device_functions.h>
 #include "device_launch_parameters.h"
-//#include "book.h"
+
+#include "book.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+
 
 #define imin(a,b) (a<b?a:b)
 #define sum_squares(x) (x*(x+1)(2*x+1)/6)
