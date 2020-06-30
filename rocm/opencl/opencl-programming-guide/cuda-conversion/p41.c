@@ -16,10 +16,10 @@
 // A simple kernelfcn kernel
 const char *source =
 
-"kernel void kernelfcn(     global uint *l_global_id, global uint *l_global_size)      \n"
+"kernel void kernelfcn(     global uint *dev_c, global uint *dev_b, global uint *dev_a)  \n"
 "{                                                                      \n"
-"       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
-"       l_global_size[get_global_id(0)] = get_global_id(0);             \n"
+" uint tid = get_global_id(0);                                          \n"
+" dev_c[tid] = dev_b[tid] + dev_a[tid];                                 \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv)
@@ -31,6 +31,7 @@ int main(int argc, char ** argv)
     ulong ulong1;
     size_t strLen;
     cl_int ret;
+    int a[NWITEMS], b[NWITEMS], c[NWITEMS];
 
     // 1. Get a platform.
 
@@ -42,7 +43,7 @@ int main(int argc, char ** argv)
     printf("\nNo. of platforms available: %d", platforms_available);
 
     for (int i = 0 ; i < platforms_available; i ++ ) {
-        printf("\nPlatform %d: %d.", i, platforms[i]);
+        printf("Platform %d: %d.\n", i, platforms[i]);
     }
 
     // 2. Find a gpu/cpu device.
@@ -107,7 +108,7 @@ int main(int argc, char ** argv)
 };
     stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
 
-    printf("\nNo. of devices available: %d", devices_available);
+    printf("No. of devices available: %d.\n", devices_available);
 
     /*
 
@@ -153,9 +154,7 @@ int main(int argc, char ** argv)
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
     cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
-
     clBuildProgram( program, 1, device, NULL, NULL, NULL );
-
     cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
 
     if (ret) {
@@ -168,32 +167,68 @@ int main(int argc, char ** argv)
 
     // 5. Create a data buffer.
 
-    cl_mem global_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
-    cl_mem global_size_buffer  = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    for (int i = 0; i < NWITEMS; i ++ ) {
+        a[i]  = -i;
+        b[i] = i * i;
+    }
+
+    cl_mem dev_a = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_b = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+
+    /*
+    cl_int clEnqueueWriteBuffer(
+    cl_command_queue command_queue,
+    cl_mem buffer,
+    cl_bool blocking_write,
+    size_t offset,
+    size_t size,
+    const void* ptr,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+    */
+
+    ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
     size_t global_work_size = NWITEMS;
-    size_t local_work_size = 128;
-    clSetKernelArg(kernel, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
-    clSetKernelArg(kernel, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
+    size_t local_work_size = LOCAL_WORK_SIZE;
+    clSetKernelArg(kernel, 0, sizeof(a), (void*) &a);
+    clSetKernelArg(kernel, 1, sizeof(b), (void*) &b);
     clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
     clFinish( queue );
 
     // 7. Look at the results via synchronous buffer map.
 
     cl_uint *int_global_id, *int_global_size;
-    int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
-    int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
+//  int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
+//  int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
 
-    printf("clEnqueueMapBuffer return (int_global_id):%x ", int_global_id);
+    /*
+    cl_int clEnqueueReadBuffer(
+    cl_command_queue command_queue,
+    cl_mem buffer,
+    cl_bool blocking_read,
+    size_t offset,
+    size_t size,
+    void* ptr,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+    */  
+
+    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
 
     int i;
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("\n%2d: global_id: 0x%08u. global_size: 0x%08u", i, int_global_id[i], int_global_size[i]);
-       
+        printf("\n%2d: global_id: 0x%08u. global_size: 0x%08u", i, c[i]);
+        
     }
 
     printf("\n");
