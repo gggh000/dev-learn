@@ -17,7 +17,7 @@ const char *source =
 "kernel void simple_add(     global uint *c,  uint a, uint b)      \n"
 "{                                           \n"
 " *c = a + b;                               \n"
-" *c = 100;                                 \n"
+" *c = 68;                                  \n"
 "}                                           \n";
 
 int main(int argc, char ** argv) {
@@ -93,7 +93,7 @@ int main(int argc, char ** argv) {
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
-    size_t global_work_size = NWITEMS;  
+    size_t global_work_size = 1;  
     clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
     cl_uint a = 2;
     cl_uint b = 7;
@@ -112,8 +112,9 @@ int main(int argc, char ** argv) {
     cl_uint *ptr;
     ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_uint), 0, NULL, NULL, &ret);
 
-    if (ret) {
-        printf("output is: %d\n", ptr[0]);
+    if (ret == 0) {
+        for (int i = 0; i < 32; i++)
+            printf("output is: idx: %d, %d\n", i, ptr[i]);
     } else {
         printf("ERROR: clEnqueueMapBuffer returned error, error code: %d.\n", ret);
         printf("output is: %d\n", ptr[0]);
