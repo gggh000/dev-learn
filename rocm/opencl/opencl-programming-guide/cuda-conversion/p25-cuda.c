@@ -11,12 +11,13 @@
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
 #define NWITEMS 512
-// A simple memset kernel
+// A simple simple_add kernel
 const char *source =
 
-"kernel void memset(     global uint *c,  uint a, uint b)      \n"
+"kernel void simple_add(     global uint *c,  uint a, uint b)      \n"
 "{                                           \n"
 " *c = a + b;                               \n"
+" *c = 100;                                 \n"
 "}                                           \n";
 
 int main(int argc, char ** argv) {
@@ -79,7 +80,7 @@ int main(int argc, char ** argv) {
     }
 
     clBuildProgram( program, 1, &device, NULL, NULL, NULL );
-    cl_kernel kernel = clCreateKernel( program, "memset", &ret);
+    cl_kernel kernel = clCreateKernel( program, "simple_add", &ret);
 
     if (ret) {
 	printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
@@ -94,8 +95,10 @@ int main(int argc, char ** argv) {
 
     size_t global_work_size = NWITEMS;  
     clSetKernelArg(kernel, 0, sizeof(buffer), (void*) &buffer);
-//    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)2);
-//    clSetKernelArg(kernel, 0, sizeof(buffer), (void*)7);
+    cl_uint a = 2;
+    cl_uint b = 7;
+    //clSetKernelArg(kernel, 1, sizeof(a), (void*)a);
+    //clSetKernelArg(kernel, 2, sizeof(b), (void*)b);
     clEnqueueNDRangeKernel( queue, kernel,  1,  NULL, &global_work_size, NULL, 0,  NULL, NULL);
     ret = clFinish( queue );
 
@@ -107,19 +110,14 @@ int main(int argc, char ** argv) {
     // 7. Look at the results via synchronous buffer map.
 
     cl_uint *ptr;
-//    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, &ret );
-    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_uint), 0, NULL, NULL, NULL );
+    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_uint), 0, NULL, NULL, &ret);
 
-    if (ptr) {
-        for(i=0; i < 4; i++) {
-  	        if (i % 16 == 0) 
-                printf("\n");
-            printf("\n%03d: %04d. ", i, ptr[i]);
-    	        
-        }
-        printf("\n");
-        return 0;
+    if (ret) {
+        printf("output is: %d\n", ptr[0]);
     } else {
         printf("ERROR: clEnqueueMapBuffer returned error, error code: %d.\n", ret);
-    }       
+        printf("output is: %d\n", ptr[0]);
+    } 
+    	        
+        return 0;
 }
