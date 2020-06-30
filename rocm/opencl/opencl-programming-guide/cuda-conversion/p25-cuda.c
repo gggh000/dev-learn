@@ -14,9 +14,9 @@
 // A simple memset kernel
 const char *source =
 
-"kernel void memset(     global uint *c, )      \n"
+"kernel void memset(     global uint *c,  uint a, uint b)      \n"
 "{                                           \n"
-" *c = get_local_id(0);                      \n"
+" *c = a + b;                               \n"
 "}                                           \n";
 
 int main(int argc, char ** argv) {
@@ -107,7 +107,8 @@ int main(int argc, char ** argv) {
     // 7. Look at the results via synchronous buffer map.
 
     cl_uint *ptr;
-    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, &ret );
+//    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, &ret );
+    ptr = (cl_uint *) clEnqueueMapBuffer( queue, buffer, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_uint), 0, NULL, NULL, NULL );
 
     if (ptr) {
         for(i=0; i < 4; i++) {
