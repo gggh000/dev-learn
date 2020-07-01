@@ -16,10 +16,12 @@
 // A simple kernelfcn kernel
 const char *source =
 
-"kernel void kernelfcn(     global uint *dev_c, global uint *dev_b, global uint *dev_a)  \n"
+"kernel void kernelfcn(     global uint *dev_c, global uint *dev_a, global uint *dev_b)  \n"
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
-" dev_c[tid] = dev_b[tid] + dev_a[tid];                                 \n"
+" dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
+" dev_a[tid] = 5000;                                                    \n"           
+" dev_b[tid] = 6000;                                                    \n"           
 "}                                                                      \n";
 
 int main(int argc, char ** argv)
@@ -168,7 +170,7 @@ int main(int argc, char ** argv)
     // 5. Create a data buffer.
 
     for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i]  = i;
+        a[i]  = i + 3;
         b[i] = i + i;
     }
 
@@ -180,7 +182,7 @@ int main(int argc, char ** argv)
 
     printf("Creating mem on GPU.....");
 
-    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, NWITEMS * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_b = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
@@ -222,8 +224,8 @@ int main(int argc, char ** argv)
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
     if (DEBUG==1) {
-        printf("Launch kernel");
-        getchar();
+        printf("Launch kernel\n");
+        //getchar();
     }
 
     size_t global_work_size = NWITEMS;
@@ -231,29 +233,30 @@ int main(int argc, char ** argv)
     clSetKernelArg(kernel, 0, sizeof(a), (void*) &a);
     clSetKernelArg(kernel, 1, sizeof(b), (void*) &b);
     clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
-    printf("clEnqueueNDRangeKernel OK...");
-    getchar();
+    printf("clEnqueueNDRangeKernel OK...\n");
+    //getchar();
 
     clFinish( queue );
 
     if (DEBUG==1) {
-        printf("clFinish OK...");
-        getchar();
+        printf("clFinish OK...\n");
+        //getchar();
     }
 
     // 7. Look at the results via synchronous buffer map.
 
-    printf("Reading back from GPU the sum...");
+    printf("Reading back from GPU the sum...\n");
 
     ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
-    //ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
 
-    printf("Printing sums now...");
+    printf("Printing sums now...\n");
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("globalID: 0x%02u. value: 0x%08u.\n", i, c[i]);
+        printf("globalID: 0x%02u. value (a/c): 0x%08u, 0x%08u.\n", i, a[i], c[i]);
         
     }
 
