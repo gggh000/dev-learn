@@ -12,7 +12,7 @@
 
 #define NWITEMS 2048
 #define LOCAL_WORK_SIZE 256
-
+#define DEBUG 1
 // A simple kernelfcn kernel
 const char *source =
 
@@ -31,7 +31,8 @@ int main(int argc, char ** argv)
     ulong ulong1;
     size_t strLen;
     cl_int ret;
-    int a[NWITEMS], b[NWITEMS], c[NWITEMS];
+    uint a[NWITEMS], b[NWITEMS], c[NWITEMS];
+    int i;
 
     // 1. Get a platform.
 
@@ -40,7 +41,7 @@ int main(int argc, char ** argv)
     cl_uint platforms_available;
 
     clGetPlatformIDs(CONFIG_MAX_PLATFORMS, platforms, &platforms_available );
-    printf("\nNo. of platforms available: %d", platforms_available);
+    printf("\nNo. of platforms available: %d.\n", platforms_available);
 
     for (int i = 0 ; i < platforms_available; i ++ ) {
         printf("Platform %d: %d.\n", i, platforms[i]);
@@ -161,20 +162,27 @@ int main(int argc, char ** argv)
         printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
         return 1;
     } else  {
-        printf("clCreateKernel return OK. %d.\n", ret);
-        getchar();
+        printf("clCreateKernel return OK.... %d.\n", ret);
     }
 
     // 5. Create a data buffer.
 
     for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i]  = -i;
-        b[i] = i * i;
+        a[i]  = i;
+        b[i] = i + i;
     }
+
+    for(i=0; i < NWITEMS; i+=100)
+    {
+        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
+        
+    }
+
+    printf("Creating mem on GPU.....");
 
     cl_mem dev_a = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_b = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
-    cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_c = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
     /*
     cl_int clEnqueueWriteBuffer(
@@ -189,45 +197,64 @@ int main(int argc, char ** argv)
     cl_event* event);
     */
 
+    if (DEBUG==1)
+        printf("Copying data to GPU...");
+
     ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
     ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
-    ret = clEnqueueWriteBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+
+    // Erasing a[] for test.
+
+    for (int i = 0; i < NWITEMS; i ++ ) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+
+    for(i=0; i < NWITEMS; i+=100)
+    {
+        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
+        
+    }
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
+    if (DEBUG==1) {
+        printf("Launch kernel");
+        getchar();
+    }
+
+    /*
     size_t global_work_size = NWITEMS;
     size_t local_work_size = LOCAL_WORK_SIZE;
     clSetKernelArg(kernel, 0, sizeof(a), (void*) &a);
     clSetKernelArg(kernel, 1, sizeof(b), (void*) &b);
     clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
+    printf("clEnqueueNDRangeKernel OK...");
+    getchar();
+
     clFinish( queue );
+
+    if (DEBUG==1) {
+        printf("clFinish OK...");
+        getchar();
+    }
+    */
 
     // 7. Look at the results via synchronous buffer map.
 
-    cl_uint *int_global_id, *int_global_size;
-//  int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
-//  int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
+    printf("Reading back from GPU the sum...");
 
-    /*
-    cl_int clEnqueueReadBuffer(
-    cl_command_queue command_queue,
-    cl_mem buffer,
-    cl_bool blocking_read,
-    size_t offset,
-    size_t size,
-    void* ptr,
-    cl_uint num_events_in_wait_list,
-    const cl_event* event_wait_list,
-    cl_event* event);
-    */  
+    //ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
+    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
 
-    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
-
-    int i;
+    printf("Printing sums now...");
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("\n%2d: global_id: 0x%08u. global_size: 0x%08u", i, c[i]);
+        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
         
     }
 
