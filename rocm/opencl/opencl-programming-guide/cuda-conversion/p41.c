@@ -170,7 +170,7 @@ int main(int argc, char ** argv)
     // 5. Create a data buffer.
 
     for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i]  = i + 3;
+        a[i]  = i + 5;
         b[i] = i + i;
     }
 
@@ -202,9 +202,9 @@ int main(int argc, char ** argv)
     if (DEBUG==1)
         printf("Copying data to GPU...");
 
-    ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
-    ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
 
     //Erasing a[] for test.
@@ -230,8 +230,14 @@ int main(int argc, char ** argv)
 
     size_t global_work_size = NWITEMS;
     size_t local_work_size = LOCAL_WORK_SIZE;
-    clSetKernelArg(kernel, 0, sizeof(a), (void*) &a);
-    clSetKernelArg(kernel, 1, sizeof(b), (void*) &b);
+
+    printf("set kernel args...\n");
+    clSetKernelArg(kernel, 0, sizeof(dev_c), (void*) &dev_c);
+    printf("ret: %d\n", ret); 
+    clSetKernelArg(kernel, 1, sizeof(dev_a), (void*) &dev_a);
+    printf("ret: %d\n", ret); 
+    clSetKernelArg(kernel, 2, sizeof(dev_b), (void*) &dev_b);
+    printf("ret: %d\n", ret); 
     clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
     printf("clEnqueueNDRangeKernel OK...\n");
     //getchar();
@@ -247,16 +253,16 @@ int main(int argc, char ** argv)
 
     printf("Reading back from GPU the sum...\n");
 
-    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
+    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
-    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, NULL, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
 
     printf("Printing sums now...\n");
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("globalID: 0x%02u. value (a/c): 0x%08u, 0x%08u.\n", i, a[i], c[i]);
+        printf("globalID: 0x%02u. value (a/c): 0x%08u/0x%08u.\n", i, a[i], c[i]);
         
     }
 
