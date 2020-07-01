@@ -12,7 +12,7 @@
 
 #define NWITEMS 2048
 #define LOCAL_WORK_SIZE 256
-#define DEBUG 1
+#define DEBUG 0
 // A simple kernelfcn kernel
 const char *source =
 
@@ -20,8 +20,6 @@ const char *source =
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
-" dev_a[tid] = 5000;                                                    \n"           
-" dev_b[tid] = 6000;                                                    \n"           
 "}                                                                      \n";
 
 int main(int argc, char ** argv)
@@ -170,8 +168,8 @@ int main(int argc, char ** argv)
     // 5. Create a data buffer.
 
     for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i]  = i + 5;
-        b[i] = i + i;
+        a[i]  = i;
+        b[i] = i * i;
     }
 
     for(i=0; i < NWITEMS; i+=100)
@@ -253,17 +251,21 @@ int main(int argc, char ** argv)
 
     printf("Reading back from GPU the sum...\n");
 
+    if (DEBUG==1)  {
+        ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+        printf("ret: %d\n", ret); 
+    }
+
     ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
-    printf("ret: %d\n", ret); 
-    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
 
     printf("Printing sums now...\n");
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("globalID: 0x%02u. value (a/c): 0x%08u/0x%08u.\n", i, a[i], c[i]);
-        
+        if (DEBUG==1) 
+            printf("globalID: 0x%02u. value (a/c): 0x%08u/0x%08u.\n", i, a[i], c[i]);
+        printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
     }
 
     printf("\n");
