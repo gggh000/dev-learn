@@ -28,7 +28,7 @@ int main(int argc, char ** argv) {
     cl_int ret; 
     uint a[1], b[1], c[1];
     int i;
-    const void* ptr,
+    const void* ptr;
 
     // 1. Get a platform.
 
@@ -58,12 +58,12 @@ int main(int argc, char ** argv) {
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, &ret);
-    cl_command_queue queue = clCreateCommandQueue( context, &device, 0, NULL );
+    cl_command_queue queue = clCreateCommandQueue( context, device, 0, NULL );
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
     cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
-    clBuildProgram( program, 1, device, NULL, NULL, NULL );
+    clBuildProgram( program, 1, &device, NULL, NULL, NULL );
     cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
 
     if (ret) {
@@ -84,7 +84,7 @@ int main(int argc, char ** argv) {
     cl_mem dev_b = clCreateBuffer( context, CL_MEM_READ_ONLY, sizeof(cl_uint), NULL, NULL );
     cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, sizeof(cl_uint), NULL, NULL );
 
-    if (DEBUG==1)
+    if (DEBUG == 1)
         printf("Copying data to GPU...");
 
     ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, sizeof(cl_uint), a, NULL, NULL, NULL);
@@ -94,7 +94,7 @@ int main(int argc, char ** argv) {
 
     // 6. Launch the kernel. Let OpenCL pick the local work size.
 
-    if (DEBUG==1) {
+    if (DEBUG == 1) {
         printf("Launch kernel\n");
         //getchar();
     }
