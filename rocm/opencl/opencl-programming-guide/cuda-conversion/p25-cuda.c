@@ -17,8 +17,7 @@ const char *source =
 "kernel void kernelfcn(     global uint *dev_c,  global uint * dev_a, global uint * dev_b)      \n"
 "{                                           \n"
 " uint tid = get_global_id(0);               \n"
-" *dev_c = 100;                              \n"
-" *dev_a = 200;                              \n"
+" *dev_c = *dev_a + *dev_b;                  \n"
 "}                                           \n";
 
 /*
@@ -62,11 +61,11 @@ int main(int argc, char ** argv) {
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device, NULL, NULL, &ret);
-    cl_command_queue queue = clCreateCommandQueue( context, device, 0, NULL );
+    cl_command_queue queue = clCreateCommandQueue( context, device, 0,  &ret);
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
-    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, &ret);
 
     if (ret) {
         printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
@@ -75,16 +74,7 @@ int main(int argc, char ** argv) {
         printf("clCreateProgramWithSource return OK.... %d.\n", ret);
     }
 
-
-    clBuildProgram( program, 1, &device, NULL, NULL, NULL );
-
-    if (ret) {
-        printf("Error: clBuildProgram returned non-zero: %d.\n", ret);
-        return 1;
-    } else  {
-        printf("clBuildProgram return OK.... %d.\n", ret);
-    }
-
+    clBuildProgram( program, 1, &device, NULL, NULL, NULL);
 
     cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
 
@@ -133,7 +123,6 @@ int main(int argc, char ** argv) {
     printf("ret: %d\n", ret); 
     clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
     printf("clEnqueueNDRangeKernel OK...\n");
-    //getchar();
 
     clFinish( queue );
 
@@ -148,10 +137,7 @@ int main(int argc, char ** argv) {
 
     ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, sizeof(cl_uint), c, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
-    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, sizeof(cl_uint), a, NULL, NULL, NULL);
-    printf("ret: %d\n", ret); 
-    printf("output is: %d\n", *c);
-    printf("output is: a/c %d/%d\n", *a, *c);
+    printf("output is: (%d + %d) = %d\n", *a, *b, *c);
     return 0;
 }
 
