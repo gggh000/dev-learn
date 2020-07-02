@@ -14,11 +14,15 @@
 // A simple simple_add kernel
 const char *source =
 
-"kernel void simple_add(     global uint *c,  uint * a, uint * b)      \n"
+"kernel void simple_add(     global uint *dev_c,  global uint * dev_a, global uint * dev_b)      \n"
 "{                                           \n"
-" *c = *a + *b;                               \n"
-" *c = 68;                                  \n"
+" uint tid = get_global_id(0);               \n"
+" *dev_c = 100;                              \n"
+" *dev_a = 200;                              \n"
 "}                                           \n";
+
+/*
+*/
 
 int main(int argc, char ** argv) {
  
@@ -86,7 +90,7 @@ int main(int argc, char ** argv) {
 
     if (ret) {
         printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
-        return 1;
+//        return 1;
     } else  {
         printf("clCreateKernel return OK.... %d.\n", ret);
     }
@@ -144,7 +148,10 @@ int main(int argc, char ** argv) {
 
     ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, sizeof(cl_uint), c, NULL, NULL, NULL);
     printf("ret: %d\n", ret); 
-    printf("output is: idx: %d, %d\n", i, c);
-        return 0;
+    ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, sizeof(cl_uint), a, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+    printf("output is: %d\n", *c);
+    printf("output is: a/c %d/%d\n", *a, *c);
+    return 0;
 }
 
