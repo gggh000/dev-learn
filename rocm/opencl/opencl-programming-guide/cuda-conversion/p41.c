@@ -154,9 +154,35 @@ int main(int argc, char ** argv)
     cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
-    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+   cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+    if (ret) {
+        printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateProgramWithSource return OK.... %d.\n", ret);
+    }
+
+
     clBuildProgram( program, 1, device, NULL, NULL, NULL );
+
+    if (ret) {
+        printf("Error: clBuildProgram returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clBuildProgram return OK.... %d.\n", ret);
+    }
+
+
     cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
+
+    if (ret) {
+        printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
+//        return 1;
+    } else  {
+        printf("clCreateKernel return OK.... %d.\n", ret);
+    }
 
     if (ret) {
         printf("Error: clCreateKernel returned non-zero: %d.\n", ret);

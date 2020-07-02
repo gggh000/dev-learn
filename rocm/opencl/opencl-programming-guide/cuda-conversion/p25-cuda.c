@@ -11,10 +11,10 @@
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 #define DEBUG 1
 
-// A simple simple_add kernel
+// A simple kernelfcn kernel
 const char *source =
 
-"kernel void simple_add(     global uint *dev_c,  global uint * dev_a, global uint * dev_b)      \n"
+"kernel void kernelfcn(     global uint *dev_c,  global uint * dev_a, global uint * dev_b)      \n"
 "{                                           \n"
 " uint tid = get_global_id(0);               \n"
 " *dev_c = 100;                              \n"
