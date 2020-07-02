@@ -14,9 +14,9 @@
 // A simple simple_add kernel
 const char *source =
 
-"kernel void simple_add(     global uint *c,  uint a, uint b)      \n"
+"kernel void simple_add(     global uint *c,  uint * a, uint * b)      \n"
 "{                                           \n"
-" *c = a + b;                               \n"
+" *c = *a + *b;                               \n"
 " *c = 68;                                  \n"
 "}                                           \n";
 
@@ -63,7 +63,25 @@ int main(int argc, char ** argv) {
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
     cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+    if (ret) {
+        printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateProgramWithSource return OK.... %d.\n", ret);
+    }
+
+
     clBuildProgram( program, 1, &device, NULL, NULL, NULL );
+
+    if (ret) {
+        printf("Error: clBuildProgram returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clBuildProgram return OK.... %d.\n", ret);
+    }
+
+
     cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
 
     if (ret) {
