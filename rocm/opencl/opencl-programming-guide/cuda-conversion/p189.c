@@ -24,9 +24,10 @@ const char *source =
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
 "}                                                                      \n";
 
-float opencl_malloc_test(int size, bool up, bool hostAlloc = false) {
+float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, cl_command_queue * queue) {
     //cudaEvent_t start, stop;
-    int *a, *dev_a;
+    int *a;
+    cl_mem dev_a;
     float elapsedTime = 0;
     int ret;
 
@@ -46,21 +47,21 @@ float opencl_malloc_test(int size, bool up, bool hostAlloc = false) {
     }
 
     //cudaMalloc((void**)&dev_a, size * sizeof(*dev_a));
-    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, SIZE * sizeof(cl_uint), NULL, &ret);
+    dev_a = clCreateBuffer( *context, CL_MEM_READ_WRITE, SIZE * sizeof(cl_uint), NULL, &ret);
 
     if (ret) {
         printf("clCreateBuffer fail code %d.\n", ret);
         return 1;
     }
 
-    cudaEventRecord(start, 0);
+    //cudaEventRecord(start, 0);
     for (int i = 0; i < 100; i++) {
         if (up)
             //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
-            ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+            ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
         else
             //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
-            ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+            ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
 
         if (ret) {
             printf("clEnqueueWriteBuffer fail code %d.\n", ret);
@@ -210,22 +211,38 @@ int main(int argc, char ** argv)
     } 
     */   
 
+    // 3. Create a context and command queue on that device.
+
+    cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
+    cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
+
+    // 4. Perform runtime source compilation, and obtain kernel entry point.
+
+   cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+    if (ret) {
+        printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateProgramWithSource return OK.... %d.\n", ret);
+    }
+
     float elapsedTime;
 
     printf("clCreateBuffer test:\n");
     float MB = (float)100 * SIZE * sizeof(int) / 1024 / 1024;
-    elapsedTime = opencl_malloc_test(SIZE, true);
+    elapsedTime = opencl_malloc_test(SIZE, CL_TRUE, 0, &context, &queue);
     printf("Time using clCreateBuffer(up): %3.1f ms.\n", elapsedTime);
     printf("MB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
-    elapsedTime = opencl_malloc_test(SIZE, false);
+    elapsedTime = opencl_malloc_test(SIZE, CL_FALSE, 0, &context, &queue);
     printf("Time using clCreateBuffer(down): %3.1f ms.\n", elapsedTime);
     printf("MB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
 
-    printf("cudaHostalloc test:\n");
-    elapsedTime = opencl_malloc_test(SIZE, true, 1);
+    printf("Hostalloc test:\n");
+    elapsedTime = opencl_malloc_test(SIZE, CL_TRUE, 1, &context, &queue);
     printf("Time using clCreateBuffer(up): %3.1f ms.\n", elapsedTime);
     printf("MB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
-    elapsedTime = opencl_malloc_test(SIZE, false, 1);
+    elapsedTime = opencl_malloc_test(SIZE, CL_FALSE, 1, &context, &queue);
     printf("Time using clCreateBuffer(down): %3.1f ms.\n", elapsedTime);
     printf("MB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
 
