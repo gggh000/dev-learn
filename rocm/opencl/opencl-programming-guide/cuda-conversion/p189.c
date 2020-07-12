@@ -10,10 +10,11 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 2048
+#define SIZE 2048
 #define LOCAL_WORK_SIZE 256
 #define DEBUG 0
-#define SIZE (10*1024*1024)
+//#define SIZE (10*1024*1024)
+#define SIZE (1*1024*1024)
 
 // A simple kernelfcn kernel
 const char *source =
@@ -65,11 +66,22 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
-    /*
-    clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
-    clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
+    
+    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
+    
+    if (ret != 0) {
+        printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
+        return 1;
+    }
+
+    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
+
+    if (ret != 0) {
+        printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
+        return 1;
+    }
+
     elapsedTime  = (end - start) * 1.0e-6f;
-    */
 
     /*
     if (hostAlloc) {
@@ -93,7 +105,7 @@ int main(int argc, char ** argv)
     ulong ulong1;
     size_t strLen;
     cl_int ret;
-    uint a[NWITEMS], b[NWITEMS], c[NWITEMS];
+    uint a[SIZE];
     int i;
 
     // 1. Get a platform.
@@ -111,7 +123,7 @@ int main(int argc, char ** argv)
 
     // 2. Find a gpu/cpu device.
 
-    cl_uint CONFIG_MAX_DEVICES=20;
+    cl_uint CONFIG_MAX_DEVICES = 20;
     cl_uint devices_available;
 
     enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4, DEVINFO_SIZE_T=5};
