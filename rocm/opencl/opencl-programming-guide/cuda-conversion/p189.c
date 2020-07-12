@@ -31,7 +31,7 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
     cl_mem dev_a;
     float elapsedTime = 0;
     int ret;
-    cl_event evtWrite;
+    cl_event evtReadWrite;
     cl_ulong start, end;
 
     if (hostAlloc) {
@@ -55,32 +55,35 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
 
     if (up)
         //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
-        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtReadWrite);
     else
         //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
-        //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
-        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtReadWrite);
+        //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
 
     if (ret) {
         printf("clEnqueueWrite/ReadBuffer fail code %d.\n", ret);
         return 1;
     }
 
+    ret = clWaitForEvents(1, &evtReadWrite);
+    printf("clWaitForEvent return code %d.\n", ret);
+
     
-    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
+    ret = clGetEventProfilingInfo(evtReadWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
     
     if (ret != 0) {
         printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
         return 1;
     }
 
-    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
+    ret = clGetEventProfilingInfo(evtReadWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
 
     if (ret != 0) {
         printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
         return 1;
     }
-
+    
     elapsedTime  = (end - start) * 1.0e-6f;
 
     /*
