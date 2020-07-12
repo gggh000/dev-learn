@@ -24,16 +24,15 @@ const char *source =
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
 "}                                                                      \n";
 
+
 float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, cl_command_queue * queue) {
-    //cudaEvent_t start, stop;
     int *a;
     cl_mem dev_a;
     float elapsedTime = 0;
     int ret;
+    cl_event evtWrite;
+    cl_ulong start, end;
 
-    //cudaEventCreate(&start);
-    //cudaEventCreate(&stop);
-    
     if (hostAlloc) {
         //a = (int*)cudaHostAlloc((void**)&a, size * sizeof(*a), cudaHostAllocDefault);
         a = (int*)malloc(size * sizeof(*a));
@@ -46,7 +45,6 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         }
     }
 
-    //cudaMalloc((void**)&dev_a, size * sizeof(*dev_a));
     dev_a = clCreateBuffer( *context, CL_MEM_READ_WRITE, SIZE * sizeof(cl_uint), NULL, &ret);
 
     if (ret) {
@@ -54,23 +52,24 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
-    //cudaEventRecord(start, 0);
-    for (int i = 0; i < 100; i++) {
-        if (up)
-            //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
-            ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
-        else
-            //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
-            ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+    if (up)
+        //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
+        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+    else
+        //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
+        //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
+        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
 
-        if (ret) {
-            printf("clEnqueueWriteBuffer fail code %d.\n", ret);
-            return 1;
-        }
+    if (ret) {
+        printf("clEnqueueWrite/ReadBuffer fail code %d.\n", ret);
+        return 1;
     }
-    //cudaEventRecord(stop, 0);
-    //cudaEventSynchronize(stop);
-    //cudaEventElapsedTime(&elapsedTime, start, stop);
+
+    /*
+    clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
+    clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
+    elapsedTime  = (end - start) * 1.0e-6f;
+    */
 
     /*
     if (hostAlloc) {
@@ -173,43 +172,6 @@ int main(int argc, char ** argv)
     stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
 
     printf("No. of devices available: %d.\n", devices_available);
-
-    /*
-
-    for (int j = 0 ; j <  devices_available; j++) {
-        for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
-
-            if (stat == 0)  {
-                switch (device_info_types[i]) {
-                    case  DEVINFO_STRING:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
-                        printf("\n%40s: %30s.", str_device_info[i], str1);
-                        break;
-                    case  DEVINFO_USHORT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ushort), (void*)&ushort1, &strLen);
-                        printf("\n%40s: %02u (%02x).", str_device_info[i], ushort1, ushort1);
-			break;
-                    case  DEVINFO_UINT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(uint), (void*)&uint1, &strLen);
-                        printf("\n%40s: %04u (%04x).", str_device_info[i], uint1, uint1);
-			break;
-                    case  DEVINFO_ULONG:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
-                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
-                        break;
-		    case DEVINFO_SIZE_T:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
-                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
-                        break;
-                }
-                //enum device_info_types={DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
-            } else {
-                printf("\nclGetDevicesIDs FAIL.");
-            return 1;
-            }
-        }
-    } 
-    */   
 
     // 3. Create a context and command queue on that device.
 
