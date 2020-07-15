@@ -191,7 +191,7 @@ int main(int argc, char ** argv)
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
-    cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
+    cl_command_queue queue = clCreateCommandQueue( context, device[0], CL_QUEUE_PROFILING_ENABLE, NULL );
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
