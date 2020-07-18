@@ -10,31 +10,17 @@
 #define printDeviceInfo(X)   printf("\n%s: %s",  (X));
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
-#define NWITEMS 4096
-#define GET_LOCAL_ID 0
-#define GET_GLOBAL_ID 1
-#define GET_ID_TYPE GET_GLOBAL_ID
-#define LOCAL_WORK_SIZE 128
-// A simple memset kernel
+#define NWITEMS 2048
+#define LOCAL_WORK_SIZE 256
+#define DEBUG 0
+// A simple kernelfcn kernel
 const char *source =
 
-#if GET_ID_TYPE == GET_LOCAL_ID
-
-"kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
+"kernel void kernelfcn(     global uint *dev_c, global uint *dev_a, global uint *dev_b)  \n"
 "{                                                                      \n"
-"       l_global_id[get_global_id(0)] = get_global_id(0);               \n"
-"       l_global_size[get_global_id(0)] = get_global_id(0);             \n"
+" uint tid = get_global_id(0);                                          \n"
+" dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
 "}                                                                      \n";
-
-#else
-
-"kernel void memset(     global uint *l_global_id, global uint *l_global_size)      \n"
-"{                                                                      \n"
-"       l_global_id[get_global_id(0)] = get_local_id(0);               \n"
-"       l_global_size[get_global_id(0)] = get_local_size(0);           \n"
-"} \n";
-#endif
-
 
 int main(int argc, char ** argv)
 {
@@ -45,6 +31,8 @@ int main(int argc, char ** argv)
     ulong ulong1;
     size_t strLen;
     cl_int ret;
+    uint a[NWITEMS], b[NWITEMS], c[NWITEMS];
+    int i;
 
     // 1. Get a platform.
 
@@ -53,10 +41,10 @@ int main(int argc, char ** argv)
     cl_uint platforms_available;
 
     clGetPlatformIDs(CONFIG_MAX_PLATFORMS, platforms, &platforms_available );
-    printf("\nNo. of platforms available: %d", platforms_available);
+    printf("\nNo. of platforms available: %d.\n", platforms_available);
 
     for (int i = 0 ; i < platforms_available; i ++ ) {
-        printf("\nPlatform %d: %d.", i, platforms[i]);
+        printf("Platform %d: %d.\n", i, platforms[i]);
     }
 
     // 2. Find a gpu/cpu device.
@@ -121,7 +109,9 @@ int main(int argc, char ** argv)
 };
     stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
 
-    printf("\nNo. of devices available: %d", devices_available);
+    printf("No. of devices available: %d.\n", devices_available);
+
+    /*
 
     for (int j = 0 ; j <  devices_available; j++) {
         for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
@@ -155,7 +145,8 @@ int main(int argc, char ** argv)
             return 1;
             }
         }
-    }    
+    } 
+    */   
 
     // 3. Create a context and command queue on that device.
 
@@ -163,52 +154,144 @@ int main(int argc, char ** argv)
     cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
-    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+   cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
+
+    if (ret) {
+        printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateProgramWithSource return OK.... %d.\n", ret);
+    }
+
 
     clBuildProgram( program, 1, device, NULL, NULL, NULL );
 
-    cl_kernel kernel = clCreateKernel( program, "memset", &ret);
+    if (ret) {
+        printf("Error: clBuildProgram returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clBuildProgram return OK.... %d.\n", ret);
+    }
+
+
+    cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
+
+    if (ret) {
+        printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
+//        return 1;
+    } else  {
+        printf("clCreateKernel return OK.... %d.\n", ret);
+    }
 
     if (ret) {
         printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
         return 1;
     } else  {
-        printf("clCreateKernel return OK. %d.\n", ret);
-        getchar();
+        printf("clCreateKernel return OK.... %d.\n", ret);
     }
 
     // 5. Create a data buffer.
-    cl_mem global_id_buffer    = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
-    cl_mem global_size_buffer  = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
-    // 6. Launch the kernel. Let OpenCL pick the local work size.
-
-    size_t global_work_size = NWITEMS;
-    size_t local_work_size = 128;
-    clSetKernelArg(kernel, 0, sizeof(global_id_buffer), (void*) &global_id_buffer);
-    clSetKernelArg(kernel, 1, sizeof(global_size_buffer), (void*) &global_size_buffer);
-    clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
-    clFinish( queue );
-
-    // 7. Look at the results via synchronous buffer map.
-
-    cl_uint *int_global_id, *int_global_size;
-    int_global_id  = (cl_uint *) clEnqueueMapBuffer( queue, global_id_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
-    int_global_size  = (cl_uint *) clEnqueueMapBuffer( queue, global_size_buffer, CL_TRUE, CL_MAP_READ, 0, NWITEMS * sizeof(cl_uint), 0, NULL, NULL, NULL );
-
-    printf("clEnqueueMapBuffer return (int_global_id):%x ", int_global_id);
-
-    int i;
+    for (int i = 0; i < NWITEMS; i ++ ) {
+        a[i]  = i;
+        b[i] = i * i;
+    }
 
     for(i=0; i < NWITEMS; i+=100)
     {
-
-#if GET_ID_TYPE == GET_GLOBAL_ID
-    printf("\n%2d: global_id: 0x%08u. global_size: 0x%08u", i, int_global_id[i], int_global_size[i]);
-#else
-    printf("\n%2d: local_id: 0x%08u. local_size: 0x%08u", i, int_global_id[i], int_global_size[i]);
-#endif
+        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
         
+    }
+
+    printf("Creating mem on GPU.....");
+
+    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_b = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
+
+    /*
+    cl_int clEnqueueWriteBuffer(
+    cl_command_queue command_queue,
+    cl_mem buffer,
+    cl_bool blocking_write,
+    size_t offset,
+    size_t size,
+    const void* ptr,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+    */
+
+    if (DEBUG==1)
+        printf("Copying data to GPU...");
+
+    ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+    ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+
+    //Erasing a[] for test.
+
+    for (int i = 0; i < NWITEMS; i ++ ) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+
+    for(i=0; i < NWITEMS; i+=100)
+    {
+        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
+        
+    }
+    
+
+    // 6. Launch the kernel. Let OpenCL pick the local work size.
+
+    if (DEBUG==1) {
+        printf("Launch kernel\n");
+        //getchar();
+    }
+
+    size_t global_work_size = NWITEMS;
+    size_t local_work_size = LOCAL_WORK_SIZE;
+
+    printf("set kernel args...\n");
+    clSetKernelArg(kernel, 0, sizeof(dev_c), (void*) &dev_c);
+    printf("ret: %d\n", ret); 
+    clSetKernelArg(kernel, 1, sizeof(dev_a), (void*) &dev_a);
+    printf("ret: %d\n", ret); 
+    clSetKernelArg(kernel, 2, sizeof(dev_b), (void*) &dev_b);
+    printf("ret: %d\n", ret); 
+    clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
+    printf("clEnqueueNDRangeKernel OK...\n");
+    //getchar();
+
+    clFinish( queue );
+
+    if (DEBUG==1) {
+        printf("clFinish OK...\n");
+        //getchar();
+    }
+
+    // 7. Look at the results via synchronous buffer map.
+
+    printf("Reading back from GPU the sum...\n");
+
+    if (DEBUG==1)  {
+        ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
+        printf("ret: %d\n", ret); 
+    }
+
+    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
+    printf("ret: %d\n", ret); 
+
+    printf("Printing sums now...\n");
+
+    for(i=0; i < NWITEMS; i+=100)
+    {
+        if (DEBUG==1) 
+            printf("globalID: 0x%02u. value (a/c): 0x%08u/0x%08u.\n", i, a[i], c[i]);
+        printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
     }
 
     printf("\n");
