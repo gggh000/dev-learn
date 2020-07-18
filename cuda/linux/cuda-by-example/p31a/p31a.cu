@@ -21,8 +21,8 @@ Rather, whole vector sum return data will be invalid. To prove this, increase th
 
 // Helper functions and utilities to work with CUDA
 
-#include <helper_functions.h>
-#include <helper_cuda.h>
+//#include <helper_functions.h>
+//#include <helper_cuda.h>
 
 #define N 65536
 #define DEBUG 0
