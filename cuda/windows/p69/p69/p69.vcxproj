@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\git.co\dev-learn\cuda\windows\glut\include;C:\git.co\dev-learn\cuda\windows\common;$(IncludePath)</IncludePath>
-    <LibraryPath>$(VC_L6ibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <LibraryPath>C:\git.co\dev-learn\cuda\windows\glut\lib;$(VC_L6ibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -54,7 +54,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\git.co\CUDA-by-Example-source-code-for-the-book-s-examples-\lib;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib\amd64;C:\git.co\dev-learn\cuda\windows\common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\git.co\dev-learn\cuda\windows\glut\lib;C:\git.co\CUDA-by-Example-source-code-for-the-book-s-examples-\lib;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\lib\amd64;C:\git.co\dev-learn\cuda\windows\common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
