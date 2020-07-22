@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 #include <chrono>
+#include <fstream>
 #define ARRAY_SIZE 1024 
 
 using namespace std;
@@ -15,6 +16,7 @@ int main(int argc, char ** argv) {
     cl_kernel kernel = 0;
     cl_mem memObjects[3] = {0,0,0};
     cl_int errNum;
+    cl_int ret;
 
     cl_uint CONFIG_MAX_PLATFORMS=20;
     cl_platform_id platforms[CONFIG_MAX_PLATFORMS];
@@ -50,7 +52,7 @@ int main(int argc, char ** argv) {
 
     // Create a command queue on the first device available
 
-    commandQueue = clCreateCommandQueue(context, device);
+    commandQueue = clCreateCommandQueue(context, device, 0, &ret);
     
     if (commandQueue == NULL ) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
@@ -59,7 +61,16 @@ int main(int argc, char ** argv) {
 
     // Create opencl program from helloworld.cl kernel source
 
-    program = clCreateProgram(context, device, "HelloWorld.cl");
+    ifstream myFile;
+    myFile.open ("HelloWorld.cl");
+    string str;
+    string src = "";
+    
+    while (getline(myFile, str))
+        src +=  str;
+    
+
+    program = clCreateProgramWithSource(context, 1, src, src.length(), &ret);
 
     if (program == NULL) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
