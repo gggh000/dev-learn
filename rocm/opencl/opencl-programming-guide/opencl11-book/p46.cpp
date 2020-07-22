@@ -1,14 +1,43 @@
 #include <CL/cl.h>
 #include <stdio.h>
+#include <thread>
+#include <iostream>
+#include <chrono>
+#define ARRAY_SIZE 1024 
+
+using namespace std;
 
 int main(int argc, char ** argv) {
     cl_context context = 0;
     cl_command_queue commandQueue = 0;
-    cl_program = program = 0;
-    cl_device_id = device = 0;
+    cl_program program = 0;
+    cl_device_id device = 0;
     cl_kernel kernel = 0;
     cl_mem memObjects[3] = {0,0,0};
-    c;_int errNum;
+    cl_int errNum;
+
+    cl_uint CONFIG_MAX_PLATFORMS=20;
+    cl_platform_id platforms[CONFIG_MAX_PLATFORMS];
+    cl_uint platforms_available;
+    cl_device_id devices[CONFIG_MAX_DEVICES];
+
+    clGetPlatformIDs(CONFIG_MAX_PLATFORMS, platforms, &platforms_available );
+    printf("\nNo. of platforms available: %d.\n", platforms_available);
+
+    for (int i = 0 ; i < platforms_available; i ++ ) {
+        printf("Platform %d: %d.\n", i, platforms[i]);
+    }
+
+    // 2. Find a gpu/cpu device.
+
+    cl_uint CONFIG_MAX_DEVICES=20;
+    cl_uint devices_available;
+
+    stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, devices, &devices_available);
+    printf("No. of devices available: %d.\n", devices_available);
+    device = devices[0];
+
+    cout << "device ID 1st device: " << device << endl;
 
     // Create an opencl context on first available platform
 
@@ -21,19 +50,19 @@ int main(int argc, char ** argv) {
 
     // Create a command queue on the first device available
 
-    commandQueue = CreateCommandQueue(context, &device);
+    commandQueue = clCreateCommandQueue(context, device);
     
     if (commandQueue == NULL ) { 
-       Cleanup(context, commandQueue, program, kernel, memObjects);
+       //Cleanup(context, commandQueue, program, kernel, memObjects);
        return 1;
     }
 
     // Create opencl program from helloworld.cl kernel source
 
-    program = CreateProgram(context, device, "HelloWorld.cl");
+    program = clCreateProgram(context, device, "HelloWorld.cl");
 
     if (program == NULL) { 
-       Cleanup(context, commandQueue, program, kernel, memObjects);
+       //Cleanup(context, commandQueue, program, kernel, memObjects);
     }
 
     // Create opencl kernel.
@@ -42,7 +71,7 @@ int main(int argc, char ** argv) {
 
     if (kernel == NULL) {
         cerr << "Failed to create a kernel " << endl;
-        Cleanup(context, commandQueue, program, kernel, memObjects);
+        //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;    
     }
 
@@ -60,7 +89,7 @@ int main(int argc, char ** argv) {
 
     if (!CreateMemObjects(context, memObjectss, a, b))
     {
-        Cleanup(context, commandQueue, program, kernel, memObjects);
+        //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
     }
 
@@ -72,7 +101,7 @@ int main(int argc, char ** argv) {
 
     if (errNum != CL_SUCCESS)  {
         cerr << "Error setting kernel arguments" << endl;
-        Cleanup(context, commandQueue, program, kernel, memObjects);
+        //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
     }
 
@@ -85,7 +114,7 @@ int main(int argc, char ** argv) {
     
     if (errNum != CL_SUCCESS) { 
         cerr << "Error queueing kernel for execution." << endl;
-        Cleanup(context, commandQueue, program, kernel, memObjects);
+        //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
     }
 
@@ -95,7 +124,7 @@ int main(int argc, char ** argv) {
 
     if (errNum != CL_SUCCESS) { 
         cerr << "Error reading results buffer." << endl;
-        Cleanup(context, commandQueue, program, kernel, memObjects);
+        //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
     }
 
@@ -107,7 +136,7 @@ int main(int argc, char ** argv) {
 
     cout << endl;    
     cout << "Executed program successfully." << endl;
-    Cleanup(context, commandQueue, program, kernel, memObjects);
+    //Cleanup(context, commandQueue, program, kernel, memObjects);
     return 0;
     
 }
