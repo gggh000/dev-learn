@@ -3,8 +3,8 @@ FILE2=p100
 FILE_GET_PLATFORM_INFO=ex-get-platform-info
 ROCMOPENCL=/opt/rocm/opencl/
 
-p46: $(FILE1).c
-	g++ -o $(FILE1).o -c $(FILE1).c -I$(ROCMOPENCL)/include
+p46: $(FILE1).cpp
+	g++ -o $(FILE1).o -c $(FILE1).cpp -I$(ROCMOPENCL)/include
 	g++ -o $(FILE1) $(FILE1).o -lOpenCL -L$(ROCMOPENCL)/lib/x86_64
 
 p25-cuda: $(FILE2).c

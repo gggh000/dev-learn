@@ -1,4 +1,7 @@
-int main(int argv, chat ** argv) {
+#include <CL/cl.h>
+#include <stdio.h>
+
+int main(int argc, char ** argv) {
     cl_context context = 0;
     cl_command_queue commandQueue = 0;
     cl_program = program = 0;
