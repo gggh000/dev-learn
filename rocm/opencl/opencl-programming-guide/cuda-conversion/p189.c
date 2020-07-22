@@ -14,7 +14,7 @@
 #define LOCAL_WORK_SIZE 256
 #define DEBUG 0
 //#define SIZE (10*1024*1024)
-#define SIZE (1*1024*1024)
+#define SIZE (512*1024)
 
 // A simple kernelfcn kernel
 const char *source =
@@ -66,7 +66,7 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
-    
+    /*    
     ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
     
     if (ret != 0) {
@@ -82,7 +82,7 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
     }
 
     elapsedTime  = (end - start) * 1.0e-6f;
-
+    */
     /*
     if (hostAlloc) {
         cudaFreeHost(dev_a);
@@ -188,7 +188,17 @@ int main(int argc, char ** argv)
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
-    cl_command_queue queue = clCreateCommandQueue( context, device[0], CL_QUEUE_PROFILING_ENABLE, NULL );
+
+    cl_command_queue_properties properties = CL_QUEUE_PROFILING_ENABLE;
+    cl_command_queue queue = clCreateCommandQueue( context, device[0], properties, &ret );
+    //cl_command_queue queue = clCreateCommandQueue( context, device[0], CL_QUEUE_PROFILING_ENABLE, NULL );
+
+    if (ret) {
+        printf("Error: clCreateCommandQueue returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateCommandQueue return OK.... %d.\n", ret);
+    }
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
