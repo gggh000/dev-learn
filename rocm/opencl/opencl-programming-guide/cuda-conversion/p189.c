@@ -14,7 +14,7 @@
 #define LOCAL_WORK_SIZE 256
 #define DEBUG 0
 //#define SIZE (10*1024*1024)
-#define SIZE (512*1024)
+#define SIZE (1024*1024)
 
 // A simple kernelfcn kernel
 const char *source =
@@ -55,18 +55,17 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
 
     if (up)
         //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
-        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
     else
         //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
-        //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
-        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+       //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
+        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
 
     if (ret) {
         printf("clEnqueueWrite/ReadBuffer fail code %d.\n", ret);
         return 1;
     }
 
-    /*    
     ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
     
     if (ret != 0) {
@@ -81,8 +80,8 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
-    elapsedTime  = (end - start) * 1.0e-6f;
-    */
+    elapsedTime  = (end - start) * 1.0e-9f;
+
     /*
     if (hostAlloc) {
         cudaFreeHost(dev_a);
