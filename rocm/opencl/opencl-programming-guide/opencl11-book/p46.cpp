@@ -19,6 +19,7 @@ int main(int argc, char ** argv) {
     cl_int ret;
 
     cl_uint CONFIG_MAX_PLATFORMS=20;
+    cl_uint CONFIG_MAX_DEVICES=10;
     cl_platform_id platforms[CONFIG_MAX_PLATFORMS];
     cl_uint platforms_available;
     cl_device_id devices[CONFIG_MAX_DEVICES];
@@ -32,10 +33,9 @@ int main(int argc, char ** argv) {
 
     // 2. Find a gpu/cpu device.
 
-    cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
 
-    stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, devices, &devices_available);
+    ret  = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, devices, &devices_available);
     printf("No. of devices available: %d.\n", devices_available);
     device = devices[0];
 
@@ -47,7 +47,7 @@ int main(int argc, char ** argv) {
 
     if (context == NULL ) {
         cerr << "Failed to create opencl context." << endl;
-        retur 1;
+        return 1;
     }
 
     // Create a command queue on the first device available
@@ -70,7 +70,7 @@ int main(int argc, char ** argv) {
         src +=  str;
     
 
-    program = clCreateProgramWithSource(context, 1, src, src.length(), &ret);
+    program = clCreateProgramWithSource(context, 1, &src, (size_t)src.length(), &ret);
 
     if (program == NULL) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
@@ -78,7 +78,7 @@ int main(int argc, char ** argv) {
 
     // Create opencl kernel.
 
-    kernel = clCreateKernel(program "hello_kernel", NULL);
+    kernel = clCreateKernel(program, "hello_kernel", &ret);
 
     if (kernel == NULL) {
         cerr << "Failed to create a kernel " << endl;
@@ -98,17 +98,25 @@ int main(int argc, char ** argv) {
         b[i] = i * 2;
     }
 
-    if (!CreateMemObjects(context, memObjectss, a, b))
+    cl_mem dev_memObjects = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_b  = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
+
+    // copy from a/b/memObjects to dev_a/dev_b/dev_memObjets.!!!!
+
+    /*
+    if (!CreateMemObjects(context, memObjects, a, b))
     {
         //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
     }
+    */
 
     // Set the kernel arguments (result, a, b)
 
     errNum = clSetKernelArg(kernel, 0, sizeof(cl_mem), &memObjects[0]);
-    errNum | = clSetKernelArg(kernel, 1, sizeof(cl_mem), &memObjects[1]);
-    errNum | = clSetKernelArg(kernel, 2, sizeof(cl_mem), &memObjects[2]);
+    errNum |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &memObjects[1]);
+    errNum |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &memObjects[2]);
 
     if (errNum != CL_SUCCESS)  {
         cerr << "Error setting kernel arguments" << endl;
