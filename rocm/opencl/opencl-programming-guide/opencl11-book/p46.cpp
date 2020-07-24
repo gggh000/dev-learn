@@ -44,6 +44,9 @@ int main(int argc, char ** argv) {
     // Create an opencl context on first available platform
 
     context = clCreateContext(NULL, 1, &device, NULL, NULL, &ret);
+    printf("1. ret: %d", ret);
+
+    getchar();
 
     if (context == NULL ) {
         cerr << "Failed to create opencl context." << endl;
@@ -53,6 +56,7 @@ int main(int argc, char ** argv) {
     // Create a command queue on the first device available
 
     commandQueue = clCreateCommandQueue(context, device, 0, &ret);
+    printf("2. ret: %d", ret);
     
     if (commandQueue == NULL ) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
@@ -71,6 +75,7 @@ int main(int argc, char ** argv) {
     
 
     program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
+    printf("3. ret: %d", ret);
 
     if (program == NULL) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
@@ -79,6 +84,7 @@ int main(int argc, char ** argv) {
     // Create opencl kernel.
 
     kernel = clCreateKernel(program, "hello_kernel", &ret);
+    printf("4. ret: %d", ret);
 
     if (kernel == NULL) {
         cerr << "Failed to create a kernel " << endl;
@@ -101,6 +107,10 @@ int main(int argc, char ** argv) {
     cl_mem dev_memObjects = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_b  = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
+
+    ret = clEnqueueWriteBuffer(commandQueue, dev_a, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(commandQueue, dev_b, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), b, NULL, NULL, NULL);
+    ret = clEnqueueWriteBuffer(commandQueue, dev_memObjects, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), memObjects, NULL, NULL, NULL);
 
     // copy from a/b/memObjects to dev_a/dev_b/dev_memObjets.!!!!
 
