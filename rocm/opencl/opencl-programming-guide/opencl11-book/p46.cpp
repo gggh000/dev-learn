@@ -43,7 +43,7 @@ int main(int argc, char ** argv) {
 
     // Create an opencl context on first available platform
 
-    context = CreateContext();
+    context = clCreateContext(NULL, 1, &device, NULL, NULL, &ret);
 
     if (context == NULL ) {
         cerr << "Failed to create opencl context." << endl;
@@ -70,7 +70,7 @@ int main(int argc, char ** argv) {
         src +=  str;
     
 
-    program = clCreateProgramWithSource(context, 1, &src, (size_t)src.length(), &ret);
+    program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
 
     if (program == NULL) { 
        //Cleanup(context, commandQueue, program, kernel, memObjects);
