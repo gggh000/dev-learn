@@ -74,36 +74,26 @@ int main(int argc, char ** argv) {
 
         ifstream myFile;
         myFile.open ("HelloWorld.cl");
-        string str;
-        string src = "";
+        string line;
+        string source = "";
         
-        while (getline(myFile, str))
-            src +=  str + "\n";
-
-        cout << "source string:" << endl;
-        cout << src;
+        while (getline(myFile, line))
+            source +=  line + "\n";
 
         //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
-        program = clCreateProgramWithSource(context, 1, (const char**)&src, NULL, &ret);
-
-        if (program == NULL) { 
-           //Cleanup(context, commandQueue, program, kernel, memObjects);
-        }
-
-        // Create opencl kernel.
+        //program = clCreateProgramWithSource(context, 1, (const char**)&source, NULL, &ret);
 
         cout << "Building kernel from file...";
     } else { 
         //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
-
-        cout << "source string:" << endl;
-        cout << source;
-
-        program = clCreateProgramWithSource(context, 1, &source, NULL, &ret);
-        clBuildProgram(program, 1, devices, NULL, NULL, NULL);
         cout << "Building kernel from source string...";
     }
 
+    cout << "source string:" << endl;
+    cout << source;
+
+    program = clCreateProgramWithSource(context, 1, &source, NULL, &ret);
+    clBuildProgram(program, 1, devices, NULL, NULL, NULL);
     kernel = clCreateKernel(program, "kernelfcn", &ret);
 
     if (kernel == NULL) {

@@ -1,4 +1,5 @@
-kernel void kernelfcn(global uint * c, global uint * b,global uint * a) {
-    uint gid = get_global_id(0);
-    c[gid] = a[gid] + b[gid];
-}
+kernel void kernelfcn(     global uint *dev_c, global uint *dev_a, global uint *dev_b)  
+{                                                                      
+    uint tid = get_global_id(0);                                          
+    dev_c[tid] = dev_a[tid] + dev_b[tid];                                 
+}       
