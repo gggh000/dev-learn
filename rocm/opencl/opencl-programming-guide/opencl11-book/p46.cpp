@@ -15,7 +15,7 @@ const char *source =
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
-"};\n";
+"}                                                                      \n";
 
 int main(int argc, char ** argv) {
     cl_context context = 0;
@@ -55,7 +55,7 @@ int main(int argc, char ** argv) {
     context = clCreateContext(NULL, 1, (const cl_device_id* )&devices[0], NULL, NULL, &ret);
 
     if (context == NULL ) {
-        cerr << "Failed to create opencl context." << endl;
+        cerr << "Failed to create opencl context: errCode: " << ret << endl;
         return 1;
     }
 
@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
     }
 
     if (kernel == NULL) {
-        cerr << "Failed to create a kernel " << endl;
+        cerr << "Failed to create a kernel: errCode: " << ret << endl;
         //Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;    
     }
