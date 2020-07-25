@@ -15,6 +15,7 @@ const char *source =
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
+//" dev_c[tid] = tid;                                 \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv) {
@@ -107,13 +108,14 @@ int main(int argc, char ** argv) {
     // Create memory objects that will be used as arguments to kernel. Create host memory arrays
     // that will be used to store the arguments to the kernel.
 
-    float c[ARRAY_SIZE];
-    float a[ARRAY_SIZE];
-    float b[ARRAY_SIZE];
+    int c[ARRAY_SIZE];
+    int a[ARRAY_SIZE];
+    int b[ARRAY_SIZE];
 
     for (int i = 0 ; i < ARRAY_SIZE;  i ++ ) {
         a[i]  = i;
         b[i] = i * 2;
+        c[i] = -1;
     }
 
     cl_mem dev_c = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
@@ -123,9 +125,9 @@ int main(int argc, char ** argv) {
     ret = clEnqueueWriteBuffer(commandQueue, dev_a, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
     ret = clEnqueueWriteBuffer(commandQueue, dev_b, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), b, NULL, NULL, NULL);
 
-    errNum = clSetKernelArg(kernel, 0, sizeof(cl_mem), &dev_c);
-    errNum |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &dev_a);
-    errNum |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &dev_b);
+    errNum = clSetKernelArg(kernel, 0, sizeof(dev_c), &dev_c);
+    errNum |= clSetKernelArg(kernel, 1, sizeof(dev_a), &dev_a);
+    errNum |= clSetKernelArg(kernel, 2, sizeof(dev_b), &dev_b);
 
     if (errNum != CL_SUCCESS)  {
         cerr << "Error setting kernel arguments" << endl;
@@ -134,11 +136,13 @@ int main(int argc, char ** argv) {
     }
 
     size_t globalWorkSize[1] = {ARRAY_SIZE} ; 
-    size_t localWorkSize[1] = {1} ; 
+    //size_t localWorkSize[1] = {1} ; 
+    size_t localWorkSize[1] = {16} ; 
 
     // Queue the kernel up for execution across the array
 
     errNum = clEnqueueNDRangeKernel(commandQueue, kernel, 1, NULL, globalWorkSize, localWorkSize, 0, NULL, NULL);
+    errNum |= clFinish(commandQueue);
     
     if (errNum != CL_SUCCESS) { 
         cerr << "Error queueing kernel for execution." << endl;
@@ -148,7 +152,7 @@ int main(int argc, char ** argv) {
 
     // Read the output buffer back to the Host.
 
-    errNum = clEnqueueReadBuffer(commandQueue, dev_c, CL_TRUE, 0, ARRAY_SIZE * sizeof(float), c, 0, NULL, NULL);
+    errNum = clEnqueueReadBuffer(commandQueue, dev_c, CL_TRUE, 0, ARRAY_SIZE * sizeof(int), c, 0, NULL, NULL);
 
     if (errNum != CL_SUCCESS) { 
         cerr << "Error reading results buffer." << endl;
