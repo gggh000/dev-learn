@@ -31,7 +31,7 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
     cl_mem dev_a;
     float elapsedTime = 0;
     int ret;
-    cl_event evtWrite;
+    cl_event evtReadWrite;
     cl_ulong start, end;
 
     if (hostAlloc) {
@@ -66,14 +66,17 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
-    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
+    ret = clWaitForEvents(1, &evtReadWrite);
+    printf("clWaitForEvent return code %d.\n", ret);
+
+    ret = clGetEventProfilingInfo(evtReadWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
     
     if (ret != 0) {
         printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
         return 1;
     }
 
-    ret = clGetEventProfilingInfo(evtWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
+    ret = clGetEventProfilingInfo(evtReadWrite,CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);
 
     if (ret != 0) {
         printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
