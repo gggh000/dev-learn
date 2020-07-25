@@ -5,7 +5,7 @@
 #include <chrono>
 #include <fstream>
 #define ARRAY_SIZE 1024 
-#define BUILD_FROM_FILE 0
+#define BUILD_FROM_FILE 1
 using namespace std;
 
 // A simple kernelfcn kernel
@@ -78,7 +78,10 @@ int main(int argc, char ** argv) {
         string src = "";
         
         while (getline(myFile, str))
-            src +=  str;
+            src +=  str + "\n";
+
+        cout << "source string:" << endl;
+        cout << src;
 
         //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
         program = clCreateProgramWithSource(context, 1, (const char**)&src, NULL, &ret);
@@ -90,14 +93,18 @@ int main(int argc, char ** argv) {
         // Create opencl kernel.
 
         cout << "Building kernel from file...";
-        kernel = clCreateKernel(program, "hello_kernel", &ret);
     } else { 
         //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
+
+        cout << "source string:" << endl;
+        cout << source;
+
         program = clCreateProgramWithSource(context, 1, &source, NULL, &ret);
         clBuildProgram(program, 1, devices, NULL, NULL, NULL);
         cout << "Building kernel from source string...";
-        kernel = clCreateKernel(program, "kernelfcn", &ret);
     }
+
+    kernel = clCreateKernel(program, "kernelfcn", &ret);
 
     if (kernel == NULL) {
         cerr << "Failed to create a kernel: errCode: " << ret << endl;
