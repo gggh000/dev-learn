@@ -14,7 +14,7 @@
 #define LOCAL_WORK_SIZE 256
 #define DEBUG 0
 //#define SIZE (10*1024*1024)
-#define SIZE (1*1024*1024)
+#define SIZE (1024*1024)
 
 // A simple kernelfcn kernel
 const char *source =
@@ -55,11 +55,11 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
 
     if (up)
         //cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
-        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtReadWrite);
+        ret = clEnqueueWriteBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
     else
         //cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);
-        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtReadWrite);
-        //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
+       //ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
+        ret = clEnqueueReadBuffer(*queue, dev_a, CL_TRUE, 0, SIZE * sizeof(cl_uint), a, NULL, NULL, &evtWrite);
 
     if (ret) {
         printf("clEnqueueWrite/ReadBuffer fail code %d.\n", ret);
@@ -69,7 +69,6 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
     ret = clWaitForEvents(1, &evtReadWrite);
     printf("clWaitForEvent return code %d.\n", ret);
 
-    
     ret = clGetEventProfilingInfo(evtReadWrite,CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
     
     if (ret != 0) {
@@ -83,8 +82,8 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         printf("clGetEventProfilingInfo (END) failed with code %d.\n", ret);
         return 1;
     }
-    
-    elapsedTime  = (end - start) * 1.0e-6f;
+
+    elapsedTime  = (end - start) * 1.0e-9f;
 
     /*
     if (hostAlloc) {
@@ -191,7 +190,17 @@ int main(int argc, char ** argv)
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
-    cl_command_queue queue = clCreateCommandQueue( context, device[0], CL_QUEUE_PROFILING_ENABLE, NULL );
+
+    cl_command_queue_properties properties = CL_QUEUE_PROFILING_ENABLE;
+    cl_command_queue queue = clCreateCommandQueue( context, device[0], properties, &ret );
+    //cl_command_queue queue = clCreateCommandQueue( context, device[0], CL_QUEUE_PROFILING_ENABLE, NULL );
+
+    if (ret) {
+        printf("Error: clCreateCommandQueue returned non-zero: %d.\n", ret);
+        return 1;
+    } else  {
+        printf("clCreateCommandQueue return OK.... %d.\n", ret);
+    }
 
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
