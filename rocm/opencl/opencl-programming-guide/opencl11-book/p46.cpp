@@ -23,7 +23,7 @@ int main(int argc, char ** argv) {
     cl_program program = 0;
     cl_device_id device = 0;
     cl_kernel kernel = 0;
-    cl_mem memObjects[3] = {0,0,0};
+    //cl_mem memObjects[3] = {0,0,0};
     cl_int errNum;
     cl_int ret;
 
@@ -107,7 +107,7 @@ int main(int argc, char ** argv) {
     // Create memory objects that will be used as arguments to kernel. Create host memory arrays
     // that will be used to store the arguments to the kernel.
 
-    float result[ARRAY_SIZE];
+    float c[ARRAY_SIZE];
     float a[ARRAY_SIZE];
     float b[ARRAY_SIZE];
 
@@ -116,29 +116,16 @@ int main(int argc, char ** argv) {
         b[i] = i * 2;
     }
 
-    cl_mem dev_memObjects = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
+    cl_mem dev_c = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_b  = clCreateBuffer( context, CL_MEM_READ_WRITE, ARRAY_SIZE * sizeof(cl_uint), NULL, NULL );
 
     ret = clEnqueueWriteBuffer(commandQueue, dev_a, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), a, NULL, NULL, NULL);
     ret = clEnqueueWriteBuffer(commandQueue, dev_b, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), b, NULL, NULL, NULL);
-    //ret = clEnqueueWriteBuffer(commandQueue, dev_memObjects, CL_TRUE, 0, ARRAY_SIZE * sizeof(cl_uint), memObjects, NULL, NULL, NULL);
 
-    // copy from a/b/memObjects to dev_a/dev_b/dev_memObjets.!!!!
-
-    /*
-    if (!CreateMemObjects(context, memObjects, a, b))
-    {
-        //Cleanup(context, commandQueue, program, kernel, memObjects);
-        return 1;
-    }
-    */
-
-    // Set the kernel arguments (result, a, b)
-
-    errNum = clSetKernelArg(kernel, 0, sizeof(cl_mem), &memObjects[0]);
-    errNum |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &memObjects[1]);
-    errNum |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &memObjects[2]);
+    errNum = clSetKernelArg(kernel, 0, sizeof(cl_mem), &dev_c);
+    errNum |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &dev_a);
+    errNum |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &dev_b);
 
     if (errNum != CL_SUCCESS)  {
         cerr << "Error setting kernel arguments" << endl;
@@ -161,7 +148,7 @@ int main(int argc, char ** argv) {
 
     // Read the output buffer back to the Host.
 
-    errNum = clEnqueueReadBuffer(commandQueue, memObjects[2], CL_TRUE, 0, ARRAY_SIZE * sizeof(float), result, 0, NULL, NULL);
+    errNum = clEnqueueReadBuffer(commandQueue, dev_c, CL_TRUE, 0, ARRAY_SIZE * sizeof(float), c, 0, NULL, NULL);
 
     if (errNum != CL_SUCCESS) { 
         cerr << "Error reading results buffer." << endl;
@@ -172,7 +159,8 @@ int main(int argc, char ** argv) {
     // Output the result buffer.
 
     for (int i = 0; i < ARRAY_SIZE; i ++ ) {
-        cout << result[i] << " ";
+        i % 8 == 0 ? cout << endl : cout << " ";
+        cout << i << ": " << c[i];
     }
 
     cout << endl;    
