@@ -79,7 +79,8 @@ int main(int argc, char ** argv) {
         while (getline(myFile, str))
             src +=  str;
 
-        program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
+        //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
+        program = clCreateProgramWithSource(context, 1, (const char**)&src, NULL, &ret);
 
         if (program == NULL) { 
            //Cleanup(context, commandQueue, program, kernel, memObjects);
@@ -90,8 +91,11 @@ int main(int argc, char ** argv) {
         cout << "Building kernel from file...";
         kernel = clCreateKernel(program, "hello_kernel", &ret);
     } else { 
+        //program = clCreateProgramWithSource(context, 1, (const char**)&src, (const size_t*)src.length(), &ret);
+        program = clCreateProgramWithSource(context, 1, &source, NULL, &ret);
+        clBuildProgram(program, 1, devices, NULL, NULL, NULL);
         cout << "Building kernel from source string...";
-        kernel = clCreateKernel(program, "kernel_fcn", &ret);
+        kernel = clCreateKernel(program, "kernelfcn", &ret);
     }
 
     if (kernel == NULL) {
