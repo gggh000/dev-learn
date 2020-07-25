@@ -14,7 +14,7 @@
 #define LOCAL_WORK_SIZE 256
 #define DEBUG 0
 //#define SIZE (10*1024*1024)
-#define SIZE (1024*1024)
+#define SIZE (512*1024)
 
 // A simple kernelfcn kernel
 const char *source =
@@ -80,6 +80,7 @@ float opencl_malloc_test(int size, int up, int hostAlloc, cl_context * context, 
         return 1;
     }
 
+    printf("Elapsed time in ns: %d\n", elapsedTime);
     elapsedTime  = (end - start) * 1.0e-9f;
 
     /*
