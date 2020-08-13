@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# https://jira.readthedocs.io/en/master/examples.html#quickstart
+# http://jira.readthedocs.io/en/master/examples.html#quickstart
 from jira import JIRA
 from atlassian import Jira
 import pprint 
@@ -29,19 +29,19 @@ else:
 	    "AMD_CLOUD": "ggjira800.atlassian.net" \
 	}
 
-JIRA_SERVER_AUTH_BASIC={\
+JIRA_SERVER_AUTHINFO={\
 	"AMD_LOCAL": "ggjira200, 8981555aaa", \
-	"AMD_LOCAL_IXT39": "ggjira300, 8981555aaa", \
+	"AMD_LOCAL_IXT39": "guyen000@gmail.com, 55g2X3OiVPPtTtTydWkz0C45", \
 	"HOME_LOCAL": "ggjira300, 8981555aaa", \
-	"AMD_CLOUD": "ggjira100, 8981555aaa" \
+	"AMD_CLOUD": "ggjira100, vySlhhoBjoFav1Th2q9p4183" \
 	}
 
 JIRA_SERVER_PROFILE="AMD_CLOUD"
-JIRA_SERVER_PROFILE="AMD_LOCAL_IXT39"
+#JIRA_SERVER_PROFILE="AMD_LOCAL_IXT39"
 print("Loggin into: ", JIRA_SERVER_IP[JIRA_SERVER_PROFILE])
 print("Logging with: ", \
-	JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), "|", \
-	JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip())
+	JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[0].strip(), "|", \
+	JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip())
 options = {"server": "http://" + JIRA_SERVER_IP[JIRA_SERVER_PROFILE]}
 
 
@@ -51,8 +51,8 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
 
     jira = Jira(
         url="http://" + JIRA_SERVER_IP[JIRA_SERVER_PROFILE],
-        username=JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(),
-        password=JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip())
+        username=JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[0].strip(),
+        password=JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip())
 
     JQL = 'project = gg-proj-000'
     data = jira.jql(JQL)
@@ -71,14 +71,15 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
 elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
     print("Using jira library")
     
-    jira = JIRA('http://' + JIRA_SERVER_IP[JIRA_SERVER_PROFILE], basic_auth=(\
-        JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), \
-        JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip()))
+    jira = JIRA(basic_auth=(\
+        JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[0].strip(), \
+        JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip()), \
+        options={'server':'http://' + JIRA_SERVER_IP[JIRA_SERVER_PROFILE]})
 
     '''
     jira = JIRA(basic_auth=(\
-	    JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), \
-	    JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip()))
+	    JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[0].strip(), \
+	    JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip()))
     '''
 else:
     print("Unsupported library is enabled...")
