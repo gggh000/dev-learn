@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
 # https://jira.readthedocs.io/en/master/examples.html#quickstart
-#from jira import JIRA
+from jira import JIRA
 from atlassian import Jira
+import pprint 
+pp = pprint.PrettyPrinter(indent=4)
 
 CONFIG_JIRA_LIBRARY_JIRA=1
 CONFIG_JIRA_LIBRARY_ATLASSIAN=2
@@ -50,12 +52,19 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
     #props = jira.application_properties()
     #projects = jira.projects()
     
-    JQL = 'project = gg-proj-000 AND status IN ("To Do", "In Progress") ORDER BY issuekey'
+    #JQL = 'project = gg-proj-000 AND status IN ("To Do", "In Progress") ORDER BY issuekey'
+    JQL = 'project = gg-proj-000'
     data = jira.jql(JQL)
 
+    jql_request = 'project = gg-project-000 AND status NOT IN (Closed, Resolved) ORDER BY issuekey'
+    issues = jira.jql(jql_request)
+
+    '''
     # print(data)
     print(type(data))
+    '''
 
+    pp.pprint(issues)
     '''
     for i in range(0, len(data)):
             print("=")
