@@ -9,6 +9,7 @@ pp = pprint.PrettyPrinter(indent=4)
 CONFIG_JIRA_LIBRARY_JIRA=1
 CONFIG_JIRA_LIBRARY_ATLASSIAN=2
 CONFIG_JIRA_LIBRARY=CONFIG_JIRA_LIBRARY_ATLASSIAN
+#CONFIG_JIRA_LIBRARY=CONFIG_JIRA_LIBRARY_JIRA
 
 import re
 CONFIG_ENABLE_NAT=1
@@ -17,22 +18,25 @@ if (CONFIG_ENABLE_NAT == 0):
 	JIRA_SERVER_IP={\
 		"AMD_LOCAL": "https://10.217.73.243:8080", \
 		"AMD_LOCAL_IXT39": "http://10.216.67.167:8080", \
-        "HOME_LOCAL": "http://11.0.0.29:8080" \
+        "HOME_LOCAL": "http://11.0.0.29:8080", \
+	"AMD_CLOUD": "https://ggjira800.atlassian.net" \
 	}
 else:
 	JIRA_SERVER_IP={\
 		"AMD_LOCAL": "https://10.217.73.243:8080", \
-		"AMD_LOCAL_IXT39": "http://192.168.122.200:8080", \
-        "HOME_LOCAL": "HTTP://11.0.0.29:8080" \
+		"AMD_LOCAL_IXT39": "https://192.168.122.200:8080", \
+        "HOME_LOCAL": "HTTP://11.0.0.29:8080", \
+	"AMD_CLOUD": "https://ggjira800.atlassian.net" \
 	}
 
 JIRA_SERVER_AUTH_BASIC={\
 	"AMD_LOCAL": "ggjira200, 8981555aaa", \
-	"AMD_LOCAL_IXT39": "ggjira100, 8981555aaa", \
-	"HOME_LOCAL": "ggjira300, 8981555aaa" \
+	"AMD_LOCAL_IXT39": "ggjira300, 8981555aaa", \
+	"HOME_LOCAL": "ggjira300, 8981555aaa", \
+	"AMD_CLOUD": "ggjira100, 8981555aaa" \
 	}
 
-JIRA_SERVER_PROFILE="HOME_LOCAL"
+JIRA_SERVER_PROFILE="AMD_CLOUD"
 print("Loggin into: ", JIRA_SERVER_IP[JIRA_SERVER_PROFILE])
 print("Logging with: ", \
 	JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), "|", \
@@ -66,15 +70,15 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
 elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
     print("Using jira library")
     
-    '''
     jira = JIRA('https://' + JIRA_SERVER_IP[JIRA_SERVER_PROFILE], basic_auth=(\
         JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), \
         JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip()))
-    '''
 
+    '''
     jira = JIRA(basic_auth=(\
 	    JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(), \
 	    JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip()))
+    '''
 else:
     print("Unsupported library is enabled...")
     quit(1)
