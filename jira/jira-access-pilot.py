@@ -58,27 +58,10 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
 
     jql_request = 'project = gg-project-000 AND status NOT IN (Closed, Resolved) ORDER BY issuekey'
     issues = jira.jql(jql_request)
-
-    '''
-    # print(data)
-    print(type(data))
-    '''
-
     pp.pprint(issues)
-    '''
-    for i in range(0, len(data)):
-            print("=")
-            print(list(data.keys())[i])
-            print("-")
-            print(list(data.values())[i])
-    
-    issues=list(data.values())[-1]
-    print(issues)
 
-    for i in issues:
-        pprint(i)
-    '''
-    
+    projects=jira.projects(included_archived=None)
+
     
 elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
     print("Using jira library")
