@@ -66,8 +66,7 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
     projects=jira.projects(included_archived=None)
 
     #props = jira.application_properties()
-    #projects = jira.projects()
-    
+
 elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
     print("Using jira library")
     
@@ -76,11 +75,15 @@ elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
         JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip()), \
         options={'server':'http://' + JIRA_SERVER_IP[JIRA_SERVER_PROFILE]})
 
+    projects = jira.projects()
+    print(projects)
+
     '''
-    jira = JIRA(basic_auth=(\
-	    JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[0].strip(), \
-	    JIRA_SERVER_AUTHINFO[JIRA_SERVER_PROFILE].split()[1].strip()))
+    jra = jira.project('GP0')
+    print(jra.name)                 # 'JIRA'
+    print(jra.lead.displayName)     # 'John Doe [ACME Inc.]'
     '''
+
 else:
     print("Unsupported library is enabled...")
     quit(1)
