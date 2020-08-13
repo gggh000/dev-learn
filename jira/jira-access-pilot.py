@@ -49,19 +49,19 @@ if (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_ATLASSIAN):
         username=JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[0].strip(),
         password=JIRA_SERVER_AUTH_BASIC[JIRA_SERVER_PROFILE].split()[1].strip())
 
-    #props = jira.application_properties()
-    #projects = jira.projects()
-    
-    #JQL = 'project = gg-proj-000 AND status IN ("To Do", "In Progress") ORDER BY issuekey'
     JQL = 'project = gg-proj-000'
     data = jira.jql(JQL)
 
     jql_request = 'project = gg-project-000 AND status NOT IN (Closed, Resolved) ORDER BY issuekey'
     issues = jira.jql(jql_request)
     pp.pprint(issues)
+    print("issues data type: ")
+    print(type(issues))
 
     projects=jira.projects(included_archived=None)
 
+    #props = jira.application_properties()
+    #projects = jira.projects()
     
 elif (CONFIG_JIRA_LIBRARY==CONFIG_JIRA_LIBRARY_JIRA):
     print("Using jira library")
