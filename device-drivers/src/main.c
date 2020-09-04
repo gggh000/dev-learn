@@ -7,10 +7,9 @@
 MODULE_LICENSE("Dual BSD/GPL");
 
 int myint=3;
-module_param(myint, int, 0);
 
 MODULE_PARM_DESC(myint, "An integer");
-//module_param(myint, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+module_param(myint, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 static int hello_init(void) {
     printk(KERN_ALERT "Hello, world.\n");
