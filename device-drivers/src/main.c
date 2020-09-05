@@ -35,10 +35,11 @@ static int hello_init(void) {
     result = alloc_chrdev_region(&dev, scull_minor, scull_nr_devs,  "scull");
 
     if (result < 0) {
-            printk(KERN_WARNING "scull: can't get major %d\n", scull_major);
-            return result;
-}
-
+        printk(KERN_WARNING "scull: can't get major %d\n", scull_major);
+        return result;
+    } else {
+        printk(KERN_INFO "acquired major number: %d\n", result);
+    }
 
     return 0;
 }
