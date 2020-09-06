@@ -4,8 +4,8 @@
 #include <linux/kernel.h>
 #include <linux/stat.h>
 #include <linux/fs.h>
-#include <linux/slab.h>
-#include <linux/cdev.h>
+#include <linux/slab.h> // for qset, quantum
+#include <linux/cdev.h> // for cdev
 
 #include "scull.h"
 
@@ -21,6 +21,9 @@ int scull_nr_devs = SCULL_NR_DEVS;  /* number of bare scull devices */
 int scull_quantum = SCULL_QUANTUM;
 int scull_qset =    SCULL_QSET;
 
+int scull_release(struct inode * inode, struct file *filp) {
+    return 0;
+}
 int scull_trim(struct scull_dev *dev)
 {
     struct scull_qset *next, *dptr;
@@ -63,7 +66,7 @@ struct file_operations scull_fops = {
     //.write =    scull_write,
     //.unlocked_ioctl = scull_ioctl,
     .open =     scull_open,
-    //.release =  scull_release,
+    .release =  scull_release,
 };
 
 static int hello_init(void) {
