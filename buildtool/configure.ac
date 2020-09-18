@@ -1,0 +1,5 @@
+AC_INIT([Tutorial Program], 1.0)
+AM_INIT_AUTOMAKE
+AC_CONFIG_FILES([Makefile])
+AC_PROG_CC
+AC_OUTPUT
