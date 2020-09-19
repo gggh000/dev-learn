@@ -7,8 +7,10 @@ import sys
 lib_path = 'theories/basic_function_%s.so' % (sys.platform)
 try:
     basic_function_lib = CDLL(lib_path)
-except:
+except Exception as msg:
+    print(msg)
     print('OS %s not recognized' % (sys.platform))
+    print(msg)
     exit(1)
 
 python_c_square = basic_function_lib.c_square
