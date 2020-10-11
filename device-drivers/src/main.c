@@ -32,7 +32,7 @@ int scull_trim(struct scull_dev *dev)
     int qset = dev->qset;   /* "dev" is not-null */
     int i;
 
-    for (dptr = dev->data; dptr; dptr = next) { /* all the list items */
+    for (dptr = dev->pqset; dptr; dptr = next) { /* all the list items */
         if (dptr->data) {
             for (i = 0; i < qset; i++)
                 kfree(dptr->data[i]);
@@ -45,7 +45,7 @@ int scull_trim(struct scull_dev *dev)
     dev->size = 0;
     dev->quantum = scull_quantum;
     dev->qset = scull_qset;
-    dev->data = NULL;
+    dev->pqset = NULL;
     return 0;
 }
 
@@ -65,11 +65,11 @@ int scull_open(struct inode  * inode, struct file * filp) {
  */
 struct scull_qset *scull_follow(struct scull_dev *dev, int n)
 {
-    struct scull_qset *qs = dev->data;
+    struct scull_qset *qs = dev->pqset;
 
         /* Allocate first qset explicitly if need be */
     if (! qs) {
-        qs = dev->data = kmalloc(sizeof(struct scull_qset), GFP_KERNEL);
+        qs = dev->pqset = kmalloc(sizeof(struct scull_qset), GFP_KERNEL);
         if (qs == NULL)
             return NULL;  /* Never mind */
         memset(qs, 0, sizeof(struct scull_qset));

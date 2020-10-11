@@ -34,7 +34,7 @@ struct scull_qset {
 };
 
 struct scull_dev {
-    struct scull_qset *data;  /* Pointer to first quantum set */
+    struct scull_qset *pqset; /* Pointer to first quantum set */
     int quantum;              /* the current quantum size */
     int qset;                 /* the current array size */
     unsigned long size;       /* amount of data stored here */
