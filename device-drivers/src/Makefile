@@ -1,5 +1,5 @@
-obj-m := hello.o
-hello-objs := main.o
+obj-m := scull.o
+scull-objs := main.o
 
 PWD := $(shell pwd)
 

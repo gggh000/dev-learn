@@ -1,19 +1,19 @@
 clear
 echo "remove module..."
-dkms remove  -m hello_dkms -v 1.0 --all
+dkms remove  -m scull -v 1.0 --all
 
 echo "copying module to /usr/src..."
-rm -rf /usr/src/hello_dkms-1.0
-mkdir /usr/src/hello_dkms-1.0
+rm -rf /usr/src/scull-1.0
+mkdir /usr/src/scull-1.0
 cd src
 make clean
 cd ..
-cp -vr * /usr/src/hello_dkms-1.0/
+cp -vr * /usr/src/scull-1.0/
 
 echo "adding module..."
-dkms add -m hello_dkms -v 1.0
+dkms add -m scull -v 1.0
 echo "building module..."
-dkms build  -m hello_dkms -v 1.0
+dkms build  -m scull -v 1.0
 echo "installing module..."
-dkms install  -m hello_dkms -v 1.0
+dkms install  -m scull -v 1.0
 

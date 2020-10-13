@@ -9,7 +9,7 @@
 #include <linux/uaccess.h> // for copy_to_user
 
 #include "scull.h"
-
+#define DEBUG 1
 MODULE_LICENSE("Dual BSD/GPL");
 
 int myint=3;
@@ -160,9 +160,20 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
         count = dev->size - *f_pos;
 
     /* find listitem, qset index, and offset in the quantum */
+    // item = points to nth linked list node. 
+    // rest =  points to byte offset within the node data size. 
+    // node data size is essentially itemsize.
+
     item = (long)*f_pos / itemsize;
     rest = (long)*f_pos % itemsize;
-    s_pos = rest / quantum; q_pos = rest % quantum;
+
+    // s_pos: array index.
+
+    s_pos = rest / quantum; 
+
+    // q_pos: index within quantum.
+
+    q_pos = rest % quantum;
 
     /* follow the list up to the right position (defined elsewhere) */
     dptr = scull_follow(dev, item);
@@ -171,6 +182,7 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
         goto out; /* don't fill holes */
 
     /* read only up to the end of this quantum */
+
     if (count > quantum - q_pos)
         count = quantum - q_pos;
 
@@ -201,6 +213,7 @@ struct file_operations scull_fops = {
  */
 static void scull_setup_cdev(struct scull_dev *dev, int index)
 {
+    printk(KERN_INFO "scull_setup_cdev: entered...");
     int err, devno = MKDEV(scull_major, scull_minor + index);
 
     cdev_init(&dev->cdev, &scull_fops);
@@ -212,8 +225,8 @@ static void scull_setup_cdev(struct scull_dev *dev, int index)
         printk(KERN_NOTICE "Error %d adding scull%d", err, index);
 }
 
-static int hello_init(void) {
-    printk(KERN_ALERT "Hello, world.\n");
+static int scull_init(void) {
+    printk(KERN_ALERT "scull, world.\n");
     printk(KERN_INFO "myint is an integer: %d\n", myint);
 
     int result, i;
@@ -239,12 +252,12 @@ static int hello_init(void) {
     return 0;
 }
 
-static void hello_exit(void) {
+static void scull_exit(void) {
     printk(KERN_ALERT "Goodbye, cruel world.\n");
     return;
 }
 
-module_init(hello_init);
-module_exit(hello_exit);
+module_init(scull_init);
+module_exit(scull_exit);
 
 
