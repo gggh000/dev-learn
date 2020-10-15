@@ -22,6 +22,7 @@ int scull_nr_devs = SCULL_NR_DEVS;  /* number of bare scull devices */
 int scull_quantum = SCULL_QUANTUM;
 int scull_qset =    SCULL_QSET;
 
+struct scull_dev *scull_devices;    /* allocated in scull_init_module */
 
 int scull_release(struct inode * inode, struct file *filp) {
     return 0;
@@ -249,10 +250,42 @@ static int scull_init(void) {
         printk(KERN_INFO "acquired major number: %d\n", result);
     }
 
+     /*
+     * allocate the devices -- we can't have them static, as the number
+     * can be specified at load time
+     */
+
+    scull_devices = kmalloc(scull_nr_devs * sizeof(struct scull_dev), GFP_KERNEL);
+    if (!scull_devices) {
+        result = -ENOMEM;
+        goto fail;  /* Make this more graceful */
+    }
+    memset(scull_devices, 0, scull_nr_devs * sizeof(struct scull_dev));
+
+    /* Initialize each device. */
+
+    for (i = 0; i < scull_nr_devs; i++) {
+        scull_devices[i].quantum = scull_quantum;
+        scull_devices[i].qset = scull_qset;
+    /* causes build error, comment out for now !!!!GGGG */
+        //init_MUTEX(&scull_devices[i].sem);
+        scull_setup_cdev(&scull_devices[i], i);
+    }
+
+    /* At this point call the init function for any friend device */
+
+    dev = MKDEV(scull_major, scull_minor + scull_nr_devs);
+//  dev += scull_p_init(dev);
+//  dev += scull_access_init(dev);
+
+fail:
+    //scull_exit();
     return 0;
 }
 
 static void scull_exit(void) {
+    dev_t devno = MKDEV(scull_major, scull_minor);
+    unregister_chrdev_region(devno, scull_nr_devs);
     printk(KERN_ALERT "Goodbye, cruel world.\n");
     return;
 }
