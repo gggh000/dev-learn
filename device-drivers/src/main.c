@@ -12,9 +12,9 @@
 #define DEBUG 1
 MODULE_LICENSE("Dual BSD/GPL");
 
-int myint=3;
-MODULE_PARM_DESC(myint, "An integer");
-module_param(myint, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+int param_scull_major=3;
+MODULE_PARM_DESC(param_scull_major, "An integer");
+module_param(param_scull_major, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 int scull_major =   SCULL_MAJOR;
 int scull_minor =   0;
@@ -215,40 +215,50 @@ struct file_operations scull_fops = {
 static void scull_setup_cdev(struct scull_dev *dev, int index)
 {
     printk(KERN_INFO "scull_setup_cdev: entered...");
+    printk(KERN_INFO "major minor index: %d %d %d\n", scull_major, scull_minor, index);
     int err, devno = MKDEV(scull_major, scull_minor + index);
+    printk(KERN_INFO "devno: %d\n", devno);
 
     cdev_init(&dev->cdev, &scull_fops);
     dev->cdev.owner = THIS_MODULE;
     dev->cdev.ops = &scull_fops;
     err = cdev_add (&dev->cdev, devno, 1);
+
     /* Fail gracefully if need be */
+
     if (err)
         printk(KERN_NOTICE "Error %d adding scull%d", err, index);
 }
 
 static int scull_init(void) {
-    printk(KERN_ALERT "scull, world.\n");
-    printk(KERN_INFO "myint is an integer: %d\n", myint);
+    printk(KERN_ALERT "scull, world. Build No. 6\n");
+    printk(KERN_INFO "param_scull_major is an integer: %d\n", param_scull_major);
 
     int result, i;
     dev_t dev = 0;
 
-    /*if (scull_major) {
-            dev = MKDEV(scull_major, scull_minor);
-            result = register_chrdev_region(dev, scull_nr_devs, "scull");
+    if (scull_major) {
+        dev = MKDEV(scull_major, scull_minor);
+        printk(KERN_INFO "1. dev: %d\n", dev);
+        result = register_chrdev_region(&dev, scull_nr_devs, "scull");
+        printk(KERN_INFO "register_chrdev_region result: %d\n", result);
+        printk(KERN_INFO "2. dev: %d\n", dev);
     } else {
             scull_major = MAJOR(dev);
     }
-    */
 
+    printk(KERN_INFO "3. dev: %d\n", dev);
     result = alloc_chrdev_region(&dev, scull_minor, scull_nr_devs,  "scull");
-
+    printk(KERN_INFO "4. dev: %d\n", dev);
+    scull_major = MAJOR(dev);
+    
     if (result < 0) {
         printk(KERN_WARNING "scull: can't get major %d\n", scull_major);
         return result;
     } else {
-        printk(KERN_INFO "acquired major number: %d\n", result);
+        printk(KERN_INFO "acquired major number, result: %d\n", result);
     }
+    printk(KERN_INFO "2. scull_major/minor: %d %d\n", scull_major, scull_minor);
 
      /*
      * allocate the devices -- we can't have them static, as the number
@@ -269,6 +279,7 @@ static int scull_init(void) {
         scull_devices[i].qset = scull_qset;
     /* causes build error, comment out for now !!!!GGGG */
         //init_MUTEX(&scull_devices[i].sem);
+        //init_rwsem(&scull_devices[i].sem);
         scull_setup_cdev(&scull_devices[i], i);
     }
 

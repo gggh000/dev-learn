@@ -1,3 +1,5 @@
+modprobe -r scull 
+dmesg --clear
 clear
 echo "remove module..."
 dkms remove  -m scull -v 1.0 --all
@@ -17,3 +19,5 @@ dkms build  -m scull -v 1.0
 echo "installing module..."
 dkms install  -m scull -v 1.0
 
+modprobe scull
+dmesg
