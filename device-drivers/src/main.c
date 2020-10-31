@@ -100,8 +100,10 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
     int item, s_pos, q_pos, rest;
     ssize_t retval = -ENOMEM; /* value used in "goto out" statements */
 
-    if (down_interruptible(&dev->sem))
-        return -ERESTARTSYS;
+    printk(KERN_INFO "scull_write: entered...");
+
+    //if (down_interruptible(&dev->sem))
+    //    return -ERESTARTSYS;
 
     /* find listitem, qset index and offset in the quantum */
     item = (long)*f_pos / itemsize;
@@ -139,7 +141,7 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
         dev->size = *f_pos;
 
   out:
-    up(&dev->sem);
+    //up(&dev->sem);
     return retval;
 }
 
@@ -203,7 +205,7 @@ struct file_operations scull_fops = {
     .owner =    THIS_MODULE,
     //.llseek =   scull_llseek,
     .read =     scull_read,
-    //.write =    scull_write,
+    .write =    scull_write,
     //.unlocked_ioctl = scull_ioctl,
     .open =     scull_open,
     .release =  scull_release,
@@ -231,7 +233,7 @@ static void scull_setup_cdev(struct scull_dev *dev, int index)
 }
 
 static int scull_init(void) {
-    printk(KERN_ALERT "scull, world. Build No. 6\n");
+    printk(KERN_ALERT "scull, world. Build No. 8\n");
     printk(KERN_INFO "param_scull_major is an integer: %d\n", param_scull_major);
 
     int result, i;
