@@ -100,7 +100,9 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
     int item, s_pos, q_pos, rest;
     ssize_t retval = -ENOMEM; /* value used in "goto out" statements */
 
-    printk(KERN_INFO "scull_write: entered...");
+    //printk(KERN_INFO "scull_write: entered...");
+    printk(KERN_WARNING "scull_write: entered....");
+    printk("scull_write:entered....");
 
     //if (down_interruptible(&dev->sem))
     //    return -ERESTARTSYS;
@@ -233,7 +235,7 @@ static void scull_setup_cdev(struct scull_dev *dev, int index)
 }
 
 static int scull_init(void) {
-    printk(KERN_ALERT "scull, world. Build No. 8\n");
+    printk(KERN_ALERT "scull, world. Build No. 13.\n");
     printk(KERN_INFO "param_scull_major is an integer: %d\n", param_scull_major);
 
     int result, i;
