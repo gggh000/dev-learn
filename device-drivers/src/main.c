@@ -107,15 +107,15 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
     //if (down_interruptible(&dev->sem))
     //    return -ERESTARTSYS;
 
-    printk(KERN_INFO "itemsize/quantum/qset: %d/%d/%d", itemsize, quantum, qset);
+    printk(KERN_INFO "scull_write: itemsize/quantum/qset: %d/%d/%d", itemsize, quantum, qset);
 
     /* find listitem, qset index and offset in the quantum */
     item = (long)*f_pos / itemsize;
     rest = (long)*f_pos % itemsize;
     
     s_pos = rest / quantum; q_pos = rest % quantum;
-    printk(KERN_INFO "item/rest: %d/%d", item, rest);
-    printk(KERN_INFO "s_pos/q_pos: %d/%d", s_pos, q_pos);
+    printk(KERN_INFO "scull_write: item/rest: %d/%d", item, rest);
+    printk(KERN_INFO "scull_write: s_pos/q_pos: %d/%d", s_pos, q_pos);
 
     /* follow the list up to the right position */
     dptr = scull_follow(dev, item);
@@ -136,7 +136,7 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
     if (count > quantum - q_pos)
         count = quantum - q_pos;
 
-        printk(KERN_INFO "count: %x", count);
+        printk(KERN_INFO "scull_write: count: %x", count);
 
     if (copy_from_user(dptr->data[s_pos]+q_pos, buf, count)) {
         retval = -EFAULT;
@@ -180,7 +180,7 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     item = (long)*f_pos / itemsize;
     rest = (long)*f_pos % itemsize;
 
-    printk(KERN_INFO "item/rest: %d/%d", item, rest);
+    printk(KERN_INFO "scull_read: item/rest: %d/%d", item, rest);
 
     // s_pos: array index.
 
@@ -190,7 +190,7 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
 
     q_pos = rest % quantum;
 
-    printk(KERN_INFO "s_pos/q_pos: %d/%d", s_pos, q_pos);
+    printk(KERN_INFO "scull_read: s_pos/q_pos: %d/%d", s_pos, q_pos);
 
     /* follow the list up to the right position (defined elsewhere) */
     dptr = scull_follow(dev, item);
@@ -203,7 +203,7 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     if (count > quantum - q_pos)
         count = quantum - q_pos;
 
-    printk(KERN_INFO "count: %d", count);
+    printk(KERN_INFO "scull_read: count: %d", count);
     
     if (copy_to_user(buf, dptr->data[s_pos] + q_pos, count)) {
         retval = -EFAULT;
