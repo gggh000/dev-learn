@@ -19,5 +19,5 @@ dkms build  -m scull -v 1.0
 echo "installing module..."
 dkms install  -m scull -v 1.0
 
-modprobe scull
-dmesg
+#modprobe scull
+#dmesg
