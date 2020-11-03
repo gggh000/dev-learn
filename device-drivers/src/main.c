@@ -165,8 +165,8 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     int item, s_pos, q_pos, rest;
     ssize_t retval = 0;
 
-    if (down_interruptible(&dev->sem))
-        return -ERESTARTSYS;
+    //if (down_interruptible(&dev->sem))
+    //    return -ERESTARTSYS;
     if (*f_pos >= dev->size)
         goto out;
     if (*f_pos + count > dev->size)
@@ -180,6 +180,8 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     item = (long)*f_pos / itemsize;
     rest = (long)*f_pos % itemsize;
 
+    printk(KERN_INFO "item/rest: %d/%d", item, rest);
+
     // s_pos: array index.
 
     s_pos = rest / quantum; 
@@ -187,6 +189,8 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     // q_pos: index within quantum.
 
     q_pos = rest % quantum;
+
+    printk(KERN_INFO "s_pos/q_pos: %d/%d", s_pos, q_pos);
 
     /* follow the list up to the right position (defined elsewhere) */
     dptr = scull_follow(dev, item);
@@ -199,6 +203,8 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     if (count > quantum - q_pos)
         count = quantum - q_pos;
 
+    printk(KERN_INFO "count: %d", count);
+    
     if (copy_to_user(buf, dptr->data[s_pos] + q_pos, count)) {
         retval = -EFAULT;
         goto out;
@@ -207,7 +213,7 @@ ssize_t scull_read(struct file *filp, char __user *buf, size_t count,
     retval = count;
 
   out:
-    up(&dev->sem);
+    //up(&dev->sem);
     return retval;
 }
 
