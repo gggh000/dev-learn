@@ -113,8 +113,9 @@ ssize_t scull_write(struct file *filp, const char __user *buf, size_t count,
     item = (long)*f_pos / itemsize;
     rest = (long)*f_pos % itemsize;
     
-    printk(KERN_INFO "item/rest: %x/%x", item, rest);
     s_pos = rest / quantum; q_pos = rest % quantum;
+    printk(KERN_INFO "item/rest: %d/%d", item, rest);
+    printk(KERN_INFO "s_pos/q_pos: %d/%d", s_pos, q_pos);
 
     /* follow the list up to the right position */
     dptr = scull_follow(dev, item);
