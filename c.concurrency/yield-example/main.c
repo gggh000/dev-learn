@@ -1,4 +1,9 @@
 //  yield example. credit to https://en.cppreference.com/w/c/thread/thrd_yield
+// see followings:
+// https://man7.org/linux/man-pages/man7/sched.7.html
+// and kernel source:
+// kernel/sched/core.c
+// void __sched yield(void)
 
 #include <stdio.h>
 #include <time.h>
