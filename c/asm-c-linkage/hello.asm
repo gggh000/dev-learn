@@ -1,5 +1,6 @@
 ;   https://cs.lmu.edu/~ray/notes/nasmtutorial/
 extern      functionC
+extern      functionC2
 
     global    _start
 
@@ -14,8 +15,9 @@ _start:     mov     rax, 1                  ; system call for write
             call otherFunction              ; run the function below, until it does "ret"
             add eax,1                       ; modify returned value
 
-            push    rbp            
-            call    functionC               ; call function c
+            push    rbp       
+            mov     rdi, 2233h     
+            call    functionC2              ; call function c
             pop     rbp
 
             mov     rax, 60                 ; system call for exit
