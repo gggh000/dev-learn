@@ -1,4 +1,4 @@
-//#include "this/package/foo.h"
+#include "this/package/foo.h"
 
 #include "gtest/gtest.h"
 
