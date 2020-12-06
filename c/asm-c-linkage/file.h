@@ -1,2 +1,3 @@
 int functionC();
-int functionC2();
+int functionC2int();
+int functionC2long();
