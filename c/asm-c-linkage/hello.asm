@@ -17,9 +17,13 @@ _start:     mov     rax, 1                  ; system call for write
             add eax,1                       ; modify returned value
 
             push    rbp       
-            mov     rdi, 11442233h     
+            mov     rbp, rsp
+            push    100h
+            push    200h
+            ;mov    rdi, 11442233h     
             call    functionC2int           ; call function c
             pop     rbp
+            add     rsp, 8h
 
             mov     rax, 60                 ; system call for exit
             xor     rdi, rdi                ; exit code 0
