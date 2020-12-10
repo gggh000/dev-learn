@@ -18,12 +18,12 @@ if [[ $P1 == "rm" ]] ; then
 	virsh detach-disk --domain $VM_NAME $DISK_NAME --persistent --config
 	virsh domblklist $VM_NAME
 	echo "attaching/mounting qcow on host..."
-	echo "sd devices before connect..."
-	ls -l | grep nbd
+	echo "nbd devices before connect..."
+	ls -l /dev/nbd*| grep nbd
 	modprobe nbd max_part=8
 	qemu-nbd --connect=/dev/nbd0 $IMAGE_NAME
-	echo "sd devices after connect..."
-	ls -l | grep nbd
+	echo "nbd devices after connect..."
+	ls -l /dev/nbd*| grep nbd
 	
 elif [[ $P1 == "add" ]] ; then
 	echo "disconnect sd device..."
