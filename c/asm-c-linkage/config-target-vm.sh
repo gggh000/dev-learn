@@ -21,7 +21,7 @@ if [[ $P1 == "rm" ]] ; then
 	echo "nbd devices before connect..."
 	ls -l /dev/nbd*| grep nbd
 	modprobe nbd max_part=8
-	qemu-nbd --connect=/dev/nbd0 $IMAGE_NAME
+	qemu-nbd --connect=/dev/nbd0 $IMAGE_NAME --format=raw
 	echo "nbd devices after connect..."
 	ls -l /dev/nbd*| grep nbd
 	
@@ -30,9 +30,9 @@ elif [[ $P1 == "add" ]] ; then
 	qemu-nbd --disconnect /dev/nbd0
 	rmmod nbd
 	echo "attaching second hdd"
-	virsh attach-disk --domain $VM_NAME --source $IMAGE_NAME --target hdc --config
+	virsh attach-disk --domain $VM_NAME --source $IMAGE_NAME --target $DISK_NAME --config
 	# detach during live vm running not working so following unnecessary unless detach part works.
-	#virsh attach-disk --domain $VM_NAME --source $IMAGE_NAME --target hdc --config --live
+	#virsh attach-disk --domain $VM_NAME --source $IMAGE_NAME --target $DISK_NAME --config --live
 	virsh domblklist $VM_NAME
 	virsh start $VM_NAME
 	virsh list

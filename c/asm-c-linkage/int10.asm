@@ -11,8 +11,12 @@ _start:
 	mov 	al, '#'                 ; char 2 display.
         int     0x10
         mov     ah, 0x0e                ; int 10h, write char.
-	mov 	al, '$'                 ; char 2 display.
+	mov 	al, '@'                 ; char 2 display.
         int     0x10
+        mov     ah, 0x0e                ; int 10h, write char.
+	mov 	al, '%'                 ; char 2 display.
+        int     0x10
+	jmp	$
 
 	mov	ah, 0x42		; bios 13h extended read service code.
 	mov	dl, 0x81		; drive No.
@@ -23,7 +27,7 @@ _start:
 	mov	ds, ax
 	lea	si, [DAP]
 
-	int 	0x13			; issue the command.
+;	int 	0x13			; issue the command.
 
 ;	print few lines from there.
 
@@ -43,6 +47,10 @@ loop1_2:
         int     0x10
 	loopz 	loop1
 	
+        mov     ah, 0x0e                ; int 10h, write char.
+	mov 	al, '!'                 ; char 2 display.
+        int     0x10
+
 	jmp	$
 	mov	ax, 0x8000
 	push 	ax
