@@ -1,7 +1,7 @@
-VULKAN_SDK_PATH = /root/vulkan/1.1.114.0/x86_64/include/
+VULKAN_SDK_PATH = /root/vulkan/1.2.162.1/x86_64/
 
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include
-LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan -lpthread
 
 VulkanTest: main.cpp
 	g++ $(CFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
@@ -21,7 +21,27 @@ vulkanTutorial-window-surface: vulkanTutorial-window-surface.cpp
 vulkanTutorial-swapchain: vulkanTutorial-swapchain.cpp
 	g++ $(CFLAGS) -o vulkanTutorial-swapchain vulkanTutorial-swapchain.cpp $(LDFLAGS)
 		
-	
+vulkanTutorial-imageview: vulkanTutorial-imageview.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-imageview vulkanTutorial-imageview.cpp $(LDFLAGS)
+
+vulkanTutorial-pipeline: vulkanTutorial-pipeline.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-pipeline vulkanTutorial-pipeline.cpp $(LDFLAGS)
+
+vulkanTutorial-pipelin-1: vulkanTutorial-pipelin-1.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-pipelin-1 vulkanTutorial-pipelin-1.cpp $(LDFLAGS)
+
+vulkanTutorial-renderpass: vulkanTutorial-renderpass.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-renderpass vulkanTutorial-renderpass.cpp $(LDFLAGS)
+
+vulkanTutorial-frameBuffer: vulkanTutorial-frameBuffer.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-frameBuffer vulkanTutorial-frameBuffer.cpp $(LDFLAGS)
+
+vulkanTutorial-commandPool: vulkanTutorial-commandPool.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-commandPool  vulkanTutorial-commandPool.cpp $(LDFLAGS)
+
+vulkanTutorial-present: vulkanTutorial-present.cpp
+	g++ $(CFLAGS) -o vulkanTutorial-present  vulkanTutorial-present.cpp $(LDFLAGS)
+
 .PHONY: test clean
 
 test: VulkanTest
