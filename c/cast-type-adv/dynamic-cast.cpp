@@ -1,3 +1,4 @@
+// credit to: http://www.cplusplus.com/doc/tutorial/typecasting/
 // dynamic_cast
 #include <iostream>
 #include <exception>
