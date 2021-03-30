@@ -1,7 +1,9 @@
 echo Creating  *.o files...
-gcc *.c -c -fPIC
+gcc lib*.c -c -fPIC
+
 echo Generating *.so library...
 gcc *.o -shared -o liball.so
+
 echo Linking and test...
 gcc -L`pwd` test.c -lall -o test
 
