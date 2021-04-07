@@ -7,6 +7,7 @@
 #include <iomanip>
 #define ARRAY_SIZE 256
 #define BUILD_FROM_FILE 1
+#define DEBUG 0
 using namespace std;
 
 // A simple kernelfcn kernel
@@ -16,7 +17,6 @@ const char *source =
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
-//" dev_c[tid] = tid;                                 \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv) {
@@ -32,6 +32,10 @@ int main(int argc, char ** argv) {
     cl_uint CONFIG_MAX_PLATFORMS=20;
     cl_platform_id platforms[CONFIG_MAX_PLATFORMS];
     cl_uint platforms_available;
+
+    char char_kernel_info_ret[256];
+    uint size_t_kernel_info_ret;
+    size_t size_t_kernel_info_ret3[3] = {0, 0, 0};
 
     clGetPlatformIDs(CONFIG_MAX_PLATFORMS, platforms, &platforms_available );
     printf("\nNo. of platforms available: %d.\n", platforms_available);
@@ -82,13 +86,15 @@ int main(int argc, char ** argv) {
         while (getline(myFile, line))
             source +=  line + "\n";
 
-        cout << "Building kernel from file...";
+        cout << "Building kernel from file..." << endl;
     } else { 
         cout << "Building kernel from source string...";
     }
 
-    cout << "source string:" << endl;
-    cout << source;
+    if (DEBUG==1) {
+        cout << "source string:" << endl;
+        cout << source; 
+    }
 
     program = clCreateProgramWithSource(context, 1, &source, NULL, &ret);
     clBuildProgram(program, 1, devices, NULL, NULL, NULL);
@@ -129,7 +135,6 @@ int main(int argc, char ** argv) {
     }
 
     size_t globalWorkSize[1] = {ARRAY_SIZE} ; 
-    //size_t localWorkSize[1] = {1} ; 
     size_t localWorkSize[1] = {1} ; 
 
     // Queue the kernel up for execution across the array
@@ -157,6 +162,16 @@ int main(int argc, char ** argv) {
         i % 8 == 0 ? cout << endl : cout << setw(3) << " ";
         cout << setw(8) << i << ": " << c[i];
     }
+    cout << endl;
+
+    // Get kernel info and print it.
+
+    clGetKernelInfo(kernel, CL_KERNEL_FUNCTION_NAME, (size_t)256, (void*)&char_kernel_info_ret, NULL);
+    cout << "CL_KERNEL_FUNCTION_NAME: " << ": " << char_kernel_info_ret << endl;
+    clGetKernelInfo(kernel, CL_KERNEL_NUM_ARGS, (size_t)256, (void*)&size_t_kernel_info_ret, NULL);
+    cout << "CL_KERNEL_NUM_ARGS: " << ": " << size_t_kernel_info_ret << endl;
+    clGetKernelWorkGroupInfo(kernel, device, CL_KERNEL_GLOBAL_WORK_SIZE, 3 * sizeof(uint), &size_t_kernel_info_ret3, NULL);
+    cout << "CL_KERNEL_GLOBAL_WORK_SIZE: " << size_t_kernel_info_ret3[0] << ":"  << size_t_kernel_info_ret3[1] << ":" << size_t_kernel_info_ret3[2] << endl;
 
     cout << endl;    
     cout << "Executed program successfully." << endl;
