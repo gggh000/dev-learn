@@ -1,3 +1,6 @@
+# For llvm compilation, used resource at https://llvm.org/docs/CMake.html
+# Embedding LLVM in your project section.
+
 cmake_minimum_required(VERSION 3.10)
 set(ROCMOPENCL /opt/rocm/opencl/)
 message( "ROCM library path:" ${ROCMOPENCL} )
