@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 set(ROCMOPENCL /opt/rocm/opencl/)
 message( "ROCM library path:" ${ROCMOPENCL} )
 #add_subdirectory(${ROCMOPENCL}/lib/ build)
+find_package(ZLIB REQUIRED)
 find_package(LLVM REQUIRED CONFIG)
 #CMAKE_FIND_LIBRARY_PREFIXES=lib
 #CMAKE_FIND_LIBRARY_SUFFIXES=.so
