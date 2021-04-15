@@ -1,5 +1,5 @@
 mkdir build ; cd build
-cmake \
+CXX=`which clang++` CC=`which clang` cmake \
 	-DCMAKE_FIND_LIBRARY_PREFIXES=lib \
 	-DCMAKE_FIND_LIBRARY_SUFFIXES=.so \
 	-DZLIB_INCLUDE_DIR=/usr/include \
