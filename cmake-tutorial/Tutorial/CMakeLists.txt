@@ -12,12 +12,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # to the source code
 configure_file(TutorialConfig.h.in TutorialConfig.h)
 message("PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
+message("PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
   list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/MathFunctions")
 endif()
+
+message("EXTRA_LIBS: ${EXTRA_LIBS}")
+message("EXTRA_INCLUDES: ${EXTRA_INCLUDES}")
 
 # add the executable
 add_executable(Tutorial tutorial.cxx)
