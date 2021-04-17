@@ -1,0 +1,54 @@
+-- The C compiler identification is GNU 7.5.0
+-- The CXX compiler identification is GNU 7.5.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+PROJECT_BINARY_DIR: /git.co/dev-learn/cmake-tutorial/Tutorial/build
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /git.co/dev-learn/cmake-tutorial/Tutorial/build
+root@sriov-guest:/git.co/dev-learn/cmake-tutorial/Tutorial/build# ls
+CMakeCache.txt  CMakeFiles  Makefile  MathFunctions  TutorialConfig.h  cmake_install.cmake
+root@sriov-guest:/git.co/dev-learn/cmake-tutorial/Tutorial/build# ls -l ..
+total 48
+-rw-r--r-- 1 root root 1046 Apr 17 11:51 CMakeLists.txt
+-rw-r--r-- 1 root root 6942 Apr 17 11:52 Makefile
+drwxr-xr-x 3 root root 4096 Apr 17 11:36 MathFunctions
+-rw-r--r-- 1 root root   98 Apr 16 16:27 README.md
+drwxr-xr-x 3 root root 4096 Apr 16 01:26 Testing
+-rw-r--r-- 1 root root  190 Apr 17 04:03 TutorialConfig.h.in
+drwxr-xr-x 4 root root 4096 Apr 17 11:54 build
+-rwxr-xr-x 1 root root   48 Apr 17 04:06 build.sh
+-rwxr-xr-x 1 root root  131 Apr 17 11:53 clean.sh
+drwxr-xr-x 2 root root 4096 Apr 17 11:39 install
+-rw-r--r-- 1 root root  755 Apr 17 04:03 tutorial.cxx
+root@sriov-guest:/git.co/dev-learn/cmake-tutorial/Tutorial/build# ls
+CMakeCache.txt  CMakeFiles  Makefile  MathFunctions  TutorialConfig.h  cmake_install.cmake
+root@sriov-guest:/git.co/dev-learn/cmake-tutorial/Tutorial/build# make
+Scanning dependencies of target MathFunctions
+[ 25%] Building CXX object MathFunctions/CMakeFiles/MathFunctions.dir/mysqrt.cxx.o
+[ 50%] Linking CXX static library libMathFunctions.a
+[ 50%] Built target MathFunctions
+Scanning dependencies of target Tutorial
+[ 75%] Building CXX object CMakeFiles/Tutorial.dir/tutorial.cxx.o
+[100%] Linking CXX executable Tutorial
+[100%] Built target Tutorial
+root@sriov-guest:/git.co/dev-learn/cmake-tutorial/Tutorial/build# make install
+[ 50%] Built target MathFunctions
+[100%] Built target Tutorial
+Install the project...
+-- Install configuration: ""
+-- Installing: /usr/local/bin/Tutorial
+-- Installing: /usr/local/include/TutorialConfig.h
+-- Installing: /usr/local/lib/libMathFunctions.a
+-- Installing: /usr/local/include/MathFunctions.h
+
