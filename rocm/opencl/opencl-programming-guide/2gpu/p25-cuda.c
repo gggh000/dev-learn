@@ -41,24 +41,31 @@ int main(int argc, char ** argv) {
 
     // 2. Find a gpu device.
 
-    cl_device_id device;
+    cl_device_id * device;
     cl_device_info deviceInfos[]={CL_DEVICE_NAME, CL_DEVICE_VENDOR, CL_DEVICE_VERSION, CL_DRIVER_VERSION, CL_DEVICE_EXTENSIONS};
 
-    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 4, &device, &num_devices);
+    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
     printf("\nNo. of devices: %d.", num_devices);
+    device = malloc ( sizeof(cl_device_id ) * num_devices);
+    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, num_devices, device, NULL);
 
-    for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
-        clGetDeviceInfo(device, deviceInfos[i], sizeof(str1), str1, &strLen);
+    for (int i = 0; i < num_devices; i ++ ) {
+        printf("\n------------");
+        printf("\nDevice: %d.", i); 
 
-        if (stat == 0)  {
-            printf("\n%s.", str1);
-        } else {
-            printf("\nclGetDevicesIDs FAIL.");
-        return 1;
+        for (int j = 0; j < (sizeof(deviceInfos)  / sizeof(cl_device_info)) ; j ++) { 
+            clGetDeviceInfo(device[i], deviceInfos[j], sizeof(str1), str1, &strLen);
+            if (stat == 0)  {
+                printf("\n%s.", str1);
+            } else  {
+                printf("\nclGetDevicesIDs FAIL.");
+                return 1;
+            }
         }
     }    
 
-    printf("\n");
+            printf("\n");
+    return 0;
 
     // 3. Create a context and command queue on that device.
 
