@@ -29,7 +29,7 @@ int main(int argc, char ** argv) {
     int stat;
     char str1[100];
     size_t strLen;
-    cl_int ret; 
+    cl_int ret, num_devices; 
     uint a[1], b[1], c[1];
     int i;
     const void* ptr;
@@ -44,7 +44,8 @@ int main(int argc, char ** argv) {
     cl_device_id device;
     cl_device_info deviceInfos[]={CL_DEVICE_NAME, CL_DEVICE_VENDOR, CL_DEVICE_VERSION, CL_DRIVER_VERSION, CL_DEVICE_EXTENSIONS};
 
-    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
+    stat = clGetDeviceIDs( platform, CL_DEVICE_TYPE_GPU, 4, &device, &num_devices);
+    printf("\nNo. of devices: %d.", num_devices);
 
     for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
         clGetDeviceInfo(device, deviceInfos[i], sizeof(str1), str1, &strLen);
