@@ -12,8 +12,7 @@
 
 #define NWITEMS 2048
 #define LOCAL_WORK_SIZE 256
-#define DEBUG 1
-
+#define DEBUG 0
 // A simple kernelfcn kernel
 const char *source =
 
@@ -112,8 +111,6 @@ int main(int argc, char ** argv)
 
     printf("No. of devices available: %d.\n", devices_available);
 
-    /*
-
     for (int j = 0 ; j <  devices_available; j++) {
         for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
 
@@ -147,144 +144,6 @@ int main(int argc, char ** argv)
             }
         }
     } 
-    */   
 
-    // 3. Create a context and command queue on that device.
-
-    cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
-    cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
-
-    // 4. Perform runtime source compilation, and obtain kernel entry point.
-
-   cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
-
-    if (ret) {
-        printf("Error: clCreateProgramWithSource returned non-zero: %d.\n", ret);
-        return 1;
-    } else  {
-        printf("clCreateProgramWithSource return OK.... %d.\n", ret);
-    }
-
-
-    clBuildProgram( program, 1, device, NULL, NULL, NULL );
-
-    if (ret) {
-        printf("Error: clBuildProgram returned non-zero: %d.\n", ret);
-        return 1;
-    } else  {
-        printf("clBuildProgram return OK.... %d.\n", ret);
-    }
-
-
-    cl_kernel kernel = clCreateKernel( program, "kernelfcn", &ret);
-
-    if (ret) {
-        printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
-//        return 1;
-    } else  {
-        printf("clCreateKernel return OK.... %d.\n", ret);
-    }
-
-    if (ret) {
-        printf("Error: clCreateKernel returned non-zero: %d.\n", ret);
-        return 1;
-    } else  {
-        printf("clCreateKernel return OK.... %d.\n", ret);
-    }
-
-    // 5. Create a data buffer.
-
-    for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i]  = i;
-        b[i] = i / 2;
-    }
-
-    for(i=0; i < NWITEMS; i+=100)
-    {
-        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
-        
-    }
-
-    printf("Creating mem on GPU.....");
-
-    cl_mem dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, NWITEMS * sizeof(cl_uint), NULL, NULL );
-    cl_mem dev_b = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
-    cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
-
-    if (DEBUG==1)
-        printf("Copying data to GPU...");
-
-    ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
-    printf("ret: %d\n", ret); 
-    ret = clEnqueueWriteBuffer(queue, dev_b, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
-    printf("ret: %d\n", ret); 
-
-    //Erasing a[] for test.
-
-    for (int i = 0; i < NWITEMS; i ++ ) {
-        a[i] = 0;
-        b[i] = 0;
-    }
-
-    for(i=0; i < NWITEMS; i+=100)
-    {
-        printf("globalID: 0x%02u. value: 0x%08u\0x%08u.\n", i, a[i], b[i]);
-        
-    }
-    
-
-    // 6. Launch the kernel. Let OpenCL pick the local work size.
-
-    if (DEBUG==1) {
-        printf("Launch kernel\n");
-        //getchar();
-    }
-
-    size_t global_work_size = NWITEMS;
-    size_t local_work_size = LOCAL_WORK_SIZE;
-
-    printf("set kernel args...\n");
-    clSetKernelArg(kernel, 0, sizeof(dev_c), (void*) &dev_c);
-    printf("ret: %d\n", ret); 
-    clSetKernelArg(kernel, 1, sizeof(dev_a), (void*) &dev_a);
-    printf("ret: %d\n", ret); 
-    clSetKernelArg(kernel, 2, sizeof(dev_b), (void*) &dev_b);
-    printf("ret: %d\n", ret); 
-    clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
-    printf("clEnqueueNDRangeKernel OK...\n");
-    //getchar();
-
-    clFinish( queue );
-
-    if (DEBUG==1) {
-        printf("clFinish OK...\n");
-        //getchar();
-    }
-
-    // 7. Look at the results via synchronous buffer map.
-
-    printf("Reading back from GPU the sum...\n");
-
-    if (DEBUG==1)  {
-        ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
-        printf("ret: %d\n", ret); 
-        ret = clEnqueueReadBuffer(queue, dev_b, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
-        printf("ret: %d\n", ret); 
-    }
-
-    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
-    printf("ret: %d\n", ret); 
-
-    printf("Printing sums now...\n");
-
-    for(i=0; i < NWITEMS; i+=100)
-    {
-        if (DEBUG==1) 
-            printf("globalID: 0x%02u. value (a/b/c): 0x%08u/0x%08u/0x%08u.\n", i, a[i], b[i], c[i]);
-        else
-            printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
-    }
-
-    printf("\n");
     return 0;
 }
