@@ -1,4 +1,5 @@
 mkdir build ; cd build
+rm -rf ./*
 cmake ..
 make p41
 make p25-cuda
