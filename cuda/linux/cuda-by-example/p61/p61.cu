@@ -8,16 +8,17 @@
 // The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
 // (1+127) / 128.
 
-#define N 64
-
+#define N 1024
+#define MAX_THREAD_PER_BLOCK 1024
 __global__ void add( int * a, int * b, int * c ) {
 //	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int tid = threadIdx.x;
 
-	while (tid < N) {
-		c[tid] = a[tid] + b[tid];
-//		tid += blockDim.x * gridDim.x;
-	}
+//	while (tid < N)
+//	tid += blockDim.x * gridDim.x;
+
+    if (tid < N)
+       	c[tid] = a[tid] + b[tid];
 }
 
 int main (void) {
@@ -26,17 +27,19 @@ int main (void) {
 
 	// allocate dev memory for N size for pointers declared earlier.
 
+    printf("\nAllocating memory...");
 	cudaMalloc( (void**)&dev_a, N * sizeof(int));
 	cudaMalloc( (void**)&dev_b, N * sizeof(int));
 	cudaMalloc( (void**)&dev_c, N * sizeof(int));
 
 	for (int i = 0; i < N; i++) {
 		a[i] = i;
-		b[i] = i*2;
+		b[i] = i+2;
 	}
 
 	// copy the initialized local memory values to device memory. 
 
+    printf("\nCopy host to device...");
 	cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
 
@@ -44,11 +47,15 @@ int main (void) {
 	// block count: (N+127)/128
 	// thread count: 128
 
-	//add<<<(N+127)/128, 128>>> (dev_a, dev_b, dev_c);
-	add<<<1, N>>> (dev_a, dev_b, dev_c);
+    
+    printf("\nLaunch cuda kernel...");
+	add<<<(N+MAX_THREAD_PER_BLOCK-1)/MAX_THREAD_PER_BLOCK, MAX_THREAD_PER_BLOCK>>> (dev_a, dev_b, dev_c);
+	//add<<<1, N>>> (dev_a, dev_b, dev_c);
+
+    printf("\nCopy back from GPU to host...");
 	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i+=10) {
+	for (int i = 0; i < N; i+=50) {
 		printf("%d + %d = %d\n", a[i], b[i], c[i]);
 	}
 

@@ -1,12 +1,11 @@
 #include <stdio.h>
 
-#define N 2048
+#define N 8192
 
 __global__ void add(int *a, int*b, int *c) {
 	int tid = blockIdx.x;
 //	if (tid < N) 
 	c[tid] = a[tid] + b[tid];
-	c[tid] = blockIdx.x;
 }
 
 int main (void) {
@@ -18,7 +17,7 @@ int main (void) {
 	cudaMalloc( (void**)&dev_c, N * sizeof(int) );
 
 	for (int i = 0; i < N ; i ++ ) {
-		a[i]  = -i;
+		a[i]  = i;
 		b[i] = i * i;
 	}
 	cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
@@ -28,7 +27,7 @@ int main (void) {
 
 	cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i+=10 ) {
+	for (int i = 0; i < N; i+=50 ) {
 		printf("%d: %d + %d = %d\n", i, a[i], b[i], c[i]);
 	}
 
