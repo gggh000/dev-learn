@@ -102,19 +102,19 @@ int main(int argc, char ** argv)
     float MB  = (float)100 * SIZE * sizeof(int) / 1024 / 1024;
 
     elapsedTime = opencl_mem_alloc_test(SIZE, 1, ALLOC_NORMAL);
-    printf("Time using cudaMalloc: %3.1f ms.\n", elapsedTime);
+    printf("Time using normal allocation: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
 
     elapsedTime = opencl_mem_alloc_test(SIZE, 0, ALLOC_NORMAL);
-    printf("Time using cudaMalloc: %3.1f ms.\n", elapsedTime);
+    printf("Time using normal allocation: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
 
     elapsedTime = opencl_mem_alloc_test(SIZE, 1, ALLOC_PAGE_LOCKED);
-    printf("Time using cudaHostAlloc: %3.1f ms.\n", elapsedTime);
+    printf("Time using host allocation: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
 
     elapsedTime = opencl_mem_alloc_test(SIZE, 0, ALLOC_PAGE_LOCKED);
-    printf("Time using cudaHostAlloc: %3.1f ms.\n", elapsedTime);
+    printf("Time using host allocation: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
 
     /*
