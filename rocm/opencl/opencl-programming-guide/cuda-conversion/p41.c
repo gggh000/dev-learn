@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
     ulong ulong1;
     size_t strLen;
     cl_int ret;
-    int *a, *dev_a;
+    uint a[NWITEMS], b[NWITEMS], c[NWITEMS];
     int i;
 
     // 1. Get a platform.
