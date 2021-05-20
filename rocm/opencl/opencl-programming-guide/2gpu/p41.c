@@ -11,7 +11,8 @@
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
 #define NWITEMS 2048
-#define DEBUG 0
+#define DEBUG 1
+
 // A simple kernelfcn kernel
 const char *source =
 
@@ -157,7 +158,7 @@ int main(int argc, char ** argv)
 
     for (int i = 0; i < NWITEMS; i ++ ) {
         a[i]  = i;
-        b[i] = i * i;
+        b[i] = i / 2;
     }
 
     for(i=0; i < NWITEMS; i+=100)
@@ -189,7 +190,7 @@ int main(int argc, char ** argv)
 
     for(i=0; i < NWITEMS; i+=100)
     {
-        printf("globalID: 0x%02u. value: 0x%08u.\n", i, a[i]);
+        printf("globalID: 0x%02u. value: 0x%08u, x%08u.\n", i, a[i], b[i]);
         
     }
     
@@ -198,7 +199,6 @@ int main(int argc, char ** argv)
 
     if (DEBUG==1) {
         printf("Launch kernel\n");
-        //getchar();
     }
 
     size_t global_work_size = NWITEMS;
@@ -231,6 +231,8 @@ int main(int argc, char ** argv)
     if (DEBUG==1)  {
         ret = clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, NULL);
         printf("ret: %d\n", ret); 
+        ret = clEnqueueReadBuffer(queue, dev_b, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), b, NULL, NULL, NULL);
+        printf("ret: %d\n", ret); 
     }
 
     ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
@@ -241,8 +243,9 @@ int main(int argc, char ** argv)
     for(i=0; i < NWITEMS; i+=100)
     {
         if (DEBUG==1) 
-            printf("globalID: 0x%02u. value (a/c): 0x%08u/0x%08u.\n", i, a[i], c[i]);
-        printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
+            printf("globalID: 0x%02u. value (a/b/c): 0x%08u/0x%08u/0x%08u.\n", i, a[i], b[i], c[i]);
+        else
+            printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
     }
 
     printf("\n");
