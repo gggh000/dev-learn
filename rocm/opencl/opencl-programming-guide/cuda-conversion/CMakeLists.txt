@@ -3,7 +3,7 @@ set(ROCMOPENCL /opt/rocm/opencl/)
 message( "ROCM library path:" ${ROCMOPENCL} )
 #add_subdirectory(${ROCMOPENCL}/lib/ build)
 
-foreach(var p25 p31 p189 p41 ex-code-1)
+foreach(var p25 p31 p188 p41 ex-code-1)
 	message(STATUS "Generating makefile for ${var}")
 	project(${var})
 	add_executable(${var} ${var}.c)

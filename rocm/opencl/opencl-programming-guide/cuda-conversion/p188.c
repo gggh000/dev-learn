@@ -12,6 +12,10 @@
 
 #define NWITEMS 2048
 #define DEBUG 0
+#define SIZE (10*1024*1024)
+#define ALLOC_NORMAL 1
+#define ALLOC_PAGE_LOCKED 2
+
 // A simple kernelfcn kernel
 const char *source =
 
@@ -21,17 +25,13 @@ const char *source =
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
 "}                                                                      \n";
 
-int main(int argc, char ** argv)
-{
-    int stat;
-    char str1[100];
-    ushort ushort1;
-    uint uint1;
-    ulong ulong1;
-    size_t strLen;
-    cl_int ret;
-    int *a, *dev_a;
-    int i;
+float opencl_mem_alloc_test(int size, int up, int allocType) {
+
+    cl_event e1;
+    cl_ulong start, end, duration;
+    int *a;
+    cl_mem * dev_a;
+    int ret;
 
     // 1. Get a platform.
 
@@ -50,63 +50,9 @@ int main(int argc, char ** argv)
 
     cl_uint CONFIG_MAX_DEVICES=20;
     cl_uint devices_available;
-
-    enum enum_device_info_types {DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4, DEVINFO_SIZE_T=5};
-
-    enum enum_device_info_types device_info_types[] = {
-        DEVINFO_STRING, \
-        DEVINFO_STRING, \    
-        DEVINFO_STRING, \    
-        DEVINFO_STRING, \    
-        DEVINFO_ULONG, \    
-        DEVINFO_ULONG, \    
-        DEVINFO_USHORT, \    
-        DEVINFO_UINT, \    
-        DEVINFO_UINT, \    
-        DEVINFO_SIZE_T, \    
-        DEVINFO_UINT, \    
-        DEVINFO_SIZE_T, \    
-        DEVINFO_USHORT, \    
-        DEVINFO_STRING, \    
-	DEVINFO_SIZE_T \
-    };
-    char *str_device_info[]={\
-        "CL_DEVICE_NAME", \
-        "CL_DEVICE_VENDOR", \
-        "CL_DEVICE_VERSION", \
-        "CL_DRIVER_VERSION", \
-        "CL_DEVICE_GLOBAL_MEM_SIZE", \
-        "CL_DEVICE_LOCAL_MEM_SIZE", \
-        "CL_DEVICE_LOCAL_MEM_TYPE", \
-        "CL_DEVICE_MAX_CLOCK_FREQUENCY", \
-        "CL_DEVICE_MAX_COMPUTE_UNITS", \
-        "CL_DEVICE_MAX_WORK_GROUP_SIZE", \
-        "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS", \
-        "CL_DEVICE_MAX_WORK_ITEM_SIZES", \
-        "CL_DEVICE_TYPE", \
-        "CL_DEVICE_EXTENSIONS", \
-	"CL_DEVICE_MAX_PARAMETER_SIZE" \
-
-    };
     cl_device_id device[CONFIG_MAX_DEVICES];
-    cl_device_info deviceInfos[]={\
-        CL_DEVICE_NAME, \
-        CL_DEVICE_VENDOR, \
-        CL_DEVICE_VERSION, \
-        CL_DRIVER_VERSION, \
-        CL_DEVICE_GLOBAL_MEM_SIZE, \
-        CL_DEVICE_LOCAL_MEM_SIZE, \
-        CL_DEVICE_LOCAL_MEM_TYPE, \
-        CL_DEVICE_MAX_CLOCK_FREQUENCY, \
-        CL_DEVICE_MAX_COMPUTE_UNITS, \
-        CL_DEVICE_MAX_WORK_GROUP_SIZE, \
-        CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, \
-        CL_DEVICE_MAX_WORK_ITEM_SIZES, \
-        CL_DEVICE_TYPE, \
-        CL_DEVICE_EXTENSIONS, \
-	CL_DEVICE_MAX_PARAMETER_SIZE \
-};
-    stat = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
+
+    ret = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, device, &devices_available);
 
     printf("No. of devices available: %d.\n", devices_available);
 
@@ -115,6 +61,64 @@ int main(int argc, char ** argv)
     cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
     cl_command_queue queue = clCreateCommandQueue( context, device[0], 0, NULL );
 
+    if (allocType == ALLOC_PAGE_LOCKED) {
+        //!!!!cudaHostAlloc((void**)&a, size * sizeof(*a), cudaHostAllocDefault);
+        printf("\nNot implemented yet.");
+    } else if  (allocType == ALLOC_NORMAL ) {
+        a = (int*) malloc(size*sizeof(a));
+    }
+
+    dev_a = clCreateBuffer( context, CL_MEM_READ_WRITE, size * sizeof(cl_uint), NULL, NULL);
+
+    if (DEBUG==1)
+        printf("Copying data to GPU...");
+
+    for (int i = 0; i < 100 ; i ++ ) {
+        if (up)
+            ret = clEnqueueWriteBuffer(queue, dev_a, CL_TRUE, 0, size * sizeof(cl_uint), a, NULL, NULL, &e1);
+        else
+        clEnqueueReadBuffer(queue, dev_a, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), a, NULL, NULL, &e1);
+    }    
+
+    clGetEventProfilingInfo(e1, CL_PROFILING_COMMAND_START, sizeof(start), &start, NULL);
+    clGetEventProfilingInfo(e1, CL_PROFILING_COMMAND_END, sizeof(end), &end, NULL);
+    duration = end - start;
+    return (duration / 1024 * 1024);
+}
+
+int main(int argc, char ** argv)
+{
+    int stat;
+    char str1[100];
+    ushort ushort1;
+    uint uint1;
+    ulong ulong1;
+    size_t strLen;
+    cl_int ret;
+    uint a[NWITEMS], b[NWITEMS], c[NWITEMS];
+    int i;
+    float elapsedTime;
+
+    float MB  = (float)100 * SIZE * sizeof(int) / 1024 / 1024;
+
+    elapsedTime = opencl_mem_alloc_test(SIZE, 1, ALLOC_NORMAL);
+    printf("Time using cudaMalloc: %3.1f ms.\n", elapsedTime);
+    printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
+
+    elapsedTime = opencl_mem_alloc_test(SIZE, 0, ALLOC_NORMAL);
+    printf("Time using cudaMalloc: %3.1f ms.\n", elapsedTime);
+    printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
+
+    elapsedTime = opencl_mem_alloc_test(SIZE, 1, ALLOC_PAGE_LOCKED);
+    printf("Time using cudaHostAlloc: %3.1f ms.\n", elapsedTime);
+    printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
+
+    elapsedTime = opencl_mem_alloc_test(SIZE, 0, ALLOC_PAGE_LOCKED);
+    printf("Time using cudaHostAlloc: %3.1f ms.\n", elapsedTime);
+    printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
+
+    /*
+    
     // 4. Perform runtime source compilation, and obtain kernel entry point.
 
    cl_program program = clCreateProgramWithSource( context, 1, &source,  NULL, NULL );
@@ -201,6 +205,11 @@ int main(int argc, char ** argv)
         //getchar();
     }
 
+    // start measuring event here.
+
+    cl_event start, stop;
+    cl_int clGetEventProfilingInfo (
+
     size_t global_work_size = NWITEMS;
     size_t local_work_size = ulong1;
     clGetDeviceInfo(device[0], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(ulong), &ulong1, &strLen);
@@ -245,6 +254,7 @@ int main(int argc, char ** argv)
         printf("globalID: 0x%02u. value (a/c): 0x%08u.\n", i, c[i]);
     }
 
+    */ 
     printf("\n");
     return 0;
 }
