@@ -11,7 +11,6 @@
 #define declareDeviceInfo(X) char str(X)[] = "(X)";
 
 #define NWITEMS 2048
-#define LOCAL_WORK_SIZE 256
 #define DEBUG 0
 // A simple kernelfcn kernel
 const char *source =
@@ -111,43 +110,6 @@ int main(int argc, char ** argv)
 
     printf("No. of devices available: %d.\n", devices_available);
 
-    /*
-
-    for (int j = 0 ; j <  devices_available; j++) {
-        for (int i = 0 ; i < sizeof(deviceInfos)/sizeof(cl_device_info); i ++ ) {
-
-            if (stat == 0)  {
-                switch (device_info_types[i]) {
-                    case  DEVINFO_STRING:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(str1), str1, &strLen);
-                        printf("\n%40s: %30s.", str_device_info[i], str1);
-                        break;
-                    case  DEVINFO_USHORT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ushort), (void*)&ushort1, &strLen);
-                        printf("\n%40s: %02u (%02x).", str_device_info[i], ushort1, ushort1);
-			break;
-                    case  DEVINFO_UINT:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(uint), (void*)&uint1, &strLen);
-                        printf("\n%40s: %04u (%04x).", str_device_info[i], uint1, uint1);
-			break;
-                    case  DEVINFO_ULONG:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
-                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
-                        break;
-		    case DEVINFO_SIZE_T:
-		        clGetDeviceInfo(device[0], deviceInfos[i], sizeof(ulong), (void*)&ulong1, &strLen);
-                        printf("\n%40s: %08u (%08x).", str_device_info[i], ulong1, ulong1);
-                        break;
-                }
-                //enum device_info_types={DEVINFO_STRING=1, DEVINFO_USHORT=2, DEVINFO_UINT=3, DEVINFO_ULONG=4};
-            } else {
-                printf("\nclGetDevicesIDs FAIL.");
-            return 1;
-            }
-        }
-    } 
-    */   
-
     // 3. Create a context and command queue on that device.
 
     cl_context context = clCreateContext( NULL, 1,  &device[0], NULL, NULL, NULL);
@@ -210,19 +172,6 @@ int main(int argc, char ** argv)
     cl_mem dev_b = clCreateBuffer( context, CL_MEM_READ_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
     cl_mem dev_c = clCreateBuffer( context, CL_MEM_WRITE_ONLY, NWITEMS * sizeof(cl_uint), NULL, NULL );
 
-    /*
-    cl_int clEnqueueWriteBuffer(
-    cl_command_queue command_queue,
-    cl_mem buffer,
-    cl_bool blocking_write,
-    size_t offset,
-    size_t size,
-    const void* ptr,
-    cl_uint num_events_in_wait_list,
-    const cl_event* event_wait_list,
-    cl_event* event);
-    */
-
     if (DEBUG==1)
         printf("Copying data to GPU...");
 
@@ -253,7 +202,9 @@ int main(int argc, char ** argv)
     }
 
     size_t global_work_size = NWITEMS;
-    size_t local_work_size = LOCAL_WORK_SIZE;
+    size_t local_work_size = ulong1;
+    clGetDeviceInfo(device[0], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(ulong), &ulong1, &strLen);
+    printf("CL_DEVICE_MAX_WORK_GROUP_SIZE: %u.\n", ulong1);
 
     printf("set kernel args...\n");
     clSetKernelArg(kernel, 0, sizeof(dev_c), (void*) &dev_c);
