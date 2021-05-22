@@ -67,27 +67,33 @@ __global__ void dot(float * a, float * b, float * c) {
     }
 }
 
-float alloc_test(int size, bool up, int allocType) {
+float alloc_test(int size, int allocType) {
     int debug = 0;
     cudaEvent_t start, stop;
     float *a, *b, c, *partial_c, *dev_a, *dev_b, *dev_partial_c;
     float elapsedTime;
 
+    printf("Alloc test entered...");
 
     cudaEventCreate( &start);
     cudaEventCreate( &stop);
+
+    printf("allocate memory...");
 
     if (allocType == ALLOC_PAGE_HOST) {
         cudaHostAlloc((void**)&a, size * sizeof(float), cudaHostAllocWriteCombined|cudaHostAllocMapped);
         cudaHostAlloc((void**)&b, size * sizeof(float), cudaHostAllocWriteCombined|cudaHostAllocMapped);
         cudaHostAlloc((void**)&partial_c, size * sizeof(float), cudaHostAllocWriteCombined|cudaHostAllocMapped);
     } else if  (allocType == ALLOC_NORMAL ) {
-        a = (float*) malloc(size*sizeof(float));
-        b = (float*) malloc(size*sizeof(float));
+        a = (float*) malloc(size * sizeof(float));
+        b = (float*) malloc(size * sizeof(float));
+        partial_c = (float*) malloc(size * sizeof(float));
         cudaMalloc((void**)&dev_a, size * sizeof(float));
         cudaMalloc((void**)&dev_b, size * sizeof(float));
         cudaMalloc((void**)&dev_partial_c, blocksPerGrid * sizeof(float));
     }
+
+    printf("init values...");
 
     for (int i = 0; i < size ; i++ ) {
         a[i] = i;
@@ -102,11 +108,19 @@ float alloc_test(int size, bool up, int allocType) {
 
     cudaEventRecord( start, 0);
 
+    printf("copy to GPU...");
+
     if  (allocType == ALLOC_NORMAL ) {
         cudaMemcpy(dev_a, a, size * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(dev_b, b, size * sizeof(float), cudaMemcpyHostToDevice);
     }
-    dot<<< blocksPerGrid, threadsPerBlock>>> ( dev_a, dev_b, dev_partial_c);
+
+    printf("call kernel function...");
+
+    dot<<<blocksPerGrid, threadsPerBlock>>>( dev_a, dev_b, dev_partial_c);
+
+    printf("copy from GPU...");
+
     cudaMemcpy(partial_c, dev_partial_c, blocksPerGrid * sizeof(float), cudaMemcpyDeviceToHost);
 
     cudaEventRecord(stop, 0);
@@ -127,7 +141,7 @@ float alloc_test(int size, bool up, int allocType) {
         cudaFreeHost(dev_a);
         cudaFreeHost(dev_b);
         cudaFreeHost(dev_partial_c);
-    } else if (allocType = ALLOC_NORMAL) {
+    } else if (allocType == ALLOC_NORMAL) {
         cudaFree(dev_a);
         cudaFree(dev_b);
         cudaFree(dev_partial_c);
@@ -142,6 +156,8 @@ float alloc_test(int size, bool up, int allocType) {
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 
+    printf("Value calculated: %f.\n", c);
+
     return elapsedTime;
 }
 int main()
@@ -155,15 +171,22 @@ int main()
     if (prop.canMapHostMemory != 1 ) {
         printf("Device can not map host memory.\n");
         return 0;
+    } else {
+        printf("Device can map host memory ok...\n");
     }
     cudaSetDeviceFlags( cudaDeviceMapHost);
+    printf("set flag to map host memory...\n");
 
     //float MB  = (float)100 * SIZE * sizeof(int) / 1024 / 1024;
-    elapsedTime = alloc_test(N, true, ALLOC_NORMAL);
+    printf("Calling alloc_test with ALLOC_NORMAL...\n");
+
+    elapsedTime = alloc_test(N, ALLOC_NORMAL);
     printf("Time using cudaMalloc: %3.1f ms.\n", elapsedTime);
     //printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
 
-    elapsedTime = alloc_test(N, true, ALLOC_PAGE_HOST);
+    printf("Calling alloc_test with ALLOC_PAGE_HOST...\n");
+    elapsedTime = alloc_test(N, ALLOC_PAGE_HOST);
     printf("Time using cudaHostAlloc: %3.1f ms.\n", elapsedTime);
     //printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
+    return 0;
 }
