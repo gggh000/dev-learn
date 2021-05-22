@@ -73,12 +73,8 @@ float alloc_test(int size, int allocType) {
     float *a, *b, c, *partial_c, *dev_a, *dev_b, *dev_partial_c;
     float elapsedTime;
 
-    printf("Alloc test entered...");
-
     cudaEventCreate( &start);
     cudaEventCreate( &stop);
-
-    printf("allocate memory...");
 
     if (allocType == ALLOC_PAGE_HOST) {
         cudaHostAlloc((void**)&a, size * sizeof(float), cudaHostAllocWriteCombined|cudaHostAllocMapped);
@@ -93,8 +89,6 @@ float alloc_test(int size, int allocType) {
         cudaMalloc((void**)&dev_partial_c, blocksPerGrid * sizeof(float));
     }
 
-    printf("init values...");
-
     for (int i = 0; i < size ; i++ ) {
         a[i] = i;
         b[i] = i * 2;
@@ -108,18 +102,12 @@ float alloc_test(int size, int allocType) {
 
     cudaEventRecord( start, 0);
 
-    printf("copy to GPU...");
-
     if  (allocType == ALLOC_NORMAL ) {
         cudaMemcpy(dev_a, a, size * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(dev_b, b, size * sizeof(float), cudaMemcpyHostToDevice);
     }
 
-    printf("call kernel function...");
-
     dot<<<blocksPerGrid, threadsPerBlock>>>( dev_a, dev_b, dev_partial_c);
-
-    printf("copy from GPU...");
 
     cudaMemcpy(partial_c, dev_partial_c, blocksPerGrid * sizeof(float), cudaMemcpyDeviceToHost);
 
@@ -156,7 +144,7 @@ float alloc_test(int size, int allocType) {
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 
-    printf("Value calculated: %f.\n", c);
+    printf("Value calculated: %04.02f.\n", c);
 
     return elapsedTime;
 }
