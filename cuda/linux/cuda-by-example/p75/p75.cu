@@ -36,7 +36,7 @@ __global__ void dot(float * a, float * b, float * c) {
     __syncthreads();
 
     // for reductions, threadsPerBlock must be a power of 2 because of following code.
-    // couple of examples (still can not understand :().
+    // couple of examples (still can not understand the divide in loop.
     // blockDim.x = 256.
     //                              i         cache[tid] + cache[tid+i]
     // threadIdx/cacheindex 128:    i0 = 128, cache[128] + cache[128+128] -> t128, t256.
