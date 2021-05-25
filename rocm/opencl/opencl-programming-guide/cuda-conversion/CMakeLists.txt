@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 set(ROCMOPENCL /opt/rocm/opencl/)
+set(CMAKE_C_COMPILER /opt/rocm-4.0.0/llvm//bin//clang)
+set(CMAKE_CXX_COMPILER /opt/rocm-4.0.0/llvm//bin//clang)
 message( "ROCM library path:" ${ROCMOPENCL} )
 #add_subdirectory(${ROCMOPENCL}/lib/ build)
 
