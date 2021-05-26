@@ -7,6 +7,7 @@
 __global__ void add(int *a, int*b, int *c) {
 	int tid = hipBlockIdx_x;
 	c[tid] = a[tid] + b[tid];
+	c[tid] = tid;
 }
 
 int main (void) {
@@ -25,21 +26,21 @@ int main (void) {
 		host[2][i] = 999;
 	}
 
-	for (int i = 0; i < N ; i ++ ) {
+	for (int i = 0; i < N ; i+=100 ) {
         printf("Before add: a/b: %d, %d.\n", host[0][i], host[1][i]);
 	}
 
     for (i = 0; i > 2 ; i++)
-    	hipMemcpy(&dev[i], &host[i], N * sizeof(int), hipMemcpyHostToDevice);
+    	hipMemcpy(dev[i], host[i], N * sizeof(int), hipMemcpyHostToDevice);
     
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
 
-    //hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev[0], dev[1], dev[2]);
+    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev[0], dev[1], dev[2]);
 
-	hipMemcpy(&host[i], &dev[i], N * sizeof(int), hipMemcpyDeviceToHost);
+	hipMemcpy(host[2], dev[2], N * sizeof(int), hipMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i+=50 )
+	for (int i = 0; i < N; i+=100 )
 		printf("%d: %d + %d = %d\n", i, host[0][i], host[1][i], host[2][i]);
 
     for (i = 0; i < 3 ; i ++ ) {
