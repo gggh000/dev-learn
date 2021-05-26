@@ -30,14 +30,14 @@ int main (void) {
 	}
 
     for (i = 0; i > 2 ; i++)
-    	//hipMemcpy(&dev[i], &host[i], N * sizeof(int), hipMemcpyHostToDevice);
+    	hipMemcpy(&dev[i], &host[i], N * sizeof(int), hipMemcpyHostToDevice);
     
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
 
     //hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev[0], dev[1], dev[2]);
 
-	//hipMemcpy(&host[i], &dev[i], N * sizeof(int), hipMemcpyDeviceToHost);
+	hipMemcpy(&host[i], &dev[i], N * sizeof(int), hipMemcpyDeviceToHost);
 
 	for (int i = 0; i < N; i+=50 )
 		printf("%d: %d + %d = %d\n", i, host[0][i], host[1][i], host[2][i]);
