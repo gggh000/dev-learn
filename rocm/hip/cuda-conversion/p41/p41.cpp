@@ -11,44 +11,50 @@ __global__ void add(int *a, int*b, int *c) {
 }
 
 int main (void) {
-	int * host [ARRSIZE];
-	int *dev[ARRSIZE];
+    int *a, *b, *c;
+    int *dev_a, *dev_b, *dev_c;
     int i ;
     
 
-    for (i = 0; i < ARRSIZE ; i++) {
-        host[i] = (int*)malloc(N * sizeof(int));
-    	hipMalloc(&dev[i], N * sizeof(int) );
-    }
+    a = (int*)malloc(N * sizeof(int));
+    b = (int*)malloc(N * sizeof(int));
+    c = (int*)malloc(N * sizeof(int));
+ 	hipMalloc(&dev_a, N * sizeof(int) );
+ 	hipMalloc(&dev_b, N * sizeof(int) );
+ 	hipMalloc(&dev_c, N * sizeof(int) );
 
 	for (int i = 0; i < N ; i ++ ) {
-		host[0][i]  = i;
-		host[1][i] = i + i;
-		host[2][i] = 999;
+		a[i]  = i;
+		b[i] = i + i;
+		c[i] = 999;
 	}
 
 	for (int i = 0; i < N ; i+=LOOPSTRIDE ) {
-        printf("Before add: a/b: %d, %d.\n", host[0][i], host[1][i]);
+        printf("Before add: a/b: %d, %d.\n", a[i], b[i]);
 	}
 
-    for (i = 0; i > 2 ; i++)
-    	hipMemcpy(dev[i], host[i], N * sizeof(int), hipMemcpyHostToDevice);
+   	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
+   	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
+   	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
     
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
 
-    //hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev[0], dev[1], dev[2]);
+    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
 
-    for (i = 0; i < ARRSIZE; i++)
-	    hipMemcpy(host[i], dev[i], N * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
 
 	for (int i = 0; i < N; i+=LOOPSTRIDE )
-		printf("After add: %d: %u + %u = %u\n", i, host[0][i], host[1][i], host[2][i]);
+		printf("After add: %d: %u + %u = %u\n", i, a[i], b[i], c[i]);
 
-    for (i = 0; i < 3 ; i ++ ) {
-        hipFree(dev[i]);
-        free(host[i]);
-    }
+    hipFree(dev_a);
+    hipFree(dev_b);
+    hipFree(dev_c);
+    free(a);
+    free(b);
+    free(c);
     
 	return 0;
 }

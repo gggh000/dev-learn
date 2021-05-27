@@ -1,3 +1,6 @@
+// Using 2-D array is not working.
+// Equivalent code not using 2D array is in same folder: p41.cpp
+
 #include <stdio.h>
 #include "hip/hip_runtime.h"
 
@@ -11,50 +14,44 @@ __global__ void add(int *a, int*b, int *c) {
 }
 
 int main (void) {
-    int *a, *b, *c;
-    int *dev_a, *dev_b, *dev_c;
+	int * host [ARRSIZE];
+	int *dev[ARRSIZE];
     int i ;
     
 
-    a = (int*)malloc(N * sizeof(int));
-    b = (int*)malloc(N * sizeof(int));
-    c = (int*)malloc(N * sizeof(int));
- 	hipMalloc(&dev_a, N * sizeof(int) );
- 	hipMalloc(&dev_b, N * sizeof(int) );
- 	hipMalloc(&dev_c, N * sizeof(int) );
+    for (i = 0; i < ARRSIZE ; i++) {
+        host[i] = (int*)malloc(N * sizeof(int));
+    	hipMalloc(&dev[i], N * sizeof(int) );
+    }
 
 	for (int i = 0; i < N ; i ++ ) {
-		a[i]  = i;
-		b[i] = i + i;
-		c[i] = 999;
+		host[0][i]  = i;
+		host[1][i] = i + i;
+		host[2][i] = 999;
 	}
 
 	for (int i = 0; i < N ; i+=LOOPSTRIDE ) {
-        printf("Before add: a/b: %d, %d.\n", a[i], b[i]);
+        printf("Before add: a/b: %d, %d.\n", host[0][i], host[1][i]);
 	}
 
-   	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
-   	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
-   	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
+    for (i = 0; i > 2 ; i++)
+    	hipMemcpy(dev[i], host[i], N * sizeof(int), hipMemcpyHostToDevice);
     
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
 
-    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    //hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev[0], dev[1], dev[2]);
 
-    hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
-    hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
-    hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
+    for (i = 0; i < ARRSIZE; i++)
+	    hipMemcpy(host[i], dev[i], N * sizeof(int), hipMemcpyDeviceToHost);
 
 	for (int i = 0; i < N; i+=LOOPSTRIDE )
-		printf("After add: %d: %u + %u = %u\n", i, a[i], b[i], c[i]);
+		printf("After add: %d: %u + %u = %u\n", i, host[0][i], host[1][i], host[2][i]);
 
-    hipFree(dev_a);
-    hipFree(dev_b);
-    hipFree(dev_c);
-    free(a);
-    free(b);
-    free(c);
+    for (i = 0; i < 3 ; i ++ ) {
+        hipFree(dev[i]);
+        free(host[i]);
+    }
     
 	return 0;
 }
