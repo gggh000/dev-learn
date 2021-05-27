@@ -10,8 +10,28 @@
 float hip_mem_alloc_test(int size, bool up, int allocType) {
     int debug = 0;
     hipEvent_t start, stop;
-    int *a, *dev_a;
+    int *a, *dev_a, devId;
     float elapsedTime;
+
+   int device, i, count, stat;
+    hipDeviceProp_t props;
+    hipGetDeviceCount(&count);
+
+    if (count > 10 || count < 0) {
+        printf("Err: More than 10 devices or less than 0 devices!!!\n");
+        return 1;
+    } else {
+        printf("Count: %d. \n", count);
+    }
+    stat = hipGetDevice(&devId);
+    hipSetDevice(device);
+
+    if (stat != hipSuccess)  {
+        printf("Err: Unable to set device for device iD: %d.\n", i);
+        return 1;
+    } else {
+        printf("Devid found: %d.\n", devId);
+    }
 
     if (debug) {
         printf("hip_mem_alloc_test: entered.\n");
