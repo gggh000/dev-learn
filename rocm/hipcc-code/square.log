@@ -1,9 +1,0 @@
-info: running on device Baffin [Radeon RX 550 640SP / RX 560/560X]
-info: architecture on AMD GPU device is: 803
-info: allocate host mem (  7.63 MB)
-info: allocate device mem (  7.63 MB)
-info: copy Host2Device
-info: launch 'vector_square' kernel
-info: copy Device2Host
-info: check result
-PASSED!
