@@ -28,6 +28,37 @@ __global__ void warmingUp(float *c)
     c[tid] = ia + ib;
 }
 
+__global__ void mathKernel4(float *c)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    float ia, ib;
+    ia = ib = 0.0f;
+
+    int itid = tid >> 5;
+
+    if (itid & 0x01 == 0)
+    {
+        ia = 100.0f;
+    }
+    else
+    {
+        ib = 200.0f;
+    }
+
+    c[tid] = ia + ib;
+}
+
+__global__ void mathKernel3(float * c) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    float ia, ib;
+    ia = ib = 0.0f;
+    
+    bool ipred = (tid % 2 == 0);
+    if (ipred)  ia = 100.0f; 
+    if (!ipred) ib = 200.0f; 
+    c[tid] = ia + ib;
+}
+
 __global__ void mathKernel1(float * c) { 
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     float a, b;
@@ -111,7 +142,6 @@ int main(int argc, char **argv) {
     printf("mathKernel2 <<< %4d %4d >>> elapsed %06d sec.\n", grid.x, block.x, iElaps);
 
     // run kernel 3.
-    /*
 
     iStart = seconds();
     mathKernel3<<<grid, block>>>(d_C);
@@ -126,7 +156,6 @@ int main(int argc, char **argv) {
     cudaDeviceSynchronize();
     iElaps = seconds() - iStart;
     printf("mathKernel4 <<< %4d %4d >>> elapsed %06d sec.\n", grid.x, block.x, iElaps);
-    */
 
     cudaFree(d_C);
     cudaDeviceReset();
