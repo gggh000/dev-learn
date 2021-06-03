@@ -127,7 +127,7 @@ int main(int argc, char ** argv) {
     int dimx = 32;
     int dimy = 16;
     dim3 block(dimx, dimy);
-    dim3 grid (nx + block.x-1 / block.x, ny + block.y-1 / block.y);
+    dim3 grid ((nx + block.x-1) / block.x, (ny + block.y-1) / block.y);
     
     iStart = cpuSecond();
  

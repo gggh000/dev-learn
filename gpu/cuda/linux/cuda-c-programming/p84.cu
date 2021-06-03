@@ -16,12 +16,9 @@ __global__ void warmingUp(float *c)
     float ia, ib;
     ia = ib = 0.0f;
 
-    if ((tid / warpSize) % 2 == 0)
-    {
+    if ((tid / warpSize) % 2 == 0) {
         ia = 100.0f;
-    }
-    else
-    {
+    } else {
         ib = 200.0f;
     }
 
@@ -36,12 +33,9 @@ __global__ void mathKernel4(float *c)
 
     int itid = tid >> 5;
 
-    if (itid & 0x01 == 0)
-    {
+    if (itid & 0x01 == 0) {
         ia = 100.0f;
-    }
-    else
-    {
+    } else {
         ib = 200.0f;
     }
 
