@@ -86,7 +86,8 @@ int main(int argc, char **argv) {
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, dev);
     printf("%s using Device %d: %s.\n", argv[0], dev, deviceProp.name);
-    
+    cudaSetDevice(dev);
+
     // setup data size.
 
     int size = 64;
