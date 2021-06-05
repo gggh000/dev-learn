@@ -9,7 +9,7 @@
 // The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
 // (1+127) / 128.
 
-#define N 2048
+#define N 4194304
 #define MAX_THREAD_PER_BLOCK 1024
 
 __global__ void add( int * a, int * b, int * c ) {
@@ -20,11 +20,13 @@ __global__ void add( int * a, int * b, int * c ) {
 
 int main (void) {
     int *a, *b, *c;
-	int *dev_a, *dev_b, *dev_c;
+    int *dev_a, *dev_b, *dev_c;
+    int stepSize;
 
 	// allocate dev memory for N size for pointers declared earlier.
 
-    printf("\nAllocating memory...");
+    printf("\nAllocating memory...(size %u array size of INT).\n", N );
+
     a = (int*)malloc(N * sizeof(int));
     b = (int*)malloc(N * sizeof(int));
     c = (int*)malloc(N * sizeof(int));
@@ -57,7 +59,8 @@ int main (void) {
     hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
 
-	for (int i = 0; i < N; i+=50) {
+    stepSize =  N /20 ;	
+	for (int i = 0; i < N; i+=stepSize) {
 		printf("%d + %d = %d\n", a[i], b[i], c[i]);
 	}
 
