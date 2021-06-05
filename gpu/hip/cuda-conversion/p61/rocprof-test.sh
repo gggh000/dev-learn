@@ -1,5 +1,11 @@
 if [[ -z `which csvtool` ]] ; then apt install csvtool -y ; fi
-hipcc p61.cpp
+FILE=p61-rocprof
+hipcc $FILE.cpp
 OUTPUT=rocprof-test.csv
-rocprof -i input.txt -o $OUTPUT ./a.out
-csvtool readable $OUTPUT
+
+if [[ $? -eq 0 ]] ; then
+    rocprof -i input.xml -o $OUTPUT ./a.out
+    csvtool readable $OUTPUT
+else 
+    echo "Compile failed."
+fi

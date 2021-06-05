@@ -1,0 +1,3 @@
+<metric name=SQ:4,SQ_WAVES,VFetchInsts
+kernel="add,subtract"
+></metric>
