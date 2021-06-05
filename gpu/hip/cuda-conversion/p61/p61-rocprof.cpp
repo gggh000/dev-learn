@@ -62,7 +62,7 @@ int main (void) {
 	// thread count: 128
     
     hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
-    hipLaunchKernelGGL(subtract, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    hipLaunchKernelGGL(subtract, blocks, threadsPerBlock/2, 0, 0, dev_a, dev_b, dev_c);
     hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
