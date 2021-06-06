@@ -236,7 +236,7 @@ int main (void) {
 	// allocate dev memory for N size for pointers declared earlier.
 
     printf("\nAllocating memory...(size %u array size of INT).\n", N );
-
+    init_tracing();
     start_tracing();
 
     a = (int*)malloc(N * sizeof(int));
@@ -282,4 +282,6 @@ int main (void) {
     free(a);
     free(b);
     free(c);
+    stop_tracing();
+    return 0;
 }

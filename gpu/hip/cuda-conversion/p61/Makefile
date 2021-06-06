@@ -12,11 +12,14 @@ ROC_LIBS  = -Wl,--rpath,${LIB_PATH} $(LIB_PATH)/libroctracer64.so $(LIB_PATH)/li
 
 FLAGS =-g $(INC_PATH:%=-I%) -I$(ROCM_PATH)/roctracer/include/ -I$(ROCM_PATH)/hsa/include/hsa -I$(ROCM_PATH)/hsa/include -I$(ROCM_PATH)/hip/include -I$(ROCM_PATH)/include -DLOCAL_BUILD=1 -DHIP_VDI=${HIP_VDI} -DITERATIONS=$(ITERATIONS) -DAMD_INTERNAL_BUILD=1
 
-all:    $(EXECUTABLE)
+all:	$(EXECUTABLE)
 
 $(OBJECTS): $(SOURCES)
 	$(COMP) $(FLAGS) -c -o $@ $<
 
 $(EXECUTABLE): $(OBJECTS)
 	$(HIPCC) $(OBJECTS) -o $@ $(ROC_LIBS)
+
+test:  $(EXECUTABLE)
+	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so" ./$(EXECUTABLE)
 
