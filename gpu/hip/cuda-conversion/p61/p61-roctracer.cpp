@@ -170,27 +170,27 @@ void activity_callback(const char* begin, const char* end, void* arg) {
     SPRINT("\tActivity records:\n");
     while (record < end_record) {
         const char * name = roctracer_op_string(record->domain, record->op, record->kind);
-        SPRINT("\t%s\tcorrelation_id(%lu) time_ns(%lu:%lu)",
+        SPRINT("\t%25s\tcorrelation_id(%3lu) time_ns(%lu:%lu -> %10lu)",
             name,
             record->correlation_id,
             record->begin_ns,
-            record->end_ns);
+            record->end_ns, record->end_ns - record->begin_ns);
         if ((record->domain == ACTIVITY_DOMAIN_HIP_API) || (record->domain == ACTIVITY_DOMAIN_KFD_API)) {
-            SPRINT(" process_id(%u) thread_id(%u)",
+            SPRINT(" process_id(%12u) thread_id(%u)",
                 record->process_id,
                 record->thread_id);
         } else if (record->domain == ACTIVITY_DOMAIN_HCC_OPS) {
-            SPRINT(" device_id(%d) queue_id(%lu)",
+            SPRINT(" device_id(%12d) queue_id(%lu)",
                 record->device_id,
                 record->queue_id);
             if (record->op == HIP_OP_ID_COPY) SPRINT(" bytes(0x%zx)", record->bytes);
         } else if (record->domain == ACTIVITY_DOMAIN_HSA_OPS) {
-            SPRINT(" se(%u) cycle(%lu) pc(%lx)",
+            SPRINT(" se(%u) cycle(%12lu) pc(%lx)",
                 record->pc_sample.se,
                 record->pc_sample.cycle,
                 record->pc_sample.pc);
         } else if (record->domain == ACTIVITY_DOMAIN_EXT_API) {
-            SPRINT(" external_id(%lu)", record->external_id);
+            SPRINT(" external_id(%12lu)", record->external_id);
         } else {
             fprintf(stderr, "Bad domain %d\n\n", record->domain);
             abort();
