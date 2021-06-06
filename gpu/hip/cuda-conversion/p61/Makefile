@@ -4,6 +4,11 @@ EXECUTABLE=p61-roctracer
 OBJECTS = p61-roctracer.o
 SOURCES=p61-roctracer.cpp
 HIP_API_ACTIVITY_ON=1
+KFD_API_ACTIVITY_ON=0
+ROCTX_API_ACTIVITY_ON=1
+HCC_API_ACTIVITY_ON=0
+HSA_API_ACTIVITY_ON=1
+
 ROOT_PATH ?= /opt/rocm/roctracer/
 INC_PATH  ?= $(ROOT_PATH)/include
 LIB_PATH  ?= $(ROOT_PATH)/lib
@@ -13,7 +18,19 @@ ROC_LIBS  = -Wl,--rpath,${LIB_PATH} $(LIB_PATH)/libroctracer64.so $(LIB_PATH)/li
 FLAGS =-g $(INC_PATH:%=-I%) -I$(ROCM_PATH)/roctracer/include/ -I$(ROCM_PATH)/hsa/include/hsa -I$(ROCM_PATH)/hsa/include -I$(ROCM_PATH)/hip/include -I$(ROCM_PATH)/include -DLOCAL_BUILD=1 -DHIP_VDI=${HIP_VDI} -DITERATIONS=$(ITERATIONS) -DAMD_INTERNAL_BUILD=1
 
 ifeq ($(HIP_API_ACTIVITY_ON), 1)
-        FLAGS += -DHIP_API_ACTIVITY_ON=1
+		FLAGS += -DHIP_API_ACTIVITY_ON=1
+endif
+ifeq ($(KFD_API_ACTIVITY_ON), 1)
+		FLAGS += -DKFD_API_ACTIVITY_ON=1
+endif
+ifeq ($(ROCTX_API_ACTIVITY_ON), 1)
+		FLAGS += -DROCTX_API_ACTIVITY_ON=1
+endif
+ifeq ($(HCC_API_ACTIVITY_ON), 1)
+		FLAGS += -DHCC_API_ACTIVITY_ON=1
+endif
+ifeq ($(HSA_API_ACTIVITY_ON), 1)
+		FLAGS += -DHSA_API_ACTIVITY_ON=1
 endif
 
 all:	$(EXECUTABLE)
@@ -27,3 +44,6 @@ $(EXECUTABLE): $(OBJECTS)
 test:  $(EXECUTABLE)
 	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so" ./$(EXECUTABLE)
 
+clean:
+	rm *.o
+	rm $(EXECUTABLE)

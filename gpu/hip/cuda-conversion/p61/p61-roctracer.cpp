@@ -150,15 +150,23 @@ void start_tracing() {
 
 // Stop tracing routine
 void stop_tracing() {
-    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
-    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
 #if HIP_API_ACTIVITY_ON
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
     roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HIP_API);
 #endif
+#if HCC_API_ACTIVITY_ON
     roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HCC_OPS);
+#endif
+#if HSA_API_ACTIVITY_ON
     roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HSA_OPS);
+#endif
+#if KFD_API_ACTIVITY_ON
     roctracer_disable_domain_callback(ACTIVITY_DOMAIN_KFD_API);
+#endif
+#if ROCTX_API_ACTIVITY_ON
     roctracer_disable_domain_callback(ACTIVITY_DOMAIN_ROCTX);
+#endif
     roctracer_flush_activity();
     printf("# STOP    \n");
 }
@@ -213,19 +221,27 @@ void init_tracing() {
     properties.buffer_size = 0x1000;
     properties.buffer_callback_fun = activity_callback;
     roctracer_open_pool(&properties);
+#if HIP_API_ACTIVITY_ON
     // Enable HIP API callbacks
     roctracer_enable_domain_callback(ACTIVITY_DOMAIN_HIP_API, api_callback, NULL);
     // Enable HIP activity tracing
-#if HIP_API_ACTIVITY_ON
     roctracer_enable_domain_activity(ACTIVITY_DOMAIN_HIP_API);
 #endif
+#if HCC_API_ACTIVITY_ON
     roctracer_enable_domain_activity(ACTIVITY_DOMAIN_HCC_OPS);
+#endif
+#if HSA_API_ACTIVITY_ON
     // Enable PC sampling
     roctracer_enable_op_activity(ACTIVITY_DOMAIN_HSA_OPS, HSA_OP_ID_RESERVED1);
+#endif
+#if KFD_API_ACTIVITY_ON
     // Enable KFD API tracing
     roctracer_enable_domain_callback(ACTIVITY_DOMAIN_KFD_API, api_callback, NULL);
+#endif
+#if ROCTX_API_ACTIVITY_ON
     // Enable rocTX
     roctracer_enable_domain_callback(ACTIVITY_DOMAIN_ROCTX, api_callback, NULL);
+#endif
 }
 
 int main (void) {
