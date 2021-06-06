@@ -1,0 +1,22 @@
+COMP=hipcc
+HIPCC=$(COMP)
+EXECUTABLE=p61-roctracer
+OBJECTS = p61-roctracer.o
+SOURCES=p61-roctracer.cpp
+
+ROOT_PATH ?= /opt/rocm/roctracer/
+INC_PATH  ?= $(ROOT_PATH)/include
+LIB_PATH  ?= $(ROOT_PATH)/lib
+ROCM_PATH ?= /opt/rocm
+ROC_LIBS  = -Wl,--rpath,${LIB_PATH} $(LIB_PATH)/libroctracer64.so $(LIB_PATH)/libroctx64.so
+
+FLAGS =-g $(INC_PATH:%=-I%) -I$(ROCM_PATH)/roctracer/include/ -I$(ROCM_PATH)/hsa/include/hsa -I$(ROCM_PATH)/hsa/include -I$(ROCM_PATH)/hip/include -I$(ROCM_PATH)/include -DLOCAL_BUILD=1 -DHIP_VDI=${HIP_VDI} -DITERATIONS=$(ITERATIONS) -DAMD_INTERNAL_BUILD=1
+
+all:    $(EXECUTABLE)
+
+$(OBJECTS): $(SOURCES)
+	$(COMP) $(FLAGS) -c -o $@ $<
+
+$(EXECUTABLE): $(OBJECTS)
+	$(HIPCC) $(OBJECTS) -o $@ $(ROC_LIBS)
+

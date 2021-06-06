@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include "hip/hip_runtime.h"
+
+// roctx header file
+#include <roctx.h>
+// roctracer extension API
+#include <roctracer_ext.h>
+
+// 1. if N is set to up to 1024, then sum is OK.
+// 2. Set N past the 1024 which is past No. of threads per blocks, and then all iterations of sum results in 
+// even the ones within the block.
+
+// 3. To circumvent the problem described in 2. above, since if N goes past No. of threads per block, we need multiple block launch.
+// The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
+// (1+127) / 128.
+
+#define N 4194304
+#define MAX_THREAD_PER_BLOCK 1024
+
+__global__ void add( int * a, int * b, int * c ) {
+    int tid = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x ;
+    if (tid < N) 
+        c[tid] = a[tid] + b[tid];
+}    
+
+void init_tracing();
+void start_tracing();
+void stop_tracing();
+
+void start_tracing() {
+  printf("# START tracing");
+  // Start
+  roctracer_start();
+}
+
+// Stop tracing routine
+void stop_tracing() {
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_HIP_API);
+#if HIP_API_ACTIVITY_ON
+    roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HIP_API);
+#endif
+    roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HCC_OPS);
+    roctracer_disable_domain_activity(ACTIVITY_DOMAIN_HSA_OPS);
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_KFD_API);
+    roctracer_disable_domain_callback(ACTIVITY_DOMAIN_ROCTX);
+    roctracer_flush_activity();
+    printf("# STOP  \n");
+}
+
+int main (void) {
+    int *a, *b, *c;
+    int *dev_a, *dev_b, *dev_c;
+    int stepSize;
+
+	// allocate dev memory for N size for pointers declared earlier.
+
+    printf("\nAllocating memory...(size %u array size of INT).\n", N );
+
+    start_tracing();
+
+    a = (int*)malloc(N * sizeof(int));
+    b = (int*)malloc(N * sizeof(int));
+    c = (int*)malloc(N * sizeof(int));
+	hipMalloc( (void**)&dev_a, N * sizeof(int));
+	hipMalloc( (void**)&dev_b, N * sizeof(int));
+	hipMalloc( (void**)&dev_c, N * sizeof(int));
+
+	for (int i = 0; i < N; i++) {
+		a[i] = i;
+		b[i] = i+2;
+		c[i] = 999;
+	}
+
+	// copy the initialized local memory values to device memory. 
+
+    printf("\nCopy host to device...");
+	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
+	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
+	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
+
+    const unsigned blocks = 512;
+    const unsigned threadsPerBlock = 256;
+
+	// invoke the kernel: 
+	// block count: (N+127)/128
+	// thread count: 128
+    
+    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
+
+    stepSize =  N /20 ;	
+	for (int i = 0; i < N; i+=stepSize) {
+		printf("%d + %d = %d\n", a[i], b[i], c[i]);
+	}
+
+	hipFree(dev_a);
+	hipFree(dev_b);
+	hipFree(dev_c);
+    free(a);
+    free(b);
+    free(c);
+}
