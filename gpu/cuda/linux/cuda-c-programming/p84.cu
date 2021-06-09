@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include <cuda_runtime.h>
 
 inline double seconds()
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
     if (argc > 1) blocksize = atoi(argv[1]);
     if (argc > 2) size = atoi(argv[2]);
 
-    printf("Data size %d.\n", size);
+    printf("blocksize / size %d, %d.\n", blocksize, size);
 
     // setup execution congiguration.
 
@@ -103,6 +104,7 @@ int main(int argc, char **argv) {
     dim3 grid((size + block.x-1 ) / block.x, 1);
     
     printf("Execution configure (block %d grid %d).\n", block.x, grid.x);
+    sleep(3);
     
     // allocate gpu memory.
 
