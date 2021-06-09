@@ -18,6 +18,13 @@ __global__ void add( int * a, int * b, int * c ) {
         c[tid] = a[tid] + b[tid];
 }    
 
+__global__ void subtract( int * a, int * b, int * c ) {
+    int tid = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x ;
+    if (tid < N)
+        c[tid] = a[tid] - b[tid];
+}
+
+
 int main (void) {
     int *a, *b, *c;
     int *dev_a, *dev_b, *dev_c;
@@ -55,6 +62,7 @@ int main (void) {
 	// thread count: 128
     
     hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    hipLaunchKernelGGL(subtract, blocks, threadsPerBlock/2, 0, 0, dev_a, dev_b, dev_c);
     hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);

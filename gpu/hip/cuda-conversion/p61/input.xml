@@ -1,0 +1,3 @@
+<metric name=SQ_WAVES,SQ_INSTS_VALU,SQ_INSTS_SALU,SQ_INSTS_SMEM,VALUInsts,SALUInsts
+kernel="add,subtract"
+></metric>
