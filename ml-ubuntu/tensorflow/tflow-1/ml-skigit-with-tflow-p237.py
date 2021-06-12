@@ -1,4 +1,6 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
 w = tf.constant(3)
 x = w + 2
 y = x + 5

@@ -1,4 +1,7 @@
-import tensorflow as tf
+#import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
 x=tf.Variable(3, name="x")
 y=tf.Variable(4, name="y")
 f = x * x * y + y + 2
