@@ -2,6 +2,7 @@ import os
 import tarfile
 import pandas as pd
 import urllib.request
+import matplotlib.pyplot as plt
 
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
 HOUSING_PATH=os.path.join("datasets", "housing")
@@ -22,5 +23,12 @@ def load_housing_data(housing_path=HOUSING_PATH):
     csv_path = os.path.join(housing_path, "housing.csv")
     return pd.read_csv(csv_path)
 
-pd1=load_housing_data()
-print(pd1)
+housing=load_housing_data()
+
+#p48
+print(housing.info())
+print(housing["ocean_proximity"].value_counts())
+print(housing.describe())
+housing.hist(bins=50, figsize=(20,15))
+plt.show()
+
