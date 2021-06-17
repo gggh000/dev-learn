@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from sklearn.model_selection import StratifiedShuffleSplit
+from pandas.plotting import scatter_matrix
 
 ENABLE_PLOT=0
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
@@ -81,8 +82,19 @@ for set_ in (strat_train_set, strat_test_set):
 #p56
 
 housing=strat_train_set.copy()
-housing.plot(kind="scatter", x="longitude",  y="latitude", alpha=0.4, s=housing["population"]/100, label="population", figsize=(10,7), \
-c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True)
+
+if ENABLE_PLOT:
+    housing.plot(kind="scatter", x="longitude",  y="latitude", alpha=0.4, s=housing["population"]/100, label="population", figsize=(10,7), \
+    c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True)
+    plt.show()
+
+
+#looking for correlation using median housing value.
+
+corr_matrix=housing.corr()
+print(corr_matrix)
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+attributes=["median_house_value", "median_income", "total_rooms", "housing_median_age"]
+scatter_matrix(housing[attributes], figsize=(12, 8))
 plt.show()
-
-
