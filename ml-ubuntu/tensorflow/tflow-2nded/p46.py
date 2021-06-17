@@ -4,6 +4,9 @@ import pandas as pd
 import urllib.request
 import matplotlib.pyplot as plt
 import numpy as np
+
+from sklearn.model_selection import StratifiedShuffleSplit
+
 ENABLE_PLOT=0
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
 HOUSING_PATH=os.path.join("datasets", "housing")
@@ -52,3 +55,21 @@ if ENABLE_PLOT:
 
 train_set, test_set=split_train_test(housing, 0.2)
 print(len(train_set), len(test_set))
+
+housing["income_cat"] = pd.cut(housing["median_income"], bins=[0, 1.5, 3.0, 4.5, 6., np.inf], labels=[1,2,3,4,5])
+print(housing["income_cat"])
+print(housing["income_cat"].hist())
+
+if ENABLE_PLOT:
+    plt.show()
+
+#p55
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+print(split)
+for train_index, test_index in split.split(housing, housing["income_cat"]):
+    strat_train_set = housing.loc[train_index]
+    strat_test_set = housing.loc[test_index]
+
+print(strat_test_set["income_cat"].value_counts() / len(strat_test_set))
+print(strat_test_set["income_cat"].value_counts())
+
