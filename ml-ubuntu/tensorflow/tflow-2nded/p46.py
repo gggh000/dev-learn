@@ -12,6 +12,7 @@ ENABLE_PLOT=0
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
 HOUSING_PATH=os.path.join("datasets", "housing")
 HOUSING_URL=DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
+EXPERIMENTAL_CODE=0
 
 def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     os.makedirs(housing_path, exist_ok=True)
@@ -88,7 +89,6 @@ if ENABLE_PLOT:
     c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True)
     plt.show()
 
-
 #looking for correlation using median housing value.
 
 corr_matrix=housing.corr()
@@ -96,5 +96,26 @@ print(corr_matrix)
 print(corr_matrix["median_house_value"].sort_values(ascending=False))
 
 attributes=["median_house_value", "median_income", "total_rooms", "housing_median_age"]
-scatter_matrix(housing[attributes], figsize=(12, 8))
-plt.show()
+
+if ENABLE_PLOT:
+    scatter_matrix(housing[attributes], figsize=(12, 8))
+    plt.show()
+
+# experimental code.
+
+if EXPERIMENTAL_CODE:
+    print("households, 1st ten:")
+    print(pd.DataFrame(housing).shape)
+    print(pd.DataFrame((housing["households"])).shape)
+    print(housing)
+    print(housing["households"][:10])
+
+#p62
+housing["rooms_per_household"] = housing["total_rooms"] / housing["households"]
+housing["bedrooms_per_room"] = housing["total_bedrooms"] / housing["total_rooms"]
+housing["population_per_household"] = housing["population"] / housing["households"]
+
+if EXPERIMENTAL_CODE or 1:
+    for i in ["rooms_per_household", "bedrooms_per_room", "population_per_household"]:
+        print(i)
+        print(housing[i][:20])
