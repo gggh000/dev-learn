@@ -7,6 +7,8 @@ import numpy as np
 
 from sklearn.model_selection import StratifiedShuffleSplit
 from pandas.plotting import scatter_matrix
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 
 ENABLE_PLOT=0
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
@@ -119,3 +121,33 @@ if EXPERIMENTAL_CODE or 1:
     for i in ["rooms_per_household", "bedrooms_per_room", "population_per_household"]:
         print(i)
         print(housing[i][:20])
+
+corr_matrix=housing.corr()
+print(corr_matrix)
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+#p63
+print("Data cleaning...")
+print(housing.info())
+housing=strat_train_set.drop("median_house_value", axis=1)
+print(housing.info())
+housing_labels=strat_train_set["median_house_value"].copy()
+print(housing_labels)
+
+median=housing["total_bedrooms"].median()
+housing["total_bedrooms"].fillna(median, inplace=True)
+print(housing.info())
+
+print(" - convert categorical tex value to encoded numerical values.")
+
+housing_cat=housing[["ocean_proximity"]]
+ordinal_encoder= OrdinalEncoder()
+housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat)
+print(housing_cat_encoded[:10])
+print(ordinal_encoder.categories_)
+
+cat_encoder=OneHotEncoder()
+housing_cat_1hot=cat_encoder.fit_transform(housing_cat)
+print(housing_cat_1hot)
+print(housing_cat_1hot.toarray())
+
