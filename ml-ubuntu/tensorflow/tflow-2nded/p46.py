@@ -7,8 +7,12 @@ import numpy as np
 
 from sklearn.model_selection import StratifiedShuffleSplit
 from pandas.plotting import scatter_matrix
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 ENABLE_PLOT=0
 DOWNLOAD_ROOT="http://raw.githubusercontent.com/ageron/handson-ml2/master/"
@@ -134,6 +138,10 @@ print(housing.info())
 housing_labels=strat_train_set["median_house_value"].copy()
 print(housing_labels)
 
+#from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(strategy = "median")
+housing_num = housing.drop("ocean_proximity", axis=1)
+
 median=housing["total_bedrooms"].median()
 housing["total_bedrooms"].fillna(median, inplace=True)
 print(housing.info())
@@ -151,3 +159,53 @@ housing_cat_1hot=cat_encoder.fit_transform(housing_cat)
 print(housing_cat_1hot)
 print(housing_cat_1hot.toarray())
 
+# Custom transformer
+
+# from sklearn.base import BaseEstimator, TransformerMixin
+# p68
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room=True):
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+        
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
+        population_per_household = X[:, population_ix] / X[:, households_ix]
+        
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[X, rooms_per_household, population_per_household, bedrooms_per_room]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
+
+rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
+
+attr_adder = CombinedAttributesAdder(add_bedrooms_per_room=False)
+housing_extra_attribs = attr_adder.transform(housing.values)
+
+print("housing_extra_attribs:", housing_extra_attribs)
+
+# feature scaling
+#from sklearn.pipeline import Pipeline
+#from sklearn.preprocessing import StandardScaler
+
+num_pipeline = Pipeline([
+    ('imputer', SimpleImputer(strategy="median")),
+    ('attribs_adder', CombinedAttributesAdder()),
+    ('std_scaler', StandardScaler()),
+])
+
+housing_num_tr = num_pipeline.fit_transform(housing_num)
+
+from sklearn.compose import ColumnTransformer
+
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+
+full_pipeline = ColumnTransformer([
+    ("num", num_pipeline, num_attribs),
+    ("cat", OneHotEncoder(), cat_attribs),
+])
