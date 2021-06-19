@@ -7,6 +7,7 @@ nvcc -g -G -arch=sm_20 $FILENAME.cu -o $OUTPUT
 #echo "BRANCH EFFICIENCY:"
 #ncu --metrics smsp__sass_average_branch_targets_threads_uniform.pct ./$OUTPUT
 
+if [[ $? -ne 0 ]] ; then echo "Compilation failed!" ; exit 1 ; fi
 function printWithBar() {
 echo $BAR
 echo $1

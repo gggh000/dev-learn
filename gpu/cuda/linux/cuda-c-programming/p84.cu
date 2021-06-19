@@ -54,13 +54,25 @@ __global__ void mathKernel2(float * c) {
 
 __global__ void mathKernel3(float * c) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    float ia, ib;
-    ia = ib = 0.0f;
-    
-    bool ipred = (tid % 2 == 0);
-    if (ipred)  ia = 100.0f; 
-    if (!ipred) ib = 200.0f; 
-    c[tid] = ia + ib;
+    float ia, ib, ic, id;
+    ia = ib = ic = id = 0.0f;
+
+    switch(tid % 8)  {
+        case 0:
+        case 4:
+            ia = 100.0f;
+        case 1:
+        case 5:
+            ia = 200.0f;
+        case 2:
+        case 6:
+            ia = 300.0f;
+        case 3:
+        case 7:
+            ia = 400.0f;
+    }
+
+    c[tid] = ia + ib + ic + id;
 }
 
 __global__ void mathKernel4(float *c)
