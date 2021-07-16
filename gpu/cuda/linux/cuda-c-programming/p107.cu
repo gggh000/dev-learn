@@ -2,13 +2,40 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <cuda_runtime.h>
-
+#define DEBUG 0
 inline double seconds()
 {
     struct timeval tp;
     struct timezone tzp;
     int i = gettimeofday(&tp, &tzp);
     return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
+}
+
+// Recursive Implementation of Interleaved Pair Approach
+
+int cpuRecursiveReduce(int *data, int const size)
+{
+    if (DEBUG == 1) 
+        printf("cpuRecursiveReduce: size: %u.\n", size);
+
+    // Stop condition.
+
+    if (size == 1) return data[0];
+
+    // Renew the stride.
+
+    int const stride = size / 2;
+
+    // In-place reduction.
+
+    for (int i = 0; i < stride; i++)
+    {
+        data[i] += data[i + stride];
+    }
+
+    // call recursively
+
+    return cpuRecursiveReduce(data, stride);
 }
 
 __global__ void reduceNeighbored(int * g_idata, int * g_odata, unsigned int n) {
@@ -20,7 +47,7 @@ __global__ void reduceNeighbored(int * g_idata, int * g_odata, unsigned int n) {
     // Convert global data pointer to the local pointer of this block.
     // Offset into current block from the beginning of data stream.
 
-    int * idata = g_idata + blockIdx.x + blockDim.x;
+    int * idata = g_idata + blockIdx.x * blockDim.x;
 
     // Boundary check.
 
@@ -141,10 +168,12 @@ int main(int argc, char ** argv) {
     cudaMalloc((void **) &d_odata, grid.x * sizeof(int));
 
     // CPU reduction.  I am going to skip this one.
-    /*
+    
     iStart = seconds();
-    int cpu_sum = re
-    */
+    int cpu_sum = cpuRecursiveReduce(tmp, size);
+    iElaps = seconds() - iStart;
+
+    printf("cpu reduce elapsed %d ms cpu_sum: %d\n", iElaps, cpu_sum);
 
     // kernel 1: reduceNeighbored.
 
@@ -160,7 +189,8 @@ int main(int argc, char ** argv) {
     for (int i = 0; i < grid.x; i++) 
         gpu_sum += h_odata[i];
 
-    printf("GPU warmup elapsed %d ms gpu_sum: %d <<<grid %d block %d>>>\n", iElaps, gpu_sum, grid.x, block.x);
+    //printf("GPU warmup elapsed %d ms gpu_sum: %d <<<grid %d block %d>>>\n", iElaps, gpu_sum, grid.x, block.x);
+    printf("GPU warmup elapsed %d.\n", iElaps);
 
     // kernel 1: reduceNeighbored.
 
@@ -178,6 +208,7 @@ int main(int argc, char ** argv) {
 
     printf("GPU Neighbored elapsed %d ms gpu_sum: %d <<<grid %d block %d>>>\n", iElaps, gpu_sum, grid.x, block.x);
 
+    /*
     cudaDeviceSynchronize();
     iElaps = seconds() - iStart;
     cudaMemcpy(h_odata, d_odata, grid.x/8 * sizeof(int), cudaMemcpyDeviceToHost);
@@ -187,6 +218,7 @@ int main(int argc, char ** argv) {
         gpu_sum += h_odata[i];
 
     printf("GPU Cmptnrollelapsed %d ms gpu_sum: %d <<<grid %d block %d>>>\n", iElaps, gpu_sum, grid.x/8, block.x);
+    */
 
     // Free host memory.
 
