@@ -1,4 +1,4 @@
-// Summing matrices with 2d grid and 2d blocks.
+// Summing matrices with 1d grid and 1d blocks.
 
 #include <cuda_runtime.h>
 #include <stdio.h>
