@@ -1,7 +1,8 @@
 FILENAME=p100   
 BAR="----------------------------------"
 OUTPUT=$FILENAME.out
-LOGFILE=./p100.log
+LOGFILE=/log/p100.log
+mkdir log
 function printWithBar() {
 echo $BAR
 echo $1
