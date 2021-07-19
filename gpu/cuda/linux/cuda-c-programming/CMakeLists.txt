@@ -1,19 +1,27 @@
-cmake_minimum_required(VERSION 3.10)
-set(ROCMOPENCL /opt/rocm/opencl/)
-message( "ROCM library path:" ${ROCMOPENCL} )
+cmake_minimum_required(VERSION 3.5)
+set(CUDA_NVCC_EXECUTABLE "/usr/local/cuda-9.2/bin/nvcc")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda-9.2/bin/")
+set(CUDA_INCLUDE_DIRS "/usr/local/cuda/include")
+set(CUDA_CUDART_LIBRARY "/usr/local/cuda/lib64")
+set(CUDA_VERSION 9.2)
+#set(ROCMOPENCL /opt/rocm/opencl/)
+#message( "ROCM library path:" ${ROCMOPENCL} )
+#find_package(CUDA_CUDART_LIBRARY REQUIRED)
+find_package(CUDA QUIET REQUIRED)
 #add_subdirectory(${ROCMOPENCL}/lib/ build)
 
-foreach(var p18 p33 p25 p45 p51 p55 p58 p84 p100 p125 p115 p165)
+if(FALSE)
+foreach(var p18 p33 p25 p45 p51 p55 p58 p84 p125 p115 p165)
     message(STATUS "Generating makefile for ${var}")
     project(${var})
-    add_executable(${var} ${var}.c)
-    project(${var})
-    add_executable(${var}.out ${var}.c)
+    cuda_add_executable(${var} ${var}.c)
+    #project(${var})
+    #add_executable(${var} ${var}.c)
     #target_link_libraries(${var} PUBLIC ${ROCMOPENCL}/lib/libOpenCL.so)
     #target_include_directories(${var} PUBLIC ${ROCMOPENCL}/include)
 endforeach()
-
-#exclused because of customer shell build script:
+endif()
+#exclused FOR TIME BEING because of customer shell build script:
 #p84
 #p100
 #p125
