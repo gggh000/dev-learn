@@ -42,7 +42,10 @@ $(EXECUTABLE): $(OBJECTS)
 	$(HIPCC) $(OBJECTS) -o $@ $(ROC_LIBS)
 
 test:  $(EXECUTABLE)
-	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so" ./$(EXECUTABLE)
+	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" ./$(EXECUTABLE) 
+
+testp:  $(EXECUTABLE)
+	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" ./$(EXECUTABLE) 
 
 clean:
 	rm *.o
