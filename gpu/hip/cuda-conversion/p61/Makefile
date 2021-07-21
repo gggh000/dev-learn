@@ -13,7 +13,12 @@ ROOT_PATH ?= /opt/rocm/roctracer/
 INC_PATH  ?= $(ROOT_PATH)/include
 LIB_PATH  ?= $(ROOT_PATH)/lib
 ROCM_PATH ?= /opt/rocm
-ROC_LIBS  = -Wl,--rpath,${LIB_PATH} $(LIB_PATH)/libroctracer64.so $(LIB_PATH)/libroctx64.so
+ROC_LIBS  = -Wl,--rpath,${LIB_PATH} \
+    $(LIB_PATH)/libroctracer64.so \
+    $(LIB_PATH)/libroctx64.so \
+    $(ROCM_PATH)/lib/libamdhip64.so \
+    $(LIB_PATH)/libkfdwrapper64.so \
+    $(ROCM_PATH)/rocprofiler/lib/librocprofiler64.so 
 
 FLAGS =-g $(INC_PATH:%=-I%) -I$(ROCM_PATH)/roctracer/include/ -I$(ROCM_PATH)/hsa/include/hsa -I$(ROCM_PATH)/hsa/include -I$(ROCM_PATH)/hip/include -I$(ROCM_PATH)/include -DLOCAL_BUILD=1 -DHIP_VDI=${HIP_VDI} -DITERATIONS=$(ITERATIONS) -DAMD_INTERNAL_BUILD=1
 
@@ -44,8 +49,12 @@ $(EXECUTABLE): $(OBJECTS)
 test:  $(EXECUTABLE)
 	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" ./$(EXECUTABLE) 
 
-testp:  $(EXECUTABLE)
-	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" ./$(EXECUTABLE) 
+testp1:  $(EXECUTABLE)
+	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" rocprof ./$(EXECUTABLE) 
+
+testp2:  $(EXECUTABLE)
+	rocprof ./$(EXECUTABLE) 
+
 
 clean:
 	rm *.o
