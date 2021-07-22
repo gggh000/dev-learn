@@ -49,11 +49,8 @@ $(EXECUTABLE): $(OBJECTS)
 test:  $(EXECUTABLE)
 	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" ./$(EXECUTABLE) 
 
-testp1:  $(EXECUTABLE)
-	LD_PRELOAD="$(LIB_PATH)/libkfdwrapper64.so librocprofiler64.so /opt/rocm-4.2.0/lib/libamdhip64.so" rocprof ./$(EXECUTABLE) 
-
-testp2:  $(EXECUTABLE)
-	rocprof ./$(EXECUTABLE) 
+testp:  $(EXECUTABLE)
+	rocprof --hiptrace ./$(EXECUTABLE) 
 
 
 clean:
