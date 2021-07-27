@@ -1,0 +1,130 @@
+Is workgroup size in opencl same as blocksize in cuda? 
+I am trying to draw a parallel and in fact attempting to port simple vectoraddition example in cuda to opencl.
+It works but sort of different than I expected.
+ 
+ Below I only put important lines of vector addition.
+ 
+ To start with deviceproperties with RTX2070 returns 
+...
+warpSize:               0x20
+maxThreads/Block:       0x400
+...
+
+Corresponding code: 
+        cudaGetDeviceProperties ( &prop, i);
+        printf("\nwarpSize:         0x%0x", prop.warpSize);
+        printf("\nmaxThreads/Block:     0x%0x", prop.maxThreadsPerBlock);
+
+Now I sent an array vector of more than 1024 in this case, I will have to make following quite tricky adjustment, from 1) to 2) when more than 1 block is involved. If I dont do the 2), then anything past 1024, return 0 in c[tid].
+
+1) simple case, for less than 1024 size vector.
+
+__global__ void add( int * a, int * b, int * c ) {
+    int tid = threadIdx.x;
+
+    c[tid] = a[tid] + b[tid];
+}
+
+host:
+...
+add<<<1, N>>> (dev_a, dev_b, dev_c);
+
+2) vector size of more than 1024. 
+
+__global__ void add( int * a, int * b, int * c ) {
+    int tid = threadIdx.x + blockIdx.x * blockDim.x; // update index for longer than block size. 
+
+    if (tid < N) // for irregular size, not multiple of blocksize
+        c[tid] = a[tid] + b[tid];
+    c[tid]=tid;
+}
+
+host:
+...
+add<<<(N+MAX_THREAD_PER_BLOCK-1)/MAX_THREAD_PER_BLOCK, MAX_THREAD_PER_BLOCK>>> (dev_a, dev_b, dev_c);
+
+I did similar thing in opencl and see what happens if I blew past the workroup size (=blocksize), but with amd radeon card 
+with workgroup size of 1024, things go awry if I blew past 256 not 1024. How do you explain this?
+Now unlike cuda, where if I compile and execute above example as 1) but only exceed block size, the part of returned vector that exceeded 
+the block size remained 0. But in this case, it returned some garbage value if I exceed 256. 
+
+To add more confusion the clinfo returns two different values for workgroup size, 1) workgroup size 2) workgroup size (AMD)
+
+  Max work item sizes                             1024x1024x1024
+  Max work group size                             256
+  Preferred work group size (AMD)                 256
+  Max work group size (AMD)                       1024
+
+#define NWITEMS 2048
+#define LOCAL_WORK_SIZE 256
+
+... usual stuff (create context, queue etc)
+
+    size_t global_work_size = NWITEMS;
+    size_t local_work_size = LOCAL_WORK_SIZE;
+
+    clEnqueueNDRangeKernel( queue, kernel,  1, NULL, &global_work_size, &local_work_size, 0,  NULL, NULL);
+    
+    ...execute kernel etc...
+    
+    ret = clEnqueueReadBuffer(queue, dev_c, CL_TRUE, 0, NWITEMS * sizeof(cl_uint), c, NULL, NULL, NULL);
+    
+    
+now I print out the return of this opencl code, i got 
+Printing sums now...
+worksize: 256:
+
+Printing sums now...
+globalID: 0x00. value (a/b/c): 0x00000000/0x00000000/0x00000000.
+globalID: 0x100. value (a/b/c): 0x00000100/0x00000050/0x00000150.
+globalID: 0x200. value (a/b/c): 0x00000200/0x00000100/0x00000300.
+globalID: 0x300. value (a/b/c): 0x00000300/0x00000150/0x00000450.
+globalID: 0x400. value (a/b/c): 0x00000400/0x00000200/0x00000600.
+globalID: 0x500. value (a/b/c): 0x00000500/0x00000250/0x00000750.
+globalID: 0x600. value (a/b/c): 0x00000600/0x00000300/0x00000900.
+globalID: 0x700. value (a/b/c): 0x00000700/0x00000350/0x00001050.
+globalID: 0x800. value (a/b/c): 0x00000800/0x00000400/0x00001200.
+globalID: 0x900. value (a/b/c): 0x00000900/0x00000450/0x00001350.
+globalID: 0x1000. value (a/b/c): 0x00001000/0x00000500/0x00001500.
+globalID: 0x1100. value (a/b/c): 0x00001100/0x00000550/0x00001650.
+globalID: 0x1200. value (a/b/c): 0x00001200/0x00000600/0x00001800.
+globalID: 0x1300. value (a/b/c): 0x00001300/0x00000650/0x00001950.
+globalID: 0x1400. value (a/b/c): 0x00001400/0x00000700/0x00002100.
+globalID: 0x1500. value (a/b/c): 0x00001500/0x00000750/0x00002250.
+globalID: 0x1600. value (a/b/c): 0x00001600/0x00000800/0x00002400.
+globalID: 0x1700. value (a/b/c): 0x00001700/0x00000850/0x00002550.
+globalID: 0x1800. value (a/b/c): 0x00001800/0x00000900/0x00002700.
+globalID: 0x1900. value (a/b/c): 0x00001900/0x00000950/0x00002850.
+globalID: 0x2000. value (a/b/c): 0x00002000/0x00001000/0x00003000.
+
+worksize: 512:
+
+globalID: 0x00. value (a/b/c): 0x00000000/0x00000000/0x3200171710.
+globalID: 0x100. value (a/b/c): 0x00000100/0x00010000/0x3200171710.
+globalID: 0x200. value (a/b/c): 0x00000200/0x00040000/0x3200171710.
+globalID: 0x300. value (a/b/c): 0x00000300/0x00090000/0x3200171710.
+globalID: 0x400. value (a/b/c): 0x00000400/0x00160000/0x3200171710.
+globalID: 0x500. value (a/b/c): 0x00000500/0x00250000/0x3200171710.
+globalID: 0x600. value (a/b/c): 0x00000600/0x00360000/0x3200171710.
+globalID: 0x700. value (a/b/c): 0x00000700/0x00490000/0x3200171710.
+globalID: 0x800. value (a/b/c): 0x00000800/0x00640000/0x3200171710.
+globalID: 0x900. value (a/b/c): 0x00000900/0x00810000/0x3200171710.
+globalID: 0x1000. value (a/b/c): 0x00001000/0x01000000/0x3200171710.
+globalID: 0x1100. value (a/b/c): 0x00001100/0x01210000/0x3200171710.
+globalID: 0x1200. value (a/b/c): 0x00001200/0x01440000/0x3200171710.
+globalID: 0x1300. value (a/b/c): 0x00001300/0x01690000/0x3200171710.
+globalID: 0x1400. value (a/b/c): 0x00001400/0x01960000/0x3200171710.
+globalID: 0x1500. value (a/b/c): 0x00001500/0x02250000/0x3200171710.
+globalID: 0x1600. value (a/b/c): 0x00001600/0x02560000/0x3200171710.
+globalID: 0x1700. value (a/b/c): 0x00001700/0x02890000/0x3200171710.
+globalID: 0x1800. value (a/b/c): 0x00001800/0x03240000/0x3200171710.
+globalID: 0x1900. value (a/b/c): 0x00001900/0x03610000/0x3200171710.
+globalID: 0x2000. value (a/b/c): 0x00002000/0x04000000/0x3200171710.
+
+
+
+
+
+
+
+
