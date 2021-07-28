@@ -1,4 +1,7 @@
 import tensorflow as tf
+import pandas as pd 
+import matplotlib as plt
+
 from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
@@ -19,7 +22,15 @@ model.add(keras.layers.Dense(300, activation="relu"))
 model.add(keras.layers.Dense(100, activation="relu"))
 model.add(keras.layers.Dense(30, activation="softmax"))
 
-print("model summary: ", model.summary)
+print("model summary: ", model.summary())
 
+model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
+history=model.fit(X_train, y_train, epochs=30, validation_data=(X_valid, y_valid))
 
+pd.DataFrame(history.history).plot(figsize=(8, 5))
+plt.pyplot.grid(True)
+plt.pyplot.gca().set_ylim(0, 1)
+plt.pyplot.show()
+
+model.evaluate(X_test, y_test)
 
