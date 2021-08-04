@@ -6,6 +6,8 @@ from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
 
+CONFIG_ENABLE_PLOT=0
+
 fashion_mnist = keras.datasets.fashion_mnist
 (X_train_full, y_train_full), (X_test, y_test) = fashion_mnist.load_data()
 print("X_train_full.shape: ", X_train_full.shape)
@@ -28,9 +30,11 @@ model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=[
 history=model.fit(X_train, y_train, epochs=30, validation_data=(X_valid, y_valid))
 
 pd.DataFrame(history.history).plot(figsize=(8, 5))
-plt.pyplot.grid(True)
-plt.pyplot.gca().set_ylim(0, 1)
-plt.pyplot.show()
+
+if CONFIG_ENABLE_PLOT:
+    plt.pyplot.grid(True)
+    plt.pyplot.gca().set_ylim(0, 1)
+    plt.pyplot.show()
 
 model.evaluate(X_test, y_test)
 
