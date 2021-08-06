@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "hip/hip_runtime.h"
 
+// Compared to p61.cpp, it has additional kernel called subtract.
+
+
 // 1. if N is set to up to 1024, then sum is OK.
 // 2. Set N past the 1024 which is past No. of threads per blocks, and then all iterations of sum results in 
 // even the ones within the block.

@@ -34,6 +34,7 @@ static inline uint32_t GetPid() { return syscall(__NR_getpid); }
 // (1+127) / 128.
 
 #define N 4194304
+#define N 2048
 #define MAX_THREAD_PER_BLOCK 1024
 
 #ifdef __cplusplus

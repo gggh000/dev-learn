@@ -9,7 +9,7 @@
 // The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
 // (1+127) / 128.
 
-#define N 4194304
+#define N 2048
 #define MAX_THREAD_PER_BLOCK 1024
 
 __global__ void add( int * a, int * b, int * c ) {
