@@ -38,3 +38,6 @@ if CONFIG_ENABLE_PLOT:
 
 model.evaluate(X_test, y_test)
 
+print("model layers: ", model.layers)
+weights, biases  = model.layers[1].get_weights()
+print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape) 
