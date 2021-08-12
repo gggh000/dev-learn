@@ -50,3 +50,4 @@ y_pred = model.predict((\
     X_new_A, \
     X_new_B))
 
+model.save("p310.h5")
