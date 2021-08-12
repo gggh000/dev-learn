@@ -34,10 +34,10 @@ hidden1 = keras.layers.Dense(30, activation="relu")(input_B)
 hidden2 = keras.layers.Dense(30, activation="relu")(hidden1)
 concat = keras.layers.Concatenate()([input_A, hidden2])
 output = keras.layers.Dense(1, name="main_output")(concat)
-aux_output = keras.layers.Dense(1, name="aux_output")(hiddn2)
+aux_output = keras.layers.Dense(1, name="aux_output")(hidden2)
 model = keras.Model(inputs=[input_A, input_B], outputs=[output, aux_output])
 
-model.compile(loss=["mse","mse"], loss_weihts=[0.9, 0.1], optimizer="sgd")
+model.compile(loss=["mse","mse"], loss_weights=[0.9, 0.1], optimizer="sgd")
 
 history = model.fit( \
     [X_train_A, X_train_B], [y_train, y_train], \
