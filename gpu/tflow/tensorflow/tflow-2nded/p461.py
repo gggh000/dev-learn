@@ -3,6 +3,7 @@
 import tensorflow as tf
 import pandas as pd 
 import matplotlib as plt
+import time 
 
 from tensorflow import keras
 print(tf.__version__)
@@ -12,6 +13,8 @@ CONFIG_ENABLE_PLOT=0
 
 fashion_mnist = keras.datasets.fashion_mnist
 (X_train_full, y_train_full), (X_test, y_test) = fashion_mnist.load_data()
+
+X_train_full = X_train_full.reshape(-1, 28, 28, 1)
 print("X_train_full.shape: ", X_train_full.shape)
 print("X_train_full.dtype: ", X_train_full.dtype)
 
@@ -20,11 +23,30 @@ y_valid, y_train = y_train_full[:5000], y_train_full[5000:]
 X_test = X_test / 255.0
 class_names = ["T-shirt/top","Trouser", "Pullover", "Dress", "Coat" , "Sandal", "Shirt", "Sneaker","Bad","Ankle boot"]
 
+'''
 model=keras.models.Sequential()
 model.add(keras.layers.Flatten(input_shape = [28, 28]))
 model.add(keras.layers.Dense(300, activation="relu"))
 model.add(keras.layers.Dense(100, activation="relu"))
 model.add(keras.layers.Dense(30, activation="softmax"))
+'''
+
+model=keras.models.Sequential([\
+    keras.layers.Conv2D(64, 7, activation="relu", padding="same", input_shape=[28, 28, 1]),\
+    keras.layers.MaxPooling2D(2), \
+    keras.layers.Conv2D(128, 3, activation="relu", padding="same"), \
+    keras.layers.Conv2D(128, 3, activation="relu", padding="same"), \
+    keras.layers.MaxPooling2D(2), \
+    keras.layers.Conv2D(256, 3, activation="relu", padding="same"), \
+    keras.layers.Conv2D(256, 3, activation="relu", padding="same"), \
+    keras.layers.MaxPooling2D(2), \
+    keras.layers.Flatten(), \
+    keras.layers.Dense(128, activation="relu"), \
+    keras.layers.Dropout(0.5), \
+    keras.layers.Dense(64, activation="relu"), \
+    keras.layers.Dropout(0.5), \
+    keras.layers.Dense(10, activation="softmax") \
+])
 
 print("model summary: ", model.summary())
 

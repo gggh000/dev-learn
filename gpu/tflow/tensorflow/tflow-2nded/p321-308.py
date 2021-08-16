@@ -45,7 +45,7 @@ y_preid = model.predict(X_new)
 param_distribs = {\
     "n_hidden" : [0,1,2,3],
     "n_neurons" : np.arange(1, 100),
-    "learning_rate" : reciprocal(3e-4, 3e-2),
+#   "learning_rate" : reciprocal(3e-4, 3e-2),
 }
 def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
     model=keras.models.Sequential()
