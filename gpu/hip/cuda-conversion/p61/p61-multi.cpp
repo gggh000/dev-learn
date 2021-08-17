@@ -28,7 +28,6 @@ int main (void) {
     hipGetDeviceCount(&count);
 
     printf("\nDevice count: %d.", count);
-
 	// allocate dev memory for N size for pointers declared earlier.
 
     printf("\nAllocating memory...(size %u array size of INT).\n", N );
@@ -36,9 +35,6 @@ int main (void) {
     a = (int*)malloc(N * sizeof(int));
     b = (int*)malloc(N * sizeof(int));
     c = (int*)malloc(N * sizeof(int));
-	hipMalloc( (void**)&dev_a, N * sizeof(int));
-	hipMalloc( (void**)&dev_b, N * sizeof(int));
-	hipMalloc( (void**)&dev_c, N * sizeof(int));
 
 	for (int i = 0; i < N; i++) {
 		a[i] = i;
@@ -46,33 +42,40 @@ int main (void) {
 		c[i] = 999;
 	}
 
-	// copy the initialized local memory values to device memory. 
+    for (int i = 0 ; i < count; i++) {
+        hipSetDevice(i);
+    	hipMalloc( (void**)&dev_a, N * sizeof(int));
+    	hipMalloc( (void**)&dev_b, N * sizeof(int));
+    	hipMalloc( (void**)&dev_c, N * sizeof(int));
 
-    printf("\nCopy host to device...");
-	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
-	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
-	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
+    	// copy the initialized local memory values to device memory. 
 
-    const unsigned blocks = 512;
-    const unsigned threadsPerBlock = 256;
+        printf("\nCopy host to device... %d.", i);
+    	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
+    	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
+    	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
 
-	// invoke the kernel: 
-	// block count: (N+127)/128
-	// thread count: 128
-    
-    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
-    hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
-    hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
-    hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
+        const unsigned blocks = 512;
+        const unsigned threadsPerBlock = 256;
 
-    stepSize =  N /20 ;	
-	for (int i = 0; i < N; i+=stepSize) {
-		printf("%d + %d = %d\n", a[i], b[i], c[i]);
-	}
+    	// invoke the kernel: 
+    	// block count: (N+127)/128
+    	// thread count: 128
+        
+        hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+        hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
+        hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
+        hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
 
-	hipFree(dev_a);
-	hipFree(dev_b);
-	hipFree(dev_c);
+        stepSize =  N /20 ;	
+    	for (int i = 0; i < N; i+=stepSize) {
+    		printf("%d + %d = %d\n", a[i], b[i], c[i]);
+    	}
+
+    	hipFree(dev_a);
+    	hipFree(dev_b);
+    	hipFree(dev_c);
+    }
     free(a);
     free(b);
     free(c);
