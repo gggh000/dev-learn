@@ -20,9 +20,10 @@ print("X_train_full.dtype: ", X_train_full.dtype)
 
 X_valid, X_train = X_train_full[:5000] / 255.0, X_train_full[5000:]/255.0
 y_valid, y_train = y_train_full[:5000], y_train_full[5000:]
+print("X_test shape: ", X_test.shape)
+X_test = X_test.reshape(-1, 28, 28, 1)
 X_test = X_test / 255.0
 class_names = ["T-shirt/top","Trouser", "Pullover", "Dress", "Coat" , "Sandal", "Shirt", "Sneaker","Bad","Ankle boot"]
-
 '''
 model=keras.models.Sequential()
 model.add(keras.layers.Flatten(input_shape = [28, 28]))
@@ -51,7 +52,7 @@ model=keras.models.Sequential([\
 print("model summary: ", model.summary())
 
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
-history=model.fit(X_train, y_train, epochs=30, validation_data=(X_valid, y_valid))
+history=model.fit(X_train, y_train, epochs=10, validation_data=(X_valid, y_valid))
 
 pd.DataFrame(history.history).plot(figsize=(8, 5))
 
