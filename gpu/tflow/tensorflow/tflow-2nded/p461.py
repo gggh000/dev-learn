@@ -1,4 +1,4 @@
-# Using neural net to do a classification task.
+# Using CNN to do a classification task.
 
 import tensorflow as tf
 import pandas as pd 
