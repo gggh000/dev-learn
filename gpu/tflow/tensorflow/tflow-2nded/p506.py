@@ -66,7 +66,9 @@ if CONFIG_ENABLE_PLOT:
 y_pred = X_valid[:, -1]
 print("y_pred shape: ", y_pred.shape)
 model=keras.models.Sequential([\
-    keras.layers.SimpleRNN(1, input_shape=[None, 1])\
+    keras.layers.SimpleRNN(20, return_sequences=True, input_shape=[None, 1]),\
+    keras.layers.SimpleRNN(20, return_sequences=True),\
+    keras.layers.SimpleRNN(1)\
 ])
 
 print("model summary: ", model.summary())
@@ -92,6 +94,7 @@ if DEBUG:
 
 if CONFIG_SAVE_MODEL:
     model.save("p505.h5")
+
 X_new = X_test[:3]
 print("X_new shape: ", X_new.shape)
 y_proba = model.predict(X_new)
