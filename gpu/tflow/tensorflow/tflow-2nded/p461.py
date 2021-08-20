@@ -4,13 +4,19 @@ import tensorflow as tf
 import pandas as pd 
 import matplotlib as plt
 import time 
+import sys
+import re
 
+import helper
 from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
 
 CONFIG_ENABLE_PLOT=0
+CONFIG_EPOCHS=30
+CONFIG_BATCH_SIZE=32
 
+CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
 fashion_mnist = keras.datasets.fashion_mnist
 (X_train_full, y_train_full), (X_test, y_test) = fashion_mnist.load_data()
 
@@ -52,7 +58,7 @@ model=keras.models.Sequential([\
 print("model summary: ", model.summary())
 
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
-history=model.fit(X_train, y_train, epochs=10, validation_data=(X_valid, y_valid))
+history=model.fit(X_train, y_train, epochs=CONFIG_EPOCHS, batch_size=CONFIG_BATCH_SIZE, validation_data=(X_valid, y_valid))
 
 pd.DataFrame(history.history).plot(figsize=(8, 5))
 
