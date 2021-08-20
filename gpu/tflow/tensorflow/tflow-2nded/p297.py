@@ -7,6 +7,7 @@ import sys
 import time
 import re
 import numpy as np
+import helper
 from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
@@ -15,6 +16,8 @@ CONFIG_ENABLE_PLOT=0
 CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
 
+CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
+'''
 for i in sys.argv:
     print("Processing ", i)
     try:
@@ -26,7 +29,7 @@ for i in sys.argv:
     except Exception as msg:
         print("No argument provided")
         print(msg)
-
+'''
 print("CONFIG_EPOCHS: ", CONFIG_EPOCHS)
 print("CONFIG_BATCH_SIZE: ", CONFIG_BATCH_SIZE)
 time.sleep(3)
