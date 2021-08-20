@@ -21,7 +21,7 @@ CONFIG_SAVE_MODEL=0
 
 DEBUG=0
 CONFIG_ENABLE_PLOT=0
-CONFIG_EPOCHS=50
+CONFIG_EPOCHS=5
 CONFIG_BATCH_SIZE=32
 
 if  len(sys.argv) > 1:
@@ -63,7 +63,13 @@ vocab_init=tf.lookup.KeyValueTensorInitializer(words, word_ids)
 num_oov_buckets = 1000
 table = tf.lookup.StaticVocabularyTable(vocab_init, num_oov_buckets)
 
-quit(0)
+def encode_words(X_batch, y_batch):
+    return table.lookup(X_batch), y_batch
+
+train_set = datasets["train"].batch(32).map(preprocess)
+train_set = train_set.map(encode_words).prefetch(1)
+
+embed_size = 128
 '''
 with distribution.scope():
 
@@ -77,14 +83,16 @@ distribution = tf.distribute.MirroredStrategy()
 
 with distribution.scope():
     model=keras.models.Sequential([\
-        keras.layers.GRU(128, return_sequences=True, input_shape=[None, max_id], dropout=0.2, recurrent_dropout=0.2),\
-        keras.layers.GRU(128, return_sequences=True, dropout=0.2, recurrent_dropout=0.2),\
-        keras.layers.TimeDistributed(keras.layers.Dense(max_id, activation="softmax"))\
+        keras.layers.Embedding(vocab_size + num_oov_buckets, embed_size, input_shape=[None]), \
+        keras.layers.GRU(128, return_sequences=True),\
+        keras.layers.GRU(128),\
+        keras.layers.Dense(1, activation = "sigmoid")
 ])
 
-model.compile(loss="sparse_categorical_crossentropy", optimizer="adam")
-history=model.fit(dataset, epochs=CONFIG_EPOCHS, callbacks=[ResetStatesCallback()])
+model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+history=model.fit(train_set, epochs=CONFIG_EPOCHS)
 
+'''
 def preprocess(texts):
     X = np.array(tokenizer.texts_to_sequences(texts)) - 1
     return tf.one_hot(X, max_id)
@@ -92,4 +100,4 @@ def preprocess(texts):
 X_new = preprocess(["How are you"])
 Y_pred = model.predict_classes(X_new)
 print(tokenizer.sequences_to_texts(Y_pred + 1)[0][-1])
-
+'''
