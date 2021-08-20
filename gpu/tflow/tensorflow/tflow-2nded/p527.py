@@ -59,3 +59,11 @@ model=keras.models.Sequential([\
 model.compile(loss="sparse_categorical_crossentropy", optimizer="adam")
 history=model.fit(dataset, epochs=CONFIG_EPOCHS)
 
+def preprocess(texts):
+    X = np.array(tokenizer.texts_to_sequences(texts)) - 1
+    return tf.one_hot(X, max_id)
+
+X_new = preprocess(["How are you"])
+Y_pred = model.predict_classes(X_new)
+print(tokenizer.sequences_to_texts(Y_pred + 1)[0][-1])
+
