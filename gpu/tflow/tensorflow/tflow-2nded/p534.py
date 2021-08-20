@@ -1,4 +1,4 @@
-# Statefull RNN
+# Sentimental analysis.
 
 import tensorflow as tf
 import pandas as pd
@@ -25,34 +25,16 @@ CONFIG_BATCH_SIZE=32
 if  len(sys.argv) > 1:
     CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
 
-class ResetStatesCallback(keras.callbacks.Callback):
-    def on_epoch_begin(self, epoch, logs):
-        self.model.reset_states()
+(X_train, y_train), (X_test, y_test) = keras.datasets.imdb.load_data()
+print("X_train[:10]: ", X_train[0][:10])
 
-shakespeare_url="https://homl.info/shakespeare"
-filepath=keras.utils.get_file("shakespeare.txt", shakespeare_url)
-with open(filepath) as f:
-    shakespeare_text=f.read()
-tokenizer = keras.preprocessing.text.Tokenizer(char_level = True)
-tokenizer.fit_on_texts(shakespeare_text)
+word_index = keras.datasets.imdb.get_word_index()
+id_to_word = {id_ +  3: word for word, id_ in word_index.items()}
+for id_,  token in enumerate(("<pad>", "<sos>", "<unk>")):
+    id_to_word[id_] = token
 
-max_id = len(tokenizer.word_index)
-dataset_size = tokenizer.document_count
-[encoded]=np.array(tokenizer.texts_to_sequences([shakespeare_text])) - 1
-train_size = dataset_size * 90 // 100
-
-dataset = tf.data.Dataset.from_tensor_slices(encoded[:train_size])
-n_steps=100
-window_length = n_steps + 1
-dataset = dataset.window(window_length, shift=n_steps, drop_remainder = True)
-dataset = dataset.flat_map(lambda windows: windows.batch(window_length))
-
-#batch_size=CONFIG_BATCH_SIZE
-dataset = dataset.batch(1)
-dataset = dataset.map(lambda windows: (windows[:, :-1], windows[:, 1:]))
-dataset = dataset.map(lambda X_batch, Y_batch: (tf.one_hot(X_batch, depth=max_id), Y_batch))
-dataset = dataset.prefetch(1)
-
+" ".join([id_to_word[id_] for id in X_train[0][:10]])
+quit(0)
 '''
 with distribution.scope():
 
