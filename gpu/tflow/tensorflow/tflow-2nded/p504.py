@@ -46,7 +46,6 @@ def generate_series(batch_size, n_steps):
 
 n_steps=50
 series= generate_series(10000, n_steps)
-time.sleep(5)
 X_train, y_train = series[:7000, :n_steps], series[:7000, -1]
 X_valid, y_valid = series[7000:9000, :n_steps], series[7000:9000, -1]
 X_test, y_test = series[9000:, :n_steps], series[9000:, -1]
