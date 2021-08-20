@@ -8,7 +8,7 @@ print(tf.__version__)
 print(keras.__version__)
 
 CONFIG_ENABLE_PLOT=0
-
+CONFIG_SAVE_MODEL=0
 def generate_series(batch_size, n_steps):
     freq1, freq2, offsets1, offsets2 = np.random.rand(4, batch_size, 1)
     print(freq1.shape, freq2.shape, offsets1.shape, offsets2.shape)
@@ -58,9 +58,8 @@ model = keras.models.Sequential([ \
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 history=model.fit(X_train, y_train, epochs=20, validation_data=(X_valid, y_valid))
 
-pd.DataFrame(history.history).plot(figsize=(8, 5))
-
 if CONFIG_ENABLE_PLOT:
+    pd.DataFrame(history.history).plot(figsize=(8, 5))
     plt.pyplot.grid(True)
     plt.pyplot.gca().set_ylim(0, 1)
     plt.pyplot.show()
@@ -70,12 +69,12 @@ model.evaluate(X_test, y_test)
 print("model layers: ", model.layers)
 weights, biases  = model.layers[1].get_weights()
 print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape)
-model.save("p504.h5")
+
+if CONFIG_SAVE_MODEL:
+    model.save("p504.h5")
+
 X_new = X_test[:3]
 y_proba = model.predict(X_new)
-print(y_proba.round(2))
-
-y_pred = model.predict_classes(X_new)
 print("y_pred: ", y_pred)
 
 

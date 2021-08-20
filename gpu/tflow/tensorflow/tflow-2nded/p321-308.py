@@ -28,20 +28,6 @@ X_train = scaler.fit_transform(X_train)
 X_valid = scaler.transform(X_valid)
 X_test = scaler.transform(X_test)
 
-'''
-model = keras.models.Sequential([\
-    keras.layers.Dense(30, activation="relu", input_shape=X_train.shape[1:]), \
-    keras.layers.Dense(1)\
-])
-
-model.compile(loss="mean_squared_error", optimizer="sgd")
-history = model.fit(X_train, y_train, epochs=20, validation_data=(X_valid, y_valid))
-print("training result (shape): ", history)
-mse_test = model.evaluate(X_test, y_test)
-X_new = X_test[:3] # prertend these are new instances.
-y_preid = model.predict(X_new)
-'''
-
 param_distribs = {\
     "n_hidden" : [0,1,2,3],
     "n_neurons" : np.arange(1, 100),
@@ -79,5 +65,7 @@ else:
 '''
 X_new = X_test[:3] # prertend these are new instances.
 mse_test = keras_reg.score(X_test, y_test)
+print("mse_test: ", mse_test)
 y_pred = keras_reg.predict(X_new)
+print("y_pred: ", y_pred)
 

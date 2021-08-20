@@ -21,20 +21,6 @@ X_train = scaler.fit_transform(X_train)
 X_valid = scaler.transform(X_valid)
 X_test = scaler.transform(X_test)
 
-'''
-model = keras.models.Sequential([\
-    keras.layers.Dense(30, activation="relu", input_shape=X_train.shape[1:]), \
-    keras.layers.Dense(1)\
-])
-
-model.compile(loss="mean_squared_error", optimizer="sgd")
-history = model.fit(X_train, y_train, epochs=20, validation_data=(X_valid, y_valid))
-print("training result (shape): ", history)
-mse_test = model.evaluate(X_test, y_test)
-X_new = X_test[:3] # prertend these are new instances.
-y_preid = model.predict(X_new)
-'''
-
 def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
     model=keras.models.Sequential()
     model.add(keras.layers.InputLayer(input_shape=input_shape))
@@ -48,6 +34,7 @@ def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
     return model
 
 keras_reg = keras.wrappers.scikit_learn.KerasRegressor(build_model)
+
 if TEST_MODE:
     keras_reg.fit(X_train, y_train, epochs=10, validation_data=(X_valid, y_valid), \
     callbacks=[keras.callbacks.EarlyStopping(patience=10)])
@@ -57,5 +44,7 @@ else:
 
 X_new = X_test[:3] # prertend these are new instances.
 mse_test = keras_reg.score(X_test, y_test)
+print("mse_test: ", mse_test)
 y_pred = keras_reg.predict(X_new)
+print("y_pred: ", y_pred)
 
