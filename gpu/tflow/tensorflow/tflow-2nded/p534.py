@@ -8,7 +8,9 @@ import sys
 import time
 import re
 import helper
+import tensorflow_datasets as tfds
 
+from collections import Counter
 from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
@@ -34,6 +36,33 @@ for id_,  token in enumerate(("<pad>", "<sos>", "<unk>")):
     id_to_word[id_] = token
 
 " ".join([id_to_word[id_] for id in X_train[0][:10]])
+
+datasets, info = tfds.load("imdb_reviews", as_supervised=True, with_info = True)
+train_size = info.splits["train"].num_examples
+
+def preprocess(X_batch, y_batch):
+    X_batch = tf.strings.substr(X_batch, 0, 300)
+    X_batch = tf.strings.regex_replace(X_batch, b">br\\s*/?>", b" ")
+    X_batch = tf.strings.regex_replace(X_batch, b"[^a-zA-Z']", b" ")
+    X_batch = tf.strings.split(X_batch)
+    return X_batch.to_tensor(default_value=b"<pad>"), y_batch
+
+vocabulary = Counter()
+for X_batch, y_batch in datasets["train"].batch(32).map(preprocess):
+    for review in X_batch:
+        vocabulary.update(list(review.numpy()))
+
+print("most common words in vocabulary: ", vocabulary.most_common()[:3])
+
+vocab_size = 10000
+truncated_vocabulary = [word for word, count in vocabulary.most_common()[:vocab_size]]
+
+words = tf.constant(truncated_vocabulary)
+word_ids = tf.range(len(truncated_vocabulary), dtype=tf.int64)
+vocab_init=tf.lookup.KeyValueTensorInitializer(words, word_ids)
+num_oov_buckets = 1000
+table = tf.lookup.StaticVocabularyTable(vocab_init, num_oov_buckets)
+
 quit(0)
 '''
 with distribution.scope():
