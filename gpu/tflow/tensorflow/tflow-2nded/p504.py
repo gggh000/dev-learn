@@ -20,7 +20,9 @@ CONFIG_ENABLE_PLOT=0
 CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
 
-CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
+
+if  len(sys.argv) > 1:
+    CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
 
 def generate_series(batch_size, n_steps):
     freq1, freq2, offsets1, offsets2 = np.random.rand(4, batch_size, 1)
