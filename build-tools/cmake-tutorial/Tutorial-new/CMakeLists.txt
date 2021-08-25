@@ -1,3 +1,4 @@
+set(CMAKE_CPP_COMPILER g++)
 cmake_minimum_required(VERSION 3.10)
 # set the project name
 project(Tutorial VERSION 1.0)
@@ -45,3 +46,8 @@ install(TARGETS Tutorial DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
   DESTINATION include
   )
+
+if(HAVE_LOG AND HAVE_EXP)
+  target_compile_definitions(MathFunctions
+                             PRIVATE "HAVE_LOG" "HAVE_EXP")
+endif()
