@@ -47,7 +47,3 @@ install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
   DESTINATION include
   )
 
-if(HAVE_LOG AND HAVE_EXP)
-  target_compile_definitions(MathFunctions
-                             PRIVATE "HAVE_LOG" "HAVE_EXP")
-endif()
