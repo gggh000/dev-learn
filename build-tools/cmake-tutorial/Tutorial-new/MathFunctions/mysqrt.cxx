@@ -1,10 +1,13 @@
 #include <iostream>
-#include <math.h>
-//#include <cmath.h>
-#include <Table.h>
 
-using namespace std;
+#include "MathFunctions.h"
 
+// include the generated table
+#include "Table.h"
+
+namespace mathfunctions {
+namespace detail {
+// a hack square root calculation using simple operations
 double mysqrt(double x)
 {
   if (x <= 0) {
@@ -12,7 +15,6 @@ double mysqrt(double x)
   }
 
   // use the table to help find an initial value
-
   double result = x;
   if (x >= 1 && x < 10) {
     std::cout << "Use the table to help find an initial value " << std::endl;

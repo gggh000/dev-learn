@@ -1,10 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <TutorialConfig.h>
-
-#ifdef USE_MYMATH
 #include <MathFunctions.h>
-#endif
 
 using namespace std;
 int main(int argc, char *argv[]) {
@@ -19,13 +16,8 @@ int main(int argc, char *argv[]) {
     }
 
     const double inputValue = std::stod(argv[1]);
-    #ifdef USE_MYMATH
-        cout << "Using mysqrt" << endl;
-        const double outputValue = mysqrt(inputValue);
-    #else
-        cout << "Using math lib sqrt" << endl;
-        const double outputValue = sqrt(inputValue);
-    #endif
+    cout << "Using math lib sqrt" << endl;
+    const double outputValue = sqrt(inputValue);
     cout << "output: " << outputValue << endl;
     return 0;
 }
