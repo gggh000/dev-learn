@@ -52,11 +52,22 @@ set(installable_libs MathFunctions tutorial_compiler_flags)
 if(TARGET SqrtLibrary)
   list(APPEND installable_libs SqrtLibrary)
 endif()
+
 install(TARGETS ${installable_libs}
         DESTINATION lib
         EXPORT MathFunctionsTargets)
-
 install(FILES MathFunctions.h DESTINATION include)
+
+install(
+    EXPORT MathFunctionsTargets
+    FILE MathFunctionsTargets.cmake
+    DESTINATION lib/cmake/MathFunctions
+)
+
+export(EXPORT MathFunctionsTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/MathFunctionsTargets.cmake"
+)
+
 
 #if defined(_WIN32)
 #  if defined(EXPORTING_MYMATH)
@@ -78,3 +89,4 @@ set_target_properties(SqrtLibrary PROPERTIES
     )
 
 target_link_libraries(MathFunctions PRIVATE SqrtLibrary)
+
