@@ -9,3 +9,6 @@ target_compile_definitions(myapp
     PRIVATE
         AWESOME
 )
+
+add_library(mylib mylibrary.c)
+target_link_libraries(myapp PUBLIC mylib)
