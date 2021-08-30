@@ -1,0 +1,2 @@
+void mylibfcn1() {
+}
