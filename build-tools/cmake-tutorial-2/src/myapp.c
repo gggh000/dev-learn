@@ -1,6 +1,17 @@
 #include <stdio.h>
 #include "mylibrary.h"
 
+void mymainfcn1() {
+    printf("mylibfcn1: entered...\n");
+
+    #ifdef MYLIBDEF
+        char *message2 = "MYLIBDEF is defined in myapp.c!\n";
+    #else
+        char *message2 = "MYLIBDEF is not defined in myapp.c!\n";
+    #endif
+    printf("mymainfcn1: entered... message: %s", message2);
+}
+
 int main()
 {
     #ifdef AWESOME
@@ -10,8 +21,7 @@ int main()
     #endif
     printf("%s", message);
 
-    printf("Calling mylibfcn2...\n");
     mylibfcn1();
-    printf("Back from mylibfcn2...\n");
+    mymainfcn1();
     return 0;
 }

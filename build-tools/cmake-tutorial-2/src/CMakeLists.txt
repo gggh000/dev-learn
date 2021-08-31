@@ -13,4 +13,6 @@ target_compile_definitions(myapp
 add_library(mylib mylibrary.c)
 target_link_libraries(myapp PUBLIC mylib)
 target_compile_definitions(mylib PUBLIC MYLIBDEF)
+#target_compile_definitions(mylib INTERFACE MYLIBDEF)
+#target_compile_definitions(mylib PRIVATE MYLIBDEF)
 
