@@ -3,12 +3,15 @@
 
 int main()
 {
-   #ifdef AWESOME
-      char *message = "YOU ARE AWESOME!\n";
-   #else
-      char *message = "Sorry, you are not awesome\n";
-   #endif
-   printf("%s", message);
+    #ifdef AWESOME
+        char *message = "YOU ARE AWESOME!\n";
+    #else
+        char *message = "Sorry, you are not awesome\n";
+    #endif
+    printf("%s", message);
 
-   return 0;
+    printf("Calling mylibfcn2...\n");
+    mylibfcn1();
+    printf("Back from mylibfcn2...\n");
+    return 0;
 }
