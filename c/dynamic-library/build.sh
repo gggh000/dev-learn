@@ -4,12 +4,19 @@ gcc libfile*.c -c -fPIC
 echo "Generating *.so library..."
 gcc *.o -shared -o liball.so
 echo "Linking and test..."
-gcc -L. test.c -lall -o test-static-lib
+gcc -L. test.c -lall -o test-dynamic-lib
 if [[ -z $LD_LIBRARY_PATH ]]  ; then
     export LD_LIBRARY_PATH=$PWD
 else
     export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
 fi
 echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
-./test-static-lib
+./test-dynamic-lib
+
+echo "Creating static library"
+ar rcs liball.a *.o
+ar -t liball.a 
+nm liball.a
+mv liball.so liball.bak
+gcc test.c -L. -lall -o test-static-lib
 
