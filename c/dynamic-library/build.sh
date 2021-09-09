@@ -1,3 +1,4 @@
+set -x
 echo "Creating shared library."
 echo "Creating  *.o files..."
 gcc libfile*.c -c -fPIC
@@ -19,4 +20,9 @@ ar -t liball.a
 nm liball.a
 mv liball.so liball.bak
 gcc test.c -L. -lall -o test-static-lib
-
+#echo "ldd test-static-lib:"
+mv liball.bak liball.so
+ldd test-static-lib
+#echo "ldd test-dynamic-lib:"
+ldd test-dynamic-lib
+ls -l
