@@ -33,6 +33,7 @@ print("Q: ", Q.size())
 # Equivalently, we can also aggregate Q into a scalar and call backward implicitly, like Q.sum().backward().
 
 external_grad = torch.tensor([1., 1.])
+print("external_grad: ", external_grad.size())
 Q.backward(gradient=external_grad)
 
 # Gradients are now deposited in a.grad and b.grad
