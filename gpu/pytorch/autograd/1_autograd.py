@@ -40,3 +40,5 @@ Q.backward(gradient=external_grad)
 
 print(9*a**2 == a.grad)
 print(-2*b == b.grad)
+print("a/a.grad/a.grad.size(): ", a, "/", a.grad)
+print("b/b.grad/b.grad.size(): ", b, "/", b.grad)
