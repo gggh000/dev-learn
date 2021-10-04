@@ -1,3 +1,5 @@
+# https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html
+
 # Let's take a look at a single training step. For this example, we load a pretrained resnet18 model from torchvision. 
 # We create a random data tensor to represent a single image with 3 channels, and height & width of 64, and its 
 # corresponding label initialized to some random values.
