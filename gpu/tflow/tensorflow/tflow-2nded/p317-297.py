@@ -2,22 +2,40 @@
 # The difference is then log using tensorboard API.
 
 import tensorflow as tf
-import pandas as pd 
+import pandas as pd
 import matplotlib as plt
-import os
-root_logdir= os.path.join(os.curdir, "my_logs")
+import sys
+import time
+import re
+import numpy as np
+import helper
+from tensorflow import keras
+print(tf.__version__)
+print(keras.__version__)
+DEBUG=0
+CONFIG_ENABLE_PLOT=0
+CONFIG_EPOCHS=30
+CONFIG_BATCH_SIZE=32
+
+for i in sys.argv:
+    print("Processing ", i)
+    try:
+        if re.search("epochs=", i):
+            CONFIG_EPOCHS=int(i.split('=')[1])
+
+        if re.search("batch_size=", i):
+            CONFIG_BATCH_SIZE=int(i.split('=')[1])
+
+    except Exception as msg:
+        print("No argument provided, default values will be used.")
+
+print("epochs: ", CONFIG_EPOCHS)
+print("batch_size: ", CONFIG_BATCH_SIZE)
 
 def get_run_logdir():
     import time
     run_id = time.strftime("run_%Y_%m_d-%H_%M_%S")
     return os.path.join(root_logdir, run_id)
-
-
-from tensorflow import keras
-print(tf.__version__)
-print(keras.__version__)
-
-CONFIG_ENABLE_PLOT=0
 
 # tensor board code.
 #run_logdir = get_run_logdir(root_logdir, run_id)
@@ -42,7 +60,7 @@ model.add(keras.layers.Dense(30, activation="softmax"))
 print("model summary: ", model.summary())
 
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
-history=model.fit(X_train, y_train, epochs=30, validation_data=(X_valid, y_valid), callbacks=[tensorboard_cb])
+history=model.fit(X_train, y_train, epochs=CONFIG_EPOCHS, batch_size=CONFIG_BATCH_SIZE, validation_data=(X_valid, y_valid), callbacks=[tensorboard_cb])
 
 pd.DataFrame(history.history).plot(figsize=(8, 5))
 

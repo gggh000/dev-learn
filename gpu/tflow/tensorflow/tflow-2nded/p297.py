@@ -16,8 +16,31 @@ CONFIG_ENABLE_PLOT=0
 CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
 
-CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
+for i in sys.argv:
+    print("Processing ", i)
+    try:
+        if re.search("epochs=", i):
+            CONFIG_EPOCHS=int(i.split('=')[1])
 
+        if re.search("batch_size=", i):
+            CONFIG_BATCH_SIZE=int(i.split('=')[1])
+
+    except Exception as msg:
+        print("No argument provided, default values will be used.")
+
+print("epochs: ", CONFIG_EPOCHS)
+print("batch_size: ", CONFIG_BATCH_SIZE)
+
+'''
+try:
+    CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
+except Exception as msg:
+    print(msg)
+    print("CONFIG_EPOCHS: ", CONFIG_EPOCHS)
+    print("CONFIG_BATCH_SIZE:", CONFIG_BATCH_SIZE)
+
+quit(0)
+'''
 fashion_mnist = keras.datasets.fashion_mnist
 (X_train_full, y_train_full), (X_test, y_test) = fashion_mnist.load_data()
 print("X_train_full.shape: ", X_train_full.shape)

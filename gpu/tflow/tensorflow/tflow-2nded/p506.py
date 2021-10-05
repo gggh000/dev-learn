@@ -19,9 +19,26 @@ CONFIG_ENABLE_PLOT=0
 CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
 
+for i in sys.argv:
+    print("Processing ", i)
+    try:
+        if re.search("epochs=", i):
+            CONFIG_EPOCHS=int(i.split('=')[1])
+
+        if re.search("batch_size=", i):
+            CONFIG_BATCH_SIZE=int(i.split('=')[1])
+
+    except Exception as msg:
+        print("No argument provided, default values will be used.")
+
+print("epochs: ", CONFIG_EPOCHS)
+print("batch_size: ", CONFIG_BATCH_SIZE)
+
+'''
 
 if  len(sys.argv) > 1:
     CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
+'''
 
 n_steps=50
 series=helper.generate_series(10000, n_steps)
