@@ -9,20 +9,22 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 
 housing = fetch_california_housing()
-
+print("housing.data, housing target: ", housing.data.shape, ", ", housing.target.shape)
+print(housing.data[:10])
+print(housing.target[:10])
 X_train_full, X_test, y_train_full, y_test = train_test_split(housing.data, housing.target)
 X_train, X_valid, y_train, y_valid = train_test_split(X_train_full, y_train_full)
 
-print("X_train/y_train/full/test shapes: ", X_train_full.shape, X_test.shape, y_train_full.shape, y_test.shape)
-print("X_/y_/train/valid: ", X_train.shape, X_valid.shape, y_train.shape, y_valid.shape)
+print("X_train_full, X_test, y_train_full, y_test: ", X_train_full.shape, X_test.shape, y_train_full.shape, y_test.shape)
+print("X_train, X_valid, y_train, y_valid: ", X_train.shape, X_valid.shape, y_train.shape, y_valid.shape)
 
 X_train_A, X_train_B = X_train[:, :5], X_train[:, 2:]
 X_valid_A, X_valid_B = X_valid[:, :5], X_valid[:, 2:]
 X_test_A, X_test_B = X_test[:, :5], X_test[:, 2:]
 X_new_A, X_new_B = X_test_A[:3], X_test[:3, 2:]
 
-print("X_train_A/B/valid_A/B: ", X_train_A.shape, X_train_B.shape, X_valid_A.shape, X_valid_B.shape)
-print("X_test_A/B/new_A/B: ", X_test_A.shape, X_test_B.shape, X_new_A.shape, X_new_B.shape)
+print("X_train_A, X_train_B, X_valid_A, X_valid_B: ", X_train_A.shape, X_train_B.shape, X_valid_A.shape, X_valid_B.shape)
+print("X_test_A, X_test_B, X_new_A, X_new_B: ", X_test_A.shape, X_test_B.shape, X_new_A.shape, X_new_B.shape)
 
 scaler=StandardScaler()
 X_train = scaler.fit_transform(X_train)
