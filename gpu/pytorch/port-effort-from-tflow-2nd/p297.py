@@ -1,12 +1,29 @@
 import torch
 import torch.nn as nn
 import helper
-
+import sys
+import time
+DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
+CONFIG_EPOCHS=10
+CONFIG_BATCH_SIZE=32
+for i in sys.argv:
+    print("Processing ", i)
+    try:
+        if re.search("epochs=", i):
+            CONFIG_EPOCHS=int(i.split('=')[1])
+
+        if re.search("batch_size=", i):
+            CONFIG_BATCH_SIZE=int(i.split('=')[1])
+
+    except Exception as msg:
+        print("No argument provided, default values will be used.")
+
+print("epochs: ", CONFIG_EPOCHS)
+#print("batch_size: ", CONFIG_BATCH_SIZE)
 
 trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=ToTensor())
-
 
 training_data = datasets.FashionMNIST(
     root="data",
@@ -30,17 +47,6 @@ print("type: ", type(training_data[0]))
 
 print("trainloader: ", type(trainloader))
 print("testloader:  ", type(testloader))
-'''
-# Defining input size, hidden layer size, output size and batch size respectively
-n_in, n_h, n_out, batch_size = 10, 5, 1, 10
-
-# Create dummy input and target tensors (data)
-#x = torch.randn(batch_size, n_in)
-#y = torch.tensor([[1.0], [0.0], [0.0],
-#[1.0], [1.0], [1.0], [0.0], [0.0], [1.0], [1.0]])
-
-# Create a model
-'''
 
 f1=nn.Flatten()
 l1=nn.Linear(28*28, 300)
@@ -62,26 +68,36 @@ model = nn.Sequential(\
 print("Model: ", model)
 
 #print("model: layer0: ", model[0], model[0].weight)
-print("model: layer0: ", model[0])
+print("l1 info: ", l1, l1.weight.shape)
+print("l2 info: ", l2, l2.weight.shape)
+print("l3 info: ", l3, l3.weight.shape)
 
-criterion = torch.nn.MSELoss()
+#criterion = torch.nn.MSELoss()
+criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
 
-for epoch in range(50):
+time.sleep(5)
+
+for epoch in range(CONFIG_EPOCHS):
+    i=0
     for batch in trainloader:
-        print("batch: ", type(batch), ", ", len(batch))
         imgs, lbls = batch
-        print("imgs: ", type(imgs), ", ", len(imgs), imgs.shape)
-        print("lbls: ", type(lbls), ", ", len(lbls), lbls.shape)
+
+        if DEBUG:
+            print("batch: ", type(batch), ", ", len(batch))
+            print("imgs: ", type(imgs), ", ", len(imgs), imgs.shape)
+            print("lbls: ", type(lbls), ", ", len(lbls), lbls.shape)
+
         # Forward pass: Compute predicted y by passing x to the model
         y_pred = model(imgs)
 
-        print("y_pred: ", type(y_pred), y_pred.shape)
-        print("lbls:   ", type(lbls), lbls.shape)
+        if DEBUG:
+            print("y_pred: ", type(y_pred), y_pred.shape)
+            print("lbls:   ", type(lbls), lbls.shape)
 
         # Compute and print loss
         loss = criterion(y_pred, lbls)
-        print('epoch: ', epoch,' loss: ', loss.item())
+        print('epoch/batch: ', epoch, i,' loss: ', loss.item())
 
         # Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()
@@ -91,4 +107,4 @@ for epoch in range(50):
 
         # Update the parameters
         optimizer.step()
-
+        i+=1
