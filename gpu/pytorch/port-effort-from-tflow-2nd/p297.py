@@ -10,8 +10,8 @@ DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
-CONFIG_EPOCHS=10
-CONFIG_BATCH_SIZE=32
+CONFIG_EPOCHS=2
+CONFIG_BATCH_SIZE=64
 
 for i in sys.argv:
     print("Processing ", i)
@@ -31,8 +31,6 @@ print("batch_size: ", CONFIG_BATCH_SIZE)
 labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Coat', 5 : 'Sandal', 6 : 'Shirt',
               7 : 'Sneaker', 8 : 'Bag', 9 : 'Ankle Boot'};
 
-trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=ToTensor())
-
 training_data = datasets.FashionMNIST(
     root="data",
     train=True,
@@ -47,10 +45,11 @@ test_data = datasets.FashionMNIST(
     transform=ToTensor()
 )
 
+print("training_data/test_data: ", type(training_data), len(training_data), type(test_data), len(test_data))
+
 trainloader = torch.utils.data.DataLoader(training_data, batch_size=CONFIG_BATCH_SIZE, shuffle = True)
 testloader = torch.utils.data.DataLoader(test_data, batch_size=32, shuffle = True)
 
-print("training_data/test_data: ", type(training_data), len(training_data), type(test_data), len(test_data))
 print("type: ", type(training_data[0]))
 
 print("trainloader: ", type(trainloader))
@@ -84,7 +83,6 @@ print("l3 info: ", l3, l3.weight.shape)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
 
-
 i=0
 for epoch in range(CONFIG_EPOCHS):
     print("")
@@ -111,7 +109,7 @@ for epoch in range(CONFIG_EPOCHS):
         # Forward pass: Compute predicted y by passing x to the model
         y_pred = model(imgs)
 
-        if DEBUG:
+        if DEBUG or 1:
             print("y_pred: ", type(y_pred), y_pred.shape)
             print("lbls:   ", type(lbls), lbls.shape)
 
@@ -144,8 +142,10 @@ print(len(testloader), type(testloader))
 i=0
 #for batch in testloader:
 #    imgs, lbls = batch
+SLICE=10
 for imgs, lbls in testloader:
-    imgs1=imgs[:3]
+    imgs1=imgs[:SLICE]
+    lbls1=lbls[:SLICE]
     print("---", i, "---")
     print("imgs: ", imgs.shape)
     print("lbls: ", lbls.shape)
@@ -159,4 +159,5 @@ print("y_pred: ", y_pred.shape, type(y_pred))
 print(y_pred)
 
 _, pred_class = torch.max(y_pred, 1)
-print(pred_class)
+print("pred_class: ", pred_class)
+print("lbls1: ", lbls1)

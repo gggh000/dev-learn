@@ -30,25 +30,17 @@ for i in sys.argv:
 print("epochs: ", CONFIG_EPOCHS)
 print("batch_size: ", CONFIG_BATCH_SIZE)
 
-'''
-try:
-    CONFIG_EPOCHS, CONFIG_BATCH_SIZE = helper.process_params(sys.argv, ["epochs", "batch_size"])
-except Exception as msg:
-    print(msg)
-    print("CONFIG_EPOCHS: ", CONFIG_EPOCHS)
-    print("CONFIG_BATCH_SIZE:", CONFIG_BATCH_SIZE)
-
-quit(0)
-'''
 fashion_mnist = keras.datasets.fashion_mnist
 (X_train_full, y_train_full), (X_test, y_test) = fashion_mnist.load_data()
-print("X_train_full.shape: ", X_train_full.shape)
-print("X_train_full.dtype: ", X_train_full.dtype)
+print("X_train_full/y_train_full/X_test/y_test: ", X_train_full.shape, y_train_full.shape, X_test.shape, y_test.shape)
 
 SEPARATOR=10000
 X_valid, X_train = X_train_full[:SEPARATOR] / 255.0, X_train_full[SEPARATOR:]/255.0
 y_valid, y_train = y_train_full[:SEPARATOR], y_train_full[SEPARATOR:]
 X_test = X_test / 255.0
+
+print("X_valid/X_train/y_valid/y_train: ", X_valid.shape, X_train.shape, y_valid.shape, y_train.shape)
+
 class_names = ["T-shirt/top","Trouser", "Pullover", "Dress", "Coat" , "Sandal", "Shirt", "Sneaker","Bad","Ankle boot"]
 
 model=keras.models.Sequential()
@@ -86,5 +78,5 @@ print("y_proba (predict)(value): ", y_proba.round(2), "\ny_proba(shape)", np.arr
 
 y_pred = model.predict_classes(X_new)
 print("y_pred (predict_classes): ", y_pred)
-
+print("y_test: ", y_test[:3])
 
