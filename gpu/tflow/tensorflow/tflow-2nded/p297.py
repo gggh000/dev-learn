@@ -45,8 +45,9 @@ fashion_mnist = keras.datasets.fashion_mnist
 print("X_train_full.shape: ", X_train_full.shape)
 print("X_train_full.dtype: ", X_train_full.dtype)
 
-X_valid, X_train = X_train_full[:5000] / 255.0, X_train_full[5000:]/255.0
-y_valid, y_train = y_train_full[:5000], y_train_full[5000:]
+SEPARATOR=10000
+X_valid, X_train = X_train_full[:SEPARATOR] / 255.0, X_train_full[SEPARATOR:]/255.0
+y_valid, y_train = y_train_full[:SEPARATOR], y_train_full[SEPARATOR:]
 X_test = X_test / 255.0
 class_names = ["T-shirt/top","Trouser", "Pullover", "Dress", "Coat" , "Sandal", "Shirt", "Sneaker","Bad","Ankle boot"]
 

@@ -5,6 +5,7 @@ import sys
 import time
 import re 
 import numpy as np
+import matplotlib as plt
 DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
@@ -27,6 +28,8 @@ for i in sys.argv:
 
 print("epochs: ", CONFIG_EPOCHS)
 print("batch_size: ", CONFIG_BATCH_SIZE)
+labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Coat', 5 : 'Sandal', 6 : 'Shirt',
+              7 : 'Sneaker', 8 : 'Bag', 9 : 'Ankle Boot'};
 
 trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=ToTensor())
 
@@ -58,7 +61,7 @@ l1=nn.Linear(28*28, 300)
 r1=nn.ReLU()
 l2=nn.Linear(300, 100)
 r2=nn.ReLU()
-l3=nn.Linear(100, 10)
+l3=nn.Linear(100, 30)
 s3=nn.Softmax()
 model = nn.Sequential(\
     f1,
