@@ -7,7 +7,7 @@ import numpy as np
 DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
-CONFIG_EPOCHS=3
+CONFIG_EPOCHS=1
 CONFIG_BATCH_SIZE=32
 for i in sys.argv:
     print("Processing ", i)
@@ -135,9 +135,18 @@ i=0
 #for batch in testloader:
 #    imgs, lbls = batch
 for imgs, lbls in testloader:
+    imgs1=imgs[:3]
     print("---", i, "---")
     print("imgs: ", imgs.shape)
     print("lbls: ", lbls.shape)
+    print("imgs1: ", imgs1.shape)
+
+    if i >= 0:
+        break
     i+=1
-y_pred=model(imgs)
+y_pred=model(imgs1)
 print("y_pred: ", y_pred.shape, type(y_pred))
+print(y_pred)
+
+_, pred_class = torch.max(y_pred, 1)
+print(pred_class)
