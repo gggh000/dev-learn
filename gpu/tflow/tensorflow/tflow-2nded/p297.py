@@ -9,11 +9,10 @@ import re
 import numpy as np
 import helper
 from tensorflow import keras
-print(tf.__version__)
-print(keras.__version__)
+
 DEBUG=0
 CONFIG_ENABLE_PLOT=0
-CONFIG_EPOCHS=30
+CONFIG_EPOCHS=10
 CONFIG_BATCH_SIZE=32
 
 for i in sys.argv:

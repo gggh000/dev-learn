@@ -3,27 +3,30 @@ import torch.nn as nn
 import helper
 import sys
 import time
+import re 
 import numpy as np
 DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
-CONFIG_EPOCHS=1
+
+CONFIG_EPOCHS=10
 CONFIG_BATCH_SIZE=32
+
 for i in sys.argv:
     print("Processing ", i)
     try:
-        if re.search("epochs=", i):
+        if re.search("epochs", i):
             CONFIG_EPOCHS=int(i.split('=')[1])
 
-        if re.search("batch_size=", i):
+        if re.search("batch_size", i):
             CONFIG_BATCH_SIZE=int(i.split('=')[1])
 
     except Exception as msg:
+        print(msg)
         print("No argument provided, default values will be used.")
 
-print("---")
-print("epochs: ", CONFIG_EPOCHS,": ", end=' ', flush=True)
-#print("batch_size: ", CONFIG_BATCH_SIZE)
+print("epochs: ", CONFIG_EPOCHS)
+print("batch_size: ", CONFIG_BATCH_SIZE)
 
 trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=ToTensor())
 
@@ -41,7 +44,7 @@ test_data = datasets.FashionMNIST(
     transform=ToTensor()
 )
 
-trainloader = torch.utils.data.DataLoader(training_data, batch_size=32, shuffle = True)
+trainloader = torch.utils.data.DataLoader(training_data, batch_size=CONFIG_BATCH_SIZE, shuffle = True)
 testloader = torch.utils.data.DataLoader(test_data, batch_size=32, shuffle = True)
 
 print("training_data/test_data: ", type(training_data), len(training_data), type(test_data), len(test_data))
@@ -81,7 +84,8 @@ optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
 
 i=0
 for epoch in range(CONFIG_EPOCHS):
-    print('epoch/i: ', epoch, i)
+    print("")
+    print('epoch/i: ', epoch, i, end=' ', flush=True)
     j=0
     for batch in trainloader:
     
@@ -89,6 +93,9 @@ for epoch in range(CONFIG_EPOCHS):
 
         if j == 0:
             bypass_dots=int(len(training_data)/len(lbls)/80)
+            print("batch: ", type(batch), ", ", len(batch))
+            print("imgs: ", type(imgs), ", ", len(imgs), imgs.shape)
+            print("lbls: ", type(lbls), ", ", len(lbls), lbls.shape)
 
             if DEBUG:
                 print("bypass_dots quantity: ", bypass_dots)
