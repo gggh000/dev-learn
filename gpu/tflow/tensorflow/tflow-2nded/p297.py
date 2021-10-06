@@ -84,7 +84,7 @@ print("X_new shape: ", X_new.shape)
 y_proba = model.predict(X_new)
 print("y_proba (predict)(value): ", y_proba.round(2), "\ny_proba(shape)", np.array(y_proba).shape)
 
-#y_pred = model.predict_classes(X_new)
-#print("y_pred (predict_classes): ", y_pred)
+y_pred = model.predict_classes(X_new)
+print("y_pred (predict_classes): ", y_pred)
 
 

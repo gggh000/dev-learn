@@ -3,10 +3,11 @@ import torch.nn as nn
 import helper
 import sys
 import time
+import numpy as np
 DEBUG=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
-CONFIG_EPOCHS=10
+CONFIG_EPOCHS=3
 CONFIG_BATCH_SIZE=32
 for i in sys.argv:
     print("Processing ", i)
@@ -20,7 +21,8 @@ for i in sys.argv:
     except Exception as msg:
         print("No argument provided, default values will be used.")
 
-print("epochs: ", CONFIG_EPOCHS)
+print("---")
+print("epochs: ", CONFIG_EPOCHS,": ", end=' ', flush=True)
 #print("batch_size: ", CONFIG_BATCH_SIZE)
 
 trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=ToTensor())
@@ -76,12 +78,20 @@ print("l3 info: ", l3, l3.weight.shape)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
 
-time.sleep(5)
 
+i=0
 for epoch in range(CONFIG_EPOCHS):
-    i=0
+    print('epoch/i: ', epoch, i)
+    j=0
     for batch in trainloader:
+    
         imgs, lbls = batch
+
+        if j == 0:
+            bypass_dots=int(len(training_data)/len(lbls)/80)
+
+            if DEBUG:
+                print("bypass_dots quantity: ", bypass_dots)
 
         if DEBUG:
             print("batch: ", type(batch), ", ", len(batch))
@@ -97,8 +107,13 @@ for epoch in range(CONFIG_EPOCHS):
 
         # Compute and print loss
         loss = criterion(y_pred, lbls)
-        print('epoch/batch: ', epoch, i,' loss: ', loss.item())
 
+        if DEBUG:
+            print('epoch/batch: ', epoch, i,' loss: ', loss.item())
+
+        if j%bypass_dots == 0:
+            print(".", end='', flush=True)
+    
         # Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()
 
@@ -107,4 +122,22 @@ for epoch in range(CONFIG_EPOCHS):
 
         # Update the parameters
         optimizer.step()
-        i+=1
+        j+=1
+    i+=1
+
+print("Testing...")
+
+i=0
+
+print(len(testloader), type(testloader))
+
+i=0
+#for batch in testloader:
+#    imgs, lbls = batch
+for imgs, lbls in testloader:
+    print("---", i, "---")
+    print("imgs: ", imgs.shape)
+    print("lbls: ", lbls.shape)
+    i+=1
+y_pred=model(imgs)
+print("y_pred: ", y_pred.shape, type(y_pred))
