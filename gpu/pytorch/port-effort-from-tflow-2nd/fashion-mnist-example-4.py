@@ -65,11 +65,15 @@ def prepare_data():
         transform=ToTensor()
     )
 
-    print("train/test: ", type(train), len(train), type(test), len(test))
+    train, valid = torch.utils.data.random_split(train, [50000, 10000])
+
+    print("train/valid/test: ", type(train), len(train), type(valid), len(valid), type(test), len(test))
     train_dl = torch.utils.data.DataLoader(train, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
     test_dl = torch.utils.data.DataLoader(test, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
+    valid_dl = torch.utils.data.DataLoader(valid, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     print("train_dl/test_dl: ", type(train_dl), len(train_dl), type(test_dl), len(test_dl))
-    return train_dl, test_dl
+
+    return train_dl, valid_dl, test_dl
 
 
 class MLP(Module):
@@ -118,7 +122,7 @@ class MLP(Module):
         X = self.act2(X)
         # output layer
         X = self.hidden3(X)
-        X = self.act3(X)
+#        X = self.act3(X)
 
         if DEBUG:
             print("forward: X (returned): ", X.size()) 
@@ -134,19 +138,28 @@ def train_model(train_dl, model):
 
     criterion = CrossEntropyLoss()
     optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
+
     # enumerate epochs
+
     for epoch in range(CONFIG_EPOCHS):
-        print("\nepoch:", epoch, end="")
+        print("epoch:", epoch, "/", CONFIG_EPOCHS, end="")
+
         # enumerate mini batches
+
         for i, (inputs, targets) in enumerate(train_dl):
             if i % 20 == 0:
                 print(".", end="", flush=True)
+
             if DEBUG:
                 print("inputs: ", inputs.size())
                 print("targets: ", targets.size())
+
             # clear the gradients
+
             optimizer.zero_grad()
+
             # compute the model output
+
             yhat = model(inputs)
             if DEBUG:
                 print("yhat: ", yhat.size())
@@ -161,6 +174,8 @@ def train_model(train_dl, model):
             loss.backward()
             # update model weights
             optimizer.step()
+        print("loss: ", loss)    
+        
  
 # evaluate the model
 def evaluate_model(test_dl, model):
@@ -196,7 +211,7 @@ def predict(row, model):
  
 # prepare the data
 #path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv'
-train_dl, test_dl = prepare_data()
+train_dl, valid_dl, test_dl = prepare_data()
 
 print(len(train_dl.dataset), len(test_dl.dataset))
 # define the network
@@ -205,11 +220,23 @@ model = MLP()
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)
 # evaluate the model
-acc = evaluate_model(test_dl, model)
+acc = evaluate_model(valid_dl, model)
 print('Accuracy: %.3f' % acc)
+
 # make a single prediction
-'''
-row = [5.1,3.5,1.4,0.2]
-yhat = predict(row, model)
-print('Predicted: %s (class=%d)' % (yhat, argmax(yhat)))
-'''
+print("Making prediction...")
+
+enum_test_dl = list(enumerate(test_dl))
+enum_test_dl_sub=enum_test_dl[:1]
+print("enum_test_dl_sub: ", len(enum_test_dl_sub))
+yhat = model(enum_test_dl_sub[0][1][0])
+yhat = yhat.detach().numpy()
+actual = enum_test_dl_sub[0][1][1].numpy()
+#print("actual1: ", actual)
+# convert to class labels
+yhat = argmax(yhat, axis=1)
+# reshape for stacking
+#actual = actual.reshape((len(actual), 1))
+#yhat = yhat.reshape((len(yhat), 1))
+print("yhat:   ", yhat[:10])
+print("actual: ", actual[:10])
