@@ -12,7 +12,7 @@ from tensorflow import keras
 
 DEBUG=0
 CONFIG_ENABLE_PLOT=0
-CONFIG_EPOCHS=10
+CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
 
 for i in sys.argv:
