@@ -71,13 +71,14 @@ def prepare_data():
     train_target_dl = torch.utils.data.DataLoader(train_target, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
 
     test_dl = torch.utils.data.DataLoader(test, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
+    test_target_dl = torch.utils.data.DataLoader(test_target, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     valid_dl = torch.utils.data.DataLoader(valid, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
-    print("train_dl/valid_dl/test_dl: ", type(train_dl), len(train_dl), type(valid_dl), len(valid_dl), type(test_dl), len(test_dl))
-    #print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl), type(valid_target_dl), len(valid_target_dl), type(test_target_dl), len(test_target_dl))
-    print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl))
+    valid_target_dl = torch.utils.data.DataLoader(valid_target, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
+    #print("train_dl/valid_dl/test_dl: ", type(train_dl), len(train_dl), type(valid_dl), len(valid_dl), type(test_dl), len(test_dl))
+    print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl), type(valid_target_dl), len(valid_target_dl), type(test_target_dl), len(test_target_dl))
 
     #return [train_dl, train_target_dl], [valid_dl, valid_target_dl], [test_dl, test_taret_dl]
-    return [train_dl, train_target_dl], valid_dl, test_dl
+    return [train_dl, train_target_dl], [valid_dl, valid_target_dl], [test_dl, test_target_dl]
 
 class MLP(Module):
 
@@ -134,8 +135,6 @@ def train_model(train_dl, model):
 
         # enumerate mini batches
 
-        targets = train_dl[1]
-
         i=0
         for inputs, targets in zip(enumerate(train_dl[0]), enumerate(train_dl[1])):
             if i % 20 == 0:
@@ -186,7 +185,17 @@ def train_model(train_dl, model):
 # evaluate the model
 def evaluate_model(test_dl, model):
     predictions, actuals = list(), list()
-    for i, (inputs, targets) in enumerate(test_dl):
+
+    i=0
+    for inputs, targets in zip(enumerate(valid_dl[0]), enumerate(valid_dl[1])):
+        if i % 20 == 0:
+            print(".", end="", flush=True)
+
+        inputs=inputs[1]
+        targets=targets[1]
+        inputs.double()
+        targets.double()
+
         # evaluate the model on the test set
         yhat = model(inputs)
         # retrieve numpy array
@@ -200,10 +209,9 @@ def evaluate_model(test_dl, model):
         # store
         predictions.append(yhat)
         actuals.append(actual)
+
     predictions, actuals = vstack(predictions), vstack(actuals)
     # calculate accuracy
-    acc = accuracy_score(actuals, predictions)
-    return acc
  
 # make a class prediction for one row of data
 def predict(row, model):
@@ -223,27 +231,41 @@ model = MLP()
 # train the model
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)
-quit(0)
 # evaluate the model
-acc = evaluate_model(valid_dl, model)
-print('Accuracy: %.3f' % acc)
+evaluate_model(valid_dl, model)
+torch.save(model, "p308.h5")
 
-torch.save(model, "p297.h5")
+i=0
+predictions, actuals = list(), list()
+for inputs, targets in zip(enumerate(test_dl[0]), enumerate(test_dl[1])):
+    if i % 20 == 0:
+        print(".", end="", flush=True)
 
-# make a single prediction
-print("Making prediction...")
+    inputs=inputs[1]
+    targets=targets[1]
+    inputs.double()
+    targets.double()
 
-enum_test_dl = list(enumerate(test_dl))
-enum_test_dl_sub=enum_test_dl[:1]
-print("enum_test_dl_sub: ", len(enum_test_dl_sub))
-yhat = model(enum_test_dl_sub[0][1][0])
-yhat = yhat.detach().numpy()
-actual = enum_test_dl_sub[0][1][1].numpy()
-#print("actual1: ", actual)
-# convert to class labels
-yhat = argmax(yhat, axis=1)
-# reshape for stacking
-#actual = actual.reshape((len(actual), 1))
-#yhat = yhat.reshape((len(yhat), 1))
-print("yhat:   ", yhat[:10])
-print("actual: ", actual[:10])
+    print("inputs: ", inputs, type(inputs), inputs.size())
+    print("targets: ", targets, type(targets), targets.size())
+
+    # evaluate the model on the test set
+    yhat = model(inputs)
+    print("yhat: ", yhat, type(yhat), yhat.size())
+    quit()
+    # retrieve numpy array
+    yhat = yhat.detach().numpy()
+    actual = targets.numpy()
+    # convert to class labels
+    yhat = argmax(yhat, axis=1)
+    # reshape for stacking
+    actual = actual.reshape((len(actual), 1))
+    yhat = yhat.reshape((len(yhat), 1))
+    # store
+    predictions.append(yhat)
+    actuals.append(actual)
+    i+=1
+predictions, actuals = vstack(predictions), vstack(actuals)
+print("predictions: ", predictions[:10])
+print("actuals: ", actuals[:10])
+
