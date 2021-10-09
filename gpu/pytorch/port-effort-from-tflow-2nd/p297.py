@@ -26,7 +26,7 @@ from torch.nn.init import kaiming_uniform_
 from torch.nn.init import xavier_uniform_
 
 DEBUG=0
-TEST=1
+TEST=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
