@@ -118,7 +118,7 @@ class MLP(Module):
         if DEBUG:
             print("forward: X (returned): ", X.size()) 
 
-        return X
+        return X.double()
 
 # train the model
 def train_model(train_dl, model):
@@ -141,16 +141,17 @@ def train_model(train_dl, model):
             if i % 20 == 0:
                 print(".", end="", flush=True)
     
-            inputs=inputs[1].double()
-            targets=targets[1].double()
-            if DEBUG or TEST:
-                print("\ninputs: ", type(inputs), inputs.size(), "\n", inputs)
-                print("targets: ", type(targets), len(targets), "\n", targets)
+            inputs=inputs[1]
+            targets=targets[1]
+            inputs.double()
+            targets.double()
+
+            if DEBUG:
+                print("\ninputs: ", type(inputs), inputs.size(), inputs.type(), "\n", inputs)
+                print("targets: ", type(targets), len(targets), targets.type(), "\n", targets)
                 print("\ninputs: ", type(inputs), inputs.size())
                 print("targets: ", type(targets), targets.size())
 
-                #print("inputs/targets: ", type(inputs[1]), len(inputs[1]), type(targets[1]), len(targets[1]))
-                #print("\ninputs:", inputs[1][:4], "\ntargets: ", targets[1][:4])
             # clear the gradients
 
             optimizer.zero_grad()
@@ -158,6 +159,7 @@ def train_model(train_dl, model):
             # compute the model output
 
             yhat = model(inputs[1])
+
             if DEBUG:
                 print("yhat: ", yhat.size())
                 print("targets: ", targets.size())
@@ -165,11 +167,14 @@ def train_model(train_dl, model):
             # calculate loss
 
             if DEBUG:
-                print("yhat: ", type(yhat), yhat.shape)
-                print("targets:   ", type(targets), targets.shape)
+                print("\nyhat: ", type(yhat), yhat.size(), yhat.type(), "\n", yhat)
+                print("targets: ", type(targets), len(targets), targets.type(), "\n", targets)
 
             loss = criterion(yhat, targets[1])
-            print(loss)
+            
+            if DEBUG:
+                print(loss)
+
             # credit assignment
             loss.backward()
             # update model weights
