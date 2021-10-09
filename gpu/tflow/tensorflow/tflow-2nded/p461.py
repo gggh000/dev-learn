@@ -90,8 +90,8 @@ if CONFIG_ENABLE_PLOT:
 model.evaluate(X_test, y_test)
 
 print("model layers: ", model.layers)
-weights, biases  = model.layers[1].get_weights()
-print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape) 
+#weights, biases  = model.layers[1].get_weights()
+#print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape) 
 model.save("p297.h5")
 X_new = X_test[:3]
 y_proba = model.predict(X_new)

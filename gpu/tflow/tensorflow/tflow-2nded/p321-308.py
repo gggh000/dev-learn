@@ -12,6 +12,7 @@ from tensorflow import keras
 from scipy.stats import reciprocal
 from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
+import time 
 
 TEST_MODE=1
 
@@ -30,10 +31,17 @@ X_test = scaler.transform(X_test)
 
 param_distribs = {\
     "n_hidden" : [0,1,2,3],
-    "n_neurons" : np.arange(1, 100),
-#   "learning_rate" : reciprocal(3e-4, 3e-2),
+    "n_neurons" : np.arange(90, 100, 2),
+    "learning_rate" : reciprocal(3e-4, 3e-2),
 }
+
+print("param_distribs: ", param_distribs)
+time.sleep(5)
+
 def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
+    print("----------------------")
+    print("n_hidden: ", n_hidden, ", n_neurons: ", n_neurons, ", learning_rate: ", learning_rate, ", input_shape: ", input_shape)
+    print("----------------------")
     model=keras.models.Sequential()
     model.add(keras.layers.InputLayer(input_shape=input_shape))
 
@@ -63,7 +71,7 @@ else:
     keras_reg.fit(X_train, y_train, epochs=100, validation_data=(X_valid, y_valid), \
     callbacks=[keras.callbacks.EarlyStopping(patience=10)])
 '''
-X_new = X_test[:3] # prertend these are new instances.
+X_new = X_test[:3] # pretend these are new instances.
 mse_test = keras_reg.score(X_test, y_test)
 print("mse_test: ", mse_test)
 y_pred = keras_reg.predict(X_new)
