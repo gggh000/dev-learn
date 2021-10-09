@@ -26,6 +26,7 @@ from torch.nn.init import kaiming_uniform_
 from torch.nn.init import xavier_uniform_
 
 DEBUG=0
+TEST=1
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
@@ -45,6 +46,9 @@ for i in sys.argv:
         print(msg)
         print("No argument provided, default values will be used.")
 
+if TEST:
+    CONFIG_BATCH_SIZE=10
+    CONFIG_EPOCHS=1
 print("epochs: ", CONFIG_EPOCHS)
 print("batch_size: ", CONFIG_BATCH_SIZE)
 labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Coat', 5 : 'Sandal', 6 : 'Shirt',
@@ -147,12 +151,15 @@ def train_model(train_dl, model):
         # enumerate mini batches
 
         for i, (inputs, targets) in enumerate(train_dl):
+            if TEST:
+                if i > 2:
+                    quit(0)
             if i % 20 == 0:
                 print(".", end="", flush=True)
 
-            if DEBUG:
-                print("inputs: ", inputs.size())
-                print("targets: ", targets.size())
+            if DEBUG or TEST:
+                print("\ninputs: ", type(inputs), inputs.size(), inputs)
+                print("targets: ", type(targets), targets.size(), targets)
 
             # clear the gradients
 

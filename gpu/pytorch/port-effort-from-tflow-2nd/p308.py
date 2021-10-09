@@ -21,13 +21,18 @@ from torch.nn import ReLU
 from torch.nn import Softmax
 from torch.nn import Module
 from torch.optim import SGD
-from torch.nn import CrossEntropyLoss
+from torch.nn import MSELoss
 from torch.nn.init import kaiming_uniform_
 from torch.nn.init import xavier_uniform_
 
 DEBUG=0
+TEST=1
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
+
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 CONFIG_EPOCHS=10
 CONFIG_BATCH_SIZE=64
@@ -52,16 +57,27 @@ labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Co
 
 def prepare_data():
     housing = fetch_california_housing()
+    print("housing.data/housing.target (type/len): ", type(housing.data), housing.data.shape, type(housing.target), housing.target.shape)
+
     train_full, test, train_target_full, test_target = train_test_split(housing.data, housing.target)
     train, valid, train_target, valid_target = train_test_split(train_full, train_target_full)
 
-    print("train/valid/test: ", type(housing.data), len(housing.data), type(housing.target), len(housing.target))
+    print("train/valid/test: ", type(train), train.shape, type(valid), valid.shape, type(test), test.shape)
+    print("train/valid/test(targets): ", type(train_target), train_target.shape, \
+        type(valid_target), valid_target.shape, \
+        type(test_target), test_target.shape)
+
     train_dl = torch.utils.data.DataLoader(train, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
+    train_target_dl = torch.utils.data.DataLoader(train_target, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
+
     test_dl = torch.utils.data.DataLoader(test, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     valid_dl = torch.utils.data.DataLoader(valid, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
-    print("train_full/test_dl: ", type(train_full), len(train_full), type(test_dl), len(test_dl))
+    print("train_dl/valid_dl/test_dl: ", type(train_dl), len(train_dl), type(valid_dl), len(valid_dl), type(test_dl), len(test_dl))
+    #print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl), type(valid_target_dl), len(valid_target_dl), type(test_target_dl), len(test_target_dl))
+    print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl))
 
-    return train_dl, valid_dl, test_dl
+    #return [train_dl, train_target_dl], [valid_dl, valid_target_dl], [test_dl, test_taret_dl]
+    return [train_dl, train_target_dl], valid_dl, test_dl
 
 class MLP(Module):
 
@@ -71,29 +87,20 @@ class MLP(Module):
         super(MLP, self).__init__()
         #self.flatten = nn.Flatten(1, 3)
 
-        self.hidden1 = Linear(784, 30)
+        self.hidden1 = Linear(8, 30)
         kaiming_uniform_(self.hidden1.weight, nonlinearity='relu')
         self.act1 = ReLU()
 
         self.hidden2 = Linear(30, 1)
         kaiming_uniform_(self.hidden2.weight, nonlinearity='relu')
         self.act2 = ReLU()
-
-        self.hidden3 = Linear(100, 30)
-        self.act3 = Softmax()
  
     # forward propagate input
     def forward(self, X):
-
         if DEBUG:
             print("forward entered: X: ", X.size()) 
-        # input to first hidden layer
-        X = self.flatten(X)
 
-        if DEBUG:
-            print("forward: X (flatten): ", X.size()) 
-
-        X = self.hidden1(X)
+        X = self.hidden1(X.float())
 
         if DEBUG:
             print("forward: X (hidden1): ", X.size()) 
@@ -104,11 +111,9 @@ class MLP(Module):
             print("forward: X (act1/RELU): ", X.size()) 
 
         # second hidden layer
+
         X = self.hidden2(X)
         X = self.act2(X)
-        # output layer
-        X = self.hidden3(X)
-#        X = self.act3(X)
 
         if DEBUG:
             print("forward: X (returned): ", X.size()) 
@@ -116,7 +121,7 @@ class MLP(Module):
         return X
 
 # train the model
-def train_model(train_full, model):
+def train_model(train_dl, model):
     # define the optimization
 
     criterion = MSELoss()
@@ -129,35 +134,48 @@ def train_model(train_full, model):
 
         # enumerate mini batches
 
-        for i, (inputs, targets) in enumerate(train_full):
+        targets = train_dl[1]
+
+        i=0
+        for inputs, targets in zip(enumerate(train_dl[0]), enumerate(train_dl[1])):
             if i % 20 == 0:
                 print(".", end="", flush=True)
+    
+            inputs=inputs[1].double()
+            targets=targets[1].double()
+            if DEBUG or TEST:
+                print("\ninputs: ", type(inputs), inputs.size(), "\n", inputs)
+                print("targets: ", type(targets), len(targets), "\n", targets)
+                print("\ninputs: ", type(inputs), inputs.size())
+                print("targets: ", type(targets), targets.size())
 
-            if DEBUG:
-                print("inputs: ", inputs.size())
-                print("targets: ", targets.size())
-
+                #print("inputs/targets: ", type(inputs[1]), len(inputs[1]), type(targets[1]), len(targets[1]))
+                #print("\ninputs:", inputs[1][:4], "\ntargets: ", targets[1][:4])
             # clear the gradients
 
             optimizer.zero_grad()
 
             # compute the model output
 
-            yhat = model(inputs)
+            yhat = model(inputs[1])
             if DEBUG:
                 print("yhat: ", yhat.size())
                 print("targets: ", targets.size())
+
             # calculate loss
+
             if DEBUG:
                 print("yhat: ", type(yhat), yhat.shape)
                 print("targets:   ", type(targets), targets.shape)
 
-            loss = criterion(yhat, targets)
+            loss = criterion(yhat, targets[1])
+            print(loss)
             # credit assignment
             loss.backward()
             # update model weights
             optimizer.step()
-        print("loss: ", loss)    
+            i+=1
+        print("loss: ", loss)
         
  
 # evaluate the model
@@ -194,14 +212,13 @@ def predict(row, model):
  
 # prepare the data
 #path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv'
-train_full, valid_dl, test_dl = prepare_data()
-
-print(len(train_full.dataset), len(test_dl.dataset))
+train_dl, valid_dl, test_dl = prepare_data()
 # define the network
 model = MLP()
 # train the model
-print("train_full: ", len(train_full))
-train_model(train_full, model)
+print("train_dl: ", len(train_dl))
+train_model(train_dl, model)
+quit(0)
 # evaluate the model
 acc = evaluate_model(valid_dl, model)
 print('Accuracy: %.3f' % acc)
