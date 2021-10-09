@@ -34,8 +34,8 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-CONFIG_EPOCHS=10
-CONFIG_BATCH_SIZE=64
+CONFIG_EPOCHS=30
+CONFIG_BATCH_SIZE=100
 
 for i in sys.argv:
     print("Processing ", i)
@@ -57,7 +57,9 @@ labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Co
 
 def prepare_data():
     housing = fetch_california_housing()
-    print("housing.data/housing.target (type/len): ", type(housing.data), housing.data.shape, type(housing.target), housing.target.shape)
+    print("housing.data/housing.target (type/dtype/len): ", \
+        type(housing.data),housing.data.dtype, housing.data.shape, \
+        type(housing.target), housing.target.dtype, housing.target.shape)
 
     train_full, test, train_target_full, test_target = train_test_split(housing.data, housing.target)
     train, valid, train_target, valid_target = train_test_split(train_full, train_target_full)
@@ -69,15 +71,12 @@ def prepare_data():
 
     train_dl = torch.utils.data.DataLoader(train, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
     train_target_dl = torch.utils.data.DataLoader(train_target, batch_size=CONFIG_BATCH_SIZE, shuffle=True)
-
     test_dl = torch.utils.data.DataLoader(test, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     test_target_dl = torch.utils.data.DataLoader(test_target, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     valid_dl = torch.utils.data.DataLoader(valid, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
     valid_target_dl = torch.utils.data.DataLoader(valid_target, batch_size=CONFIG_BATCH_SIZE, shuffle=False)
-    #print("train_dl/valid_dl/test_dl: ", type(train_dl), len(train_dl), type(valid_dl), len(valid_dl), type(test_dl), len(test_dl))
-    print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl), type(valid_target_dl), len(valid_target_dl), type(test_target_dl), len(test_target_dl))
 
-    #return [train_dl, train_target_dl], [valid_dl, valid_target_dl], [test_dl, test_taret_dl]
+    print("train_dl/valid_dl/test_dl(targets): ", type(train_target_dl), len(train_target_dl), type(valid_target_dl), len(valid_target_dl), type(test_target_dl), len(test_target_dl))
     return [train_dl, train_target_dl], [valid_dl, valid_target_dl], [test_dl, test_target_dl]
 
 class MLP(Module):
@@ -88,45 +87,35 @@ class MLP(Module):
         super(MLP, self).__init__()
         #self.flatten = nn.Flatten(1, 3)
 
-        self.hidden1 = Linear(8, 30)
+        self.hidden1 = Linear(8, 300).double()
+
+        if DEBUG:
+            print("hidden1 dtype: ", self.hidden1.weight.dtype)
+
         kaiming_uniform_(self.hidden1.weight, nonlinearity='relu')
         self.act1 = ReLU()
 
-        self.hidden2 = Linear(30, 1)
+        self.hidden2 = Linear(300, 1).double()
         kaiming_uniform_(self.hidden2.weight, nonlinearity='relu')
         self.act2 = ReLU()
  
     # forward propagate input
     def forward(self, X):
-        if DEBUG:
-            print("forward entered: X: ", X.size()) 
-
-        X = self.hidden1(X.float())
-
-        if DEBUG:
-            print("forward: X (hidden1): ", X.size()) 
-
+        X = self.hidden1(X)
         X = self.act1(X)
-
-        if DEBUG:
-            print("forward: X (act1/RELU): ", X.size()) 
-
-        # second hidden layer
-
         X = self.hidden2(X)
         X = self.act2(X)
-
-        if DEBUG:
-            print("forward: X (returned): ", X.size()) 
-
-        return X.double()
+        return X
 
 # train the model
+
 def train_model(train_dl, model):
     # define the optimization
-
+    print("training...")
+    print("model parameters: ", model.parameters())
     criterion = MSELoss()
     optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
+    optimizer.zero_grad()
 
     # enumerate epochs
 
@@ -146,14 +135,10 @@ def train_model(train_dl, model):
             targets.double()
 
             if DEBUG:
-                print("\ninputs: ", type(inputs), inputs.size(), inputs.type(), "\n", inputs)
-                print("targets: ", type(targets), len(targets), targets.type(), "\n", targets)
+                #print("\ninputs: ", type(inputs), inputs.size(), inputs.type(), "\n", inputs)
+                #print("targets: ", type(targets), len(targets), targets.type(), "\n", targets)
                 print("\ninputs: ", type(inputs), inputs.size())
                 print("targets: ", type(targets), targets.size())
-
-            # clear the gradients
-
-            optimizer.zero_grad()
 
             # compute the model output
 
@@ -170,11 +155,6 @@ def train_model(train_dl, model):
                 print("targets: ", type(targets), len(targets), targets.type(), "\n", targets)
 
             loss = criterion(yhat, targets[1])
-            
-            if DEBUG:
-                print(loss)
-
-            # credit assignment
             loss.backward()
             # update model weights
             optimizer.step()
@@ -184,6 +164,8 @@ def train_model(train_dl, model):
  
 # evaluate the model
 def evaluate_model(test_dl, model):
+  
+    print("evaluating...")
     predictions, actuals = list(), list()
 
     i=0
@@ -235,6 +217,8 @@ train_model(train_dl, model)
 evaluate_model(valid_dl, model)
 torch.save(model, "p308.h5")
 
+print("predicting...")
+
 i=0
 predictions, actuals = list(), list()
 for inputs, targets in zip(enumerate(test_dl[0]), enumerate(test_dl[1])):
@@ -246,13 +230,14 @@ for inputs, targets in zip(enumerate(test_dl[0]), enumerate(test_dl[1])):
     inputs.double()
     targets.double()
 
-    print("inputs: ", inputs, type(inputs), inputs.size())
-    print("targets: ", targets, type(targets), targets.size())
+    if DEBUG:
+        print("inputs: ", inputs, type(inputs), inputs.size())
+        print("targets: ", targets, type(targets), targets.size())
 
     # evaluate the model on the test set
     yhat = model(inputs)
-    print("yhat: ", yhat, type(yhat), yhat.size())
-    quit()
+    if  DEBUG:
+        print("yhat: ", yhat, type(yhat), yhat.size())
     # retrieve numpy array
     yhat = yhat.detach().numpy()
     actual = targets.numpy()
