@@ -221,6 +221,8 @@ train_dl, valid_dl, test_dl = prepare_data()
 print(len(train_dl.dataset), len(test_dl.dataset))
 # define the network
 model = MLP()
+print(len(model.hidden1.weight), len(model.hidden1.weight[0]), type(model.hidden1.weight))
+time.sleep(5)
 # train the model
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)

@@ -92,24 +92,23 @@ class MLP(Module):
 
     def __init__(self):
         super(MLP, self).__init__()        
-        #self.flatten = nn.Flatten(1, 3)
-        self.conv1 = Conv2d(1, 1, 7)
+        self.conv1 = Conv2d(1, 64, 7, padding="same")
         self.act1 = ReLU()
         self.maxpool1 = MaxPool2d(2)
 
-        self.conv2a = Conv2d(1, 1, 3)
+        self.conv2a = Conv2d(64, 128, 3, padding="same")
         self.act2a = ReLU()
-        self.conv2b = Conv2d(1, 1, 3)
+        self.conv2b = Conv2d(128, 128, 3, padding="same")
         self.act2b = ReLU()
         self.maxpool2 = MaxPool2d(2)
 
-        self.conv3a = Conv2d(1, 1, 3)
+        self.conv3a = Conv2d(128, 256, 3, padding="same")
         self.act3a = ReLU()
-        self.conv3b = Conv2d(1, 1, 3)
+        self.conv3b = Conv2d(256, 256, 3, padding="same")
         self.act3b = ReLU()
         self.maxpool3= MaxPool2d(2)
 
-        self.flatten = nn.Flatten(1, 3)
+        self.flatten = nn.Flatten(2, 3)
         # not sure on 784
         self.hidden1 = Linear(784, 128)
         self.drop1 = Dropout()
@@ -149,7 +148,7 @@ class MLP(Module):
         X = self.maxpool3(X)
         printdbg("X, maxpool3: " + str(X.size()))
 
-        X = self.flatten = nn.Flatten(1, 3)
+        X = self.flatten(X)
         # not sure on 784
         X = self.hidden1(X)
         X = self.drop1(X)
