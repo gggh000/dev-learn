@@ -52,7 +52,7 @@ model.add(keras.layers.Dense(30, activation="softmax"))
 print("model summary: ", model.summary())
 
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
-history=model.fit(X_train[:1], y_train, epochs=CONFIG_EPOCHS, batch_size=CONFIG_BATCH_SIZE, validation_data=(X_valid, y_valid))
+history=model.fit(X_train, y_train, epochs=CONFIG_EPOCHS, batch_size=CONFIG_BATCH_SIZE, validation_data=(X_valid, y_valid))
 
 if CONFIG_ENABLE_PLOT:
     pd.DataFrame(history.history).plot(figsize=(8, 5))
