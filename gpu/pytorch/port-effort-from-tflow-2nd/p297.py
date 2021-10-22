@@ -26,7 +26,7 @@ from torch.nn.init import kaiming_uniform_
 from torch.nn.init import xavier_uniform_
 
 DEBUG=0
-TEST=1
+TEST=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
@@ -51,8 +51,6 @@ if TEST:
     CONFIG_EPOCHS=1
 print("epochs: ", CONFIG_EPOCHS)
 print("batch_size: ", CONFIG_BATCH_SIZE)
-labels_map = {0 : 'T-Shirt', 1 : 'Trouser', 2 : 'Pullover', 3 : 'Dress', 4 : 'Coat', 5 : 'Sandal', 6 : 'Shirt',
-              7 : 'Sneaker', 8 : 'Bag', 9 : 'Ankle Boot'};
 
 def prepare_data():
     train = datasets.FashionMNIST(
@@ -223,6 +221,8 @@ train_dl, valid_dl, test_dl = prepare_data()
 print(len(train_dl.dataset), len(test_dl.dataset))
 # define the network
 model = MLP()
+print(len(model.hidden1.weight), len(model.hidden1.weight[0]), type(model.hidden1.weight))
+time.sleep(5)
 # train the model
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)

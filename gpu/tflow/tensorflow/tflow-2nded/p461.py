@@ -59,6 +59,7 @@ model.add(keras.layers.Dense(30, activation="softmax"))
 '''
 
 model=keras.models.Sequential([\
+#    keras.layers.Conv2D(64, 7, activation="relu", padding="same", input_shape=[28, 28, 1]),\
     keras.layers.Conv2D(64, 7, activation="relu", padding="same", input_shape=[28, 28, 1]),\
     keras.layers.MaxPooling2D(2), \
     keras.layers.Conv2D(128, 3, activation="relu", padding="same"), \
