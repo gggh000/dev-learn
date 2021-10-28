@@ -30,7 +30,7 @@ from torch.nn.init import xavier_uniform_
 
 DEBUG=0
 TEST=0
-DEBUG_PRT=1
+DEBUG_PRT=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
@@ -108,14 +108,14 @@ class MLP(Module):
         self.act3b = ReLU()
         self.maxpool3= MaxPool2d(2)
 
-        self.flatten = nn.Flatten(2, 3)
+        self.flatten = nn.Flatten(1, 3)
         # not sure on 784
-        self.hidden1 = Linear(784, 128)
+        self.hidden1 = Linear(2304, 128)
         self.drop1 = Dropout()
         self.hidden2 = Linear(128, 64)
         self.drop2 = Dropout()
-        self.hidden2 = Linear(64, 10)
-        self.act7 = Softmax()
+        self.hidden3 = Linear(64, 10)
+        self.act3c = Softmax()
         
     # forward propagate input
 
@@ -149,15 +149,19 @@ class MLP(Module):
         printdbg("X, maxpool3: " + str(X.size()))
 
         X = self.flatten(X)
+        printdbg("X, flatten: " + str(X.size()))
         # not sure on 784
         X = self.hidden1(X)
+        printdbg("X, hidden1: " + str(X.size()))
         X = self.drop1(X)
+        printdbg("X, drop1: " + str(X.size()))
         X = self.hidden2(X)
+        printdbg("X, hidden2: " + str(X.size()))
         X = self.drop2(X)
-        X = self.hidden2(X)
-
-        X = self.act(X)
-
+        printdbg("X, drop2: " + str(X.size()))
+        X = self.hidden3(X)
+        printdbg("X, hidden2: " + str(X.size()))
+        X = self.act3c(X)
         if DEBUG:
             print("forward: X (returned): ", X.size()) 
 

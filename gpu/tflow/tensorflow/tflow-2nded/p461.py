@@ -81,6 +81,13 @@ print("model summary: ", model.summary())
 model.compile(loss="sparse_categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 history=model.fit(X_train, y_train, epochs=CONFIG_EPOCHS, batch_size=CONFIG_BATCH_SIZE, validation_data=(X_valid, y_valid))
 
+for i in model.layers:
+        print("------")
+#       print(i, "\n", i.input_shape, "\n", i.output_shape, "\n", i.get_weights())
+        print(i, "\n", i.input_shape, "\n", i.output_shape, "\n")
+
+quit(0)
+
 pd.DataFrame(history.history).plot(figsize=(8, 5))
 
 if CONFIG_ENABLE_PLOT:
