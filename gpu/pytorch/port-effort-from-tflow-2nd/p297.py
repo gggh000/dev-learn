@@ -29,6 +29,7 @@ from torch.nn.init import xavier_uniform_
 
 DEBUG=0
 TEST=0
+DEBUG_PRT=0
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
@@ -53,6 +54,10 @@ if TEST:
     CONFIG_EPOCHS=1
 print("epochs: ", CONFIG_EPOCHS)
 print("batch_size: ", CONFIG_BATCH_SIZE)
+
+def printdbg(msg):
+   if DEBUG_PRT:
+        print(msg)
 
 def prepare_data():
     train = datasets.FashionMNIST(
@@ -81,64 +86,45 @@ def prepare_data():
 
 
 class MLP(Module):
-# prepare the dataset
+
     # define model elements
+
     def __init__(self):
         super(MLP, self).__init__()
         self.flatten = nn.Flatten(1, 3)
-        # input to first hidden layer
         self.hidden1 = Linear(784, 300)
         kaiming_uniform_(self.hidden1.weight, nonlinearity='relu')
         self.act1 = ReLU()
-        # second hidden layer
         self.hidden2 = Linear(300, 100)
         kaiming_uniform_(self.hidden2.weight, nonlinearity='relu')
         self.act2 = ReLU()
-        # third hidden layer and output
         self.hidden3 = Linear(100, 30)
-#        xavier_uniform_(self.hidden3.weight)
-#        self.act3 = Softmax(dim=1)
         self.act3 = Softmax()
  
     # forward propagate input
+
     def forward(self, X):
 
-        if DEBUG:
-            print("forward entered: X: ", X.size()) 
-        # input to first hidden layer
+        printdbg("X, input: " + str(X.size()))
         X = self.flatten(X)
-
-        if DEBUG:
-            print("forward: X (flatten): ", X.size()) 
-
+        printdbg("X, flatten: " + str(X.size()))
         X = self.hidden1(X)
-
-        if DEBUG:
-            print("forward: X (hidden1): ", X.size()) 
-
+        printdbg("X, hidden1: " + str(X.size()))
         X = self.act1(X)
-
-        if DEBUG:
-            print("forward: X (act1/RELU): ", X.size()) 
-
-        # second hidden layer
+        printdbg("X, act1: " + str(X.size()))
         X = self.hidden2(X)
+        printdbg("X, hidden2: " + str(X.size()))
         X = self.act2(X)
-        # output layer
+        printdbg("X, act2: " + str(X.size()))
         X = self.hidden3(X)
-#        X = self.act3(X)
-
-        if DEBUG:
-            print("forward: X (returned): ", X.size()) 
-
+        printdbg("X, hidden3: " + str(X.size()))
         return X
 
 # train the model
-def train_model(train_dl, model):
-    # define the optimization
 
-    #criterion = torch.nn.CrossEntropyLoss()
-    #optimizer = torch.optim.SGD(model.parameters(), lr = 0.01)
+def train_model(train_dl, model):
+
+    # define the optimization
 
     criterion = CrossEntropyLoss()
     optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
@@ -151,9 +137,11 @@ def train_model(train_dl, model):
         # enumerate mini batches
 
         for i, (inputs, targets) in enumerate(train_dl):
+
             if TEST:
                 if i > 2:
                     quit(0)
+
             if i % 20 == 0:
                 print(".", end="", flush=True)
 
@@ -168,71 +156,104 @@ def train_model(train_dl, model):
             # compute the model output
 
             yhat = model(inputs)
+
             if DEBUG:
                 print("yhat: ", yhat.size())
                 print("targets: ", targets.size())
+
             # calculate loss
+
             if DEBUG:
                 print("yhat: ", type(yhat), yhat.shape)
                 print("targets:   ", type(targets), targets.shape)
 
             loss = criterion(yhat, targets)
+
             # credit assignment
             loss.backward()
+
             # update model weights
+
             optimizer.step()
         print("loss: ", loss)    
         
  
 # evaluate the model
+
 def evaluate_model(test_dl, model):
     predictions, actuals = list(), list()
     for i, (inputs, targets) in enumerate(test_dl):
+
         # evaluate the model on the test set
+
         yhat = model(inputs)
+
         # retrieve numpy array
+
         yhat = yhat.detach().numpy()
         actual = targets.numpy()
+
         # convert to class labels
+
         yhat = argmax(yhat, axis=1)
+
         # reshape for stacking
+
         actual = actual.reshape((len(actual), 1))
         yhat = yhat.reshape((len(yhat), 1))
+
         # store
+
         predictions.append(yhat)
         actuals.append(actual)
+
     predictions, actuals = vstack(predictions), vstack(actuals)
+
     # calculate accuracy
+
     acc = accuracy_score(actuals, predictions)
     return acc
  
 # make a class prediction for one row of data
+
 def predict(row, model):
+
     # convert row to data
+
     row = Tensor([row])
+
     # make prediction
+
     yhat = model(row)
+
     # retrieve numpy array
+
     yhat = yhat.detach().numpy()
     return yhat
  
 # prepare the data
-#path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv'
-train_dl, valid_dl, test_dl = prepare_data()
 
+train_dl, valid_dl, test_dl = prepare_data()
 print(len(train_dl.dataset), len(test_dl.dataset))
+
 # define the network
+
 model = MLP()
 print(len(model.hidden1.weight), len(model.hidden1.weight[0]), type(model.hidden1.weight))
 time.sleep(5)
+
 # train the model
+
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)
+
 # evaluate the model
+
 acc = evaluate_model(valid_dl, model)
 print('Accuracy: %.3f' % acc)
 
 # make a single prediction
+
 print("Making prediction...")
 
 enum_test_dl = list(enumerate(test_dl))
@@ -241,11 +262,12 @@ print("enum_test_dl_sub: ", len(enum_test_dl_sub))
 yhat = model(enum_test_dl_sub[0][1][0])
 yhat = yhat.detach().numpy()
 actual = enum_test_dl_sub[0][1][1].numpy()
-#print("actual1: ", actual)
+
 # convert to class labels
+
 yhat = argmax(yhat, axis=1)
+
 # reshape for stacking
-#actual = actual.reshape((len(actual), 1))
-#yhat = yhat.reshape((len(yhat), 1))
+
 print("yhat:   ", yhat[:10])
 print("actual: ", actual[:10])

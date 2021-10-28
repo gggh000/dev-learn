@@ -86,7 +86,6 @@ def prepare_data():
     return train_dl, valid_dl, test_dl
 
 class MLP(Module):
-# prepare the dataset
 
     # define model elements
 
@@ -109,7 +108,7 @@ class MLP(Module):
         self.maxpool3= MaxPool2d(2)
 
         self.flatten = nn.Flatten(1, 3)
-        # not sure on 784
+
         self.hidden1 = Linear(2304, 128)
         self.drop1 = Dropout()
         self.hidden2 = Linear(128, 64)
@@ -150,7 +149,7 @@ class MLP(Module):
 
         X = self.flatten(X)
         printdbg("X, flatten: " + str(X.size()))
-        # not sure on 784
+
         X = self.hidden1(X)
         printdbg("X, hidden1: " + str(X.size()))
         X = self.drop1(X)
@@ -162,31 +161,31 @@ class MLP(Module):
         X = self.hidden3(X)
         printdbg("X, hidden2: " + str(X.size()))
         X = self.act3c(X)
-        if DEBUG:
-            print("forward: X (returned): ", X.size()) 
-
+        printdbg("forward: X (returned): " + str(X.size())) 
         return X
 
 # train the model
 def train_model(train_dl, model):
-    # define the optimization
 
-    #https://stackoverflow.com/questions/63403485/is-there-a-version-of-sparse-categorical-cross-entropy-in-pytorch
+    # define the optimization.
+    # refer to: https://stackoverflow.com/questions/63403485/is-there-a-version-of-sparse-categorical-cross-entropy-in-pytorch
 
     criterion = CrossEntropyLoss()
     optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
 
-    # enumerate epochs
+    # enumerate epochs.
 
     for epoch in range(CONFIG_EPOCHS):
         print("epoch:", epoch, "/", CONFIG_EPOCHS, end="")
 
-        # enumerate mini batches
+        # enumerate mini batches.
 
         for i, (inputs, targets) in enumerate(train_dl):
+
             if TEST:
                 if i > 2:
                     quit(0)
+
             if i % 20 == 0:
                 print(".", end="", flush=True)
 
@@ -194,76 +193,112 @@ def train_model(train_dl, model):
                 print("\ninputs: ", type(inputs), inputs.size(), inputs)
                 print("targets: ", type(targets), targets.size(), targets)
 
-            # clear the gradients
+            # clear the gradients.
 
             optimizer.zero_grad()
 
-            # compute the model output
+            # compute the model output.
 
             yhat = model(inputs)
+
             if DEBUG:
                 print("yhat: ", yhat.size())
                 print("targets: ", targets.size())
-            # calculate loss
+
+            # calculate loss.
+
             if DEBUG:
                 print("yhat: ", type(yhat), yhat.shape)
                 print("targets:   ", type(targets), targets.shape)
 
             loss = criterion(yhat, targets)
+
             # credit assignment
+
             loss.backward()
+
             # update model weights
+
             optimizer.step()
         print("loss: ", loss)    
         
  
 # evaluate the model
+
 def evaluate_model(test_dl, model):
     predictions, actuals = list(), list()
+
     for i, (inputs, targets) in enumerate(test_dl):
+
         # evaluate the model on the test set
+
         yhat = model(inputs)
+
         # retrieve numpy array
+
         yhat = yhat.detach().numpy()
         actual = targets.numpy()
+
         # convert to class labels
+
         yhat = argmax(yhat, axis=1)
+
         # reshape for stacking
+
         actual = actual.reshape((len(actual), 1))
         yhat = yhat.reshape((len(yhat), 1))
+
         # store
+
         predictions.append(yhat)
         actuals.append(actual)
     predictions, actuals = vstack(predictions), vstack(actuals)
+
     # calculate accuracy
+
     acc = accuracy_score(actuals, predictions)
     return acc
  
 # make a class prediction for one row of data
+
 def predict(row, model):
+
     # convert row to data
+
     row = Tensor([row])
+
     # make prediction
+
     yhat = model(row)
+
     # retrieve numpy array
+
     yhat = yhat.detach().numpy()
     return yhat
  
 # prepare the data
-#path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv'
+# path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv'
+
 train_dl, valid_dl, test_dl = prepare_data()
 
 print(len(train_dl.dataset), len(test_dl.dataset))
+
 # define the network
+
 model = MLP()
+
 # train the model
+
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)
+
 # evaluate the model
+
 acc = evaluate_model(valid_dl, model)
 print('Accuracy: %.3f' % acc)
 
 # make a single prediction
+
 print("Making prediction...")
 
 enum_test_dl = list(enumerate(test_dl))
@@ -272,11 +307,14 @@ print("enum_test_dl_sub: ", len(enum_test_dl_sub))
 yhat = model(enum_test_dl_sub[0][1][0])
 yhat = yhat.detach().numpy()
 actual = enum_test_dl_sub[0][1][1].numpy()
-#print("actual1: ", actual)
+
 # convert to class labels
+
 yhat = argmax(yhat, axis=1)
+
 # reshape for stacking
 #actual = actual.reshape((len(actual), 1))
 #yhat = yhat.reshape((len(yhat), 1))
+
 print("yhat:   ", yhat[:10])
 print("actual: ", actual[:10])
