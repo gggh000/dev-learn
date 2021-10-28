@@ -53,6 +53,11 @@ model = tf.keras.Sequential([
   tf.keras.layers.Dense(3)
 ])
 
+for i in model.layers:
+	print("------")
+	print(i, "\n", i.input_shape, "\n", i.output_shape, "\n", i.get_weights())
+
+model.save("iris.h5")
 predictions = model(features)
 predictions[:5]
 
