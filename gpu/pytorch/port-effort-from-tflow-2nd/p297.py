@@ -1,3 +1,5 @@
+# Using neural net to do a classification task.
+
 import torch
 import torch.nn as nn
 import helper

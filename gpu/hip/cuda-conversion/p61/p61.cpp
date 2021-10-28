@@ -10,6 +10,7 @@
 // (1+127) / 128.
 
 #define N 2048
+#define N 536870912 
 #define MAX_THREAD_PER_BLOCK 1024
 
 __global__ void add( int * a, int * b, int * c ) {
