@@ -76,7 +76,8 @@ print("X_new shape: ", X_new.shape)
 y_proba = model.predict(X_new)
 print("y_proba (predict)(value): ", y_proba.round(2), "\ny_proba(shape)", np.array(y_proba).shape)
 
-y_pred = model.predict_classes(X_new)
+y_pred = np.argmax(y_proba,axis=1)
+#y_pred = model.predict_classes(X_new)
 print("y_pred (predict_classes): ", y_pred)
 print("y_test: ", y_test[:3])
 
