@@ -76,7 +76,7 @@ parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
 
 # Train this model with 60 epochs and after process every 300 batches log the train status 
-args = parser.parse_args(['--epochs', '60', '--log-interval', '300'])
+args = parser.parse_args(['--epochs', '20', '--log-interval', '300'])
 
 use_cuda = not args.no_cuda and torch.cuda.is_available()
 
