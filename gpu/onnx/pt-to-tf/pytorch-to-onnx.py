@@ -1,7 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import argparse
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.autograd import Variable
 
 class Net(nn.Module):
     def __init__(self):
@@ -20,10 +23,6 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
-
-import argparse
-import torch.optim as optim
-from torchvision import datasets, transforms
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
@@ -112,8 +111,6 @@ for epoch in range(1, args.epochs + 1):
 # Save the model.
 
 torch.save(model.state_dict(), 'output/mnist.pth')
-
-from torch.autograd import Variable
 
 # Load the trained model from file
 

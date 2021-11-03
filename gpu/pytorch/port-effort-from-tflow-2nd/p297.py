@@ -2,6 +2,11 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.autograd import Variable
+
 import helper
 import sys
 import time
@@ -30,6 +35,8 @@ from torch.nn.init import xavier_uniform_
 DEBUG=0
 TEST=0
 DEBUG_PRT=0
+CONFIG_ENABLE_EXPORT=1
+
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 
@@ -246,6 +253,11 @@ time.sleep(5)
 
 print("train_dl: ", len(train_dl))
 train_model(train_dl, model)
+
+# export to onnx.
+
+dummy_input = Variable(torch.randn(1, 1, 28, 28)) # one black and white 28 x 28 picture will be the input to the model
+torch.onnx.export(model, dummy_input, "output/p297.onnx")
 
 # evaluate the model
 
