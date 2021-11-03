@@ -14,6 +14,13 @@ DEBUG=0
 CONFIG_ENABLE_PLOT=0
 CONFIG_EPOCHS=30
 CONFIG_BATCH_SIZE=32
+CONFIG_SAVE_MODEL=1
+
+CONFIG_SAVE_MODEL_MODE_KERAS=0
+CONFIG_SAVE_MODEL_MODE_SAVED_MODEL=1
+CONFIG_SAVE_MODEL_MODE_SAVED_MODEL_H5=2
+CONFIG_SAVE_MODEL_MODE_CHECKPOINT=3
+CONFIG_SAVE_MODEL_MODE=CONFIG_SAVE_MODEL_MODE_SAVED_MODEL_H5
 
 for i in sys.argv:
     print("Processing ", i)
@@ -70,14 +77,31 @@ weights, biases  = model.layers[1].get_weights()
 if DEBUG:
     print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape) 
 
-model.save("p297.h5")
+if CONFIG_SAVE_MODEL:
+    print("CONFIG_SAVE_MODEL_MODE: ", CONFIG_SAVE_MODEL_MODE)
+    if CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_MODE_KERAS:
+        print("CONFIG_SAVE_MODEL_MODE_KERAS...")
+        model.save("p297.h5")
+    elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_MODE_SAVED_MODEL:
+        print("CONFIG_SAVE_MODEL_SAVED_MODEL...")
+        tf.saved_model.save(model, "p297_saved_model")
+    elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_MODE_SAVED_MODEL_H5:
+        tf.saved_model.save(model, "p297_saved_model.h5")
+    elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_CHECKPOINT:
+        print("Checkpoint: Unimplemented...")
+    else:
+        print("Unknown option: ", CONFIG_SAVE_MODEL_MODE)
+else:
+    print("Saving model is not enabled. Not saving...")
 X_new = X_test[:3]
 print("X_new shape: ", X_new.shape)
 y_proba = model.predict(X_new)
 print("y_proba (predict)(value): ", y_proba.round(2), "\ny_proba(shape)", np.array(y_proba).shape)
 
+# Deprecated with TF1.X: y_pred = model.predict_classes(X_new)
+
 y_pred = np.argmax(y_proba,axis=1)
-#y_pred = model.predict_classes(X_new)
+
 print("y_pred (predict_classes): ", y_pred)
 print("y_test: ", y_test[:3])
 
