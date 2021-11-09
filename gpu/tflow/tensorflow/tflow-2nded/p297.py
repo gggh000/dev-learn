@@ -6,6 +6,7 @@ import matplotlib as plt
 import sys 
 import time
 import re
+import os
 import numpy as np
 import helper
 from tensorflow import keras
@@ -18,9 +19,10 @@ CONFIG_SAVE_MODEL=1
 
 CONFIG_SAVE_MODEL_MODE_KERAS=0
 CONFIG_SAVE_MODEL_MODE_KERAS_H5=1
+# this fill save with directory structure compatible with tf serving: p672.sh
 CONFIG_SAVE_MODEL_MODE_SAVED_MODEL=2
 CONFIG_SAVE_MODEL_MODE_CHECKPOINT=3
-CONFIG_SAVE_MODEL_MODE=CONFIG_SAVE_MODEL_MODE_KERAS_H5
+CONFIG_SAVE_MODEL_MODE=CONFIG_SAVE_MODEL_MODE_SAVED_MODEL
 
 for i in sys.argv:
     print("Processing ", i)
@@ -84,7 +86,10 @@ if CONFIG_SAVE_MODEL:
         model.save("p297.h5")
     elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_MODE_SAVED_MODEL:
         print("CONFIG_SAVE_MODEL_SAVED_MODEL...")
-        tf.saved_model.save(model, "p297_saved_model")
+        model_version="0001"
+        model_name="p297"
+        model_path=os.path.join(model_name, model_version)
+        tf.saved_model.save(model, model_path)
     elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_MODE_KERAS_H5:
         model.save("p297")
     elif CONFIG_SAVE_MODEL_MODE == CONFIG_SAVE_MODEL_CHECKPOINT:
@@ -94,6 +99,8 @@ if CONFIG_SAVE_MODEL:
 else:
     print("Saving model is not enabled. Not saving...")
 X_new = X_test[:3]
+print("X_new type: ", type(X_new))
+np.save("test.npy", X_new)
 print("X_new shape: ", X_new.shape)
 y_proba = model.predict(X_new)
 print("y_proba (predict)(value): ", y_proba.round(2), "\ny_proba(shape)", np.array(y_proba).shape)

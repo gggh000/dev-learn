@@ -47,12 +47,13 @@ mirrored_model.evaluate(X_test, y_test)
 print("mirrored_model layers: ", mirrored_model.layers)
 weights, biases  = mirrored_model.layers[1].get_weights()
 print("weights, biases (shapes): ", weights, biases, weights.shape, biases.shape) 
-mirrored_model.save("p297.h5")
+mirrored_model.save("p710.h5")
 X_new = X_test[:3]
 y_proba = mirrored_model.predict(X_new)
 print(y_proba.round(2))
+y_pred = np.argmax(y_proba,axis=1)
+print("y_pred (predict_classes): ", y_pred)
+print("y_test: ", y_test[:3])
 
-y_pred = mirrored_model.predict_classes(X_new)
-print("y_pred: ", y_pred)
 
 

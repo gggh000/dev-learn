@@ -67,15 +67,6 @@ dataset = dataset.map(lambda windows: (windows[:, :-1], windows[:, 1:]))
 dataset = dataset.map(lambda X_batch, Y_batch: (tf.one_hot(X_batch, depth=max_id), Y_batch))
 dataset = dataset.prefetch(1)
 
-'''
-with distribution.scope():
-
-    mirrored_model=keras.models.Sequential()
-    mirrored_model.add(keras.layers.Flatten(input_shape = [28, 28]))
-    mirrored_model.add(keras.layers.Dense(300, activation="relu"))
-    mirrored_model.add(keras.layers.Dense(100, activation="relu"))
-    mirrored_model.add(keras.layers.Dense(30, activation="softmax"
-'''
 distribution = tf.distribute.MirroredStrategy()
 
 with distribution.scope():
