@@ -15,8 +15,7 @@
 #└── variables
 #    ├── variables.data-00000-of-00001
 #    └── variables.index
-
-5 directories, 7 files
+# 5 directories, 7 files
  
 TEST_MODE=0
 
@@ -29,7 +28,7 @@ else
     MODEL_NAME=p297
     docker pull tensorflow/serving
     docker run -it --rm -p 8500:8500 -p 8501:8501 \
-        -v "$ML_PATH/$MODEL_NAME/0001:/models/$MODEL_NAME" \
+        -v "$MODEL_NAME:/models/$MODEL_NAME" \
         -e MODEL_NAME=$MODEL_NAME \
         tensorflow/serving
 fi
