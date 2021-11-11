@@ -45,7 +45,7 @@ CONFIG_BATCH_SIZE=64
 CONFIG_EXPORT_MODE_ONNX=0
 CONFIG_EXPORT_MODE_PTNATIVE=1
 CONFIG_EXPORT_MODE_PB=2
-CONFIG_EXPORT_MODE=CONFIG_EXPORT_MODE_PTNATIVE
+CONFIG_EXPORT_MODE=CONFIG_EXPORT_MODE_PB
 
 for i in sys.argv:
     print("Processing ", i)
@@ -249,6 +249,7 @@ print(len(train_dl.dataset), len(test_dl.dataset))
 
 # define the network
 
+'''
 model = MLP()
 print(len(model.hidden1.weight), len(model.hidden1.weight[0]), type(model.hidden1.weight))
 time.sleep(5)
@@ -267,12 +268,17 @@ if CONFIG_ENABLE_EXPORT:
         torch.onnx.export(model, dummy_input, "output/p297.onnx")
     elif CONFIG_EXPORT_MODE==CONFIG_EXPORT_MODE_PTNATIVE:
         print("Exporting model as pytorch as native")
-        torch.save(model.state_dict(), "output/p297.pt")
+        torch.save(model.state_dict(), "p297-pt.pt")
     elif CONFIG_EXPORT_MODE==CONFIG_EXPORT_MODE_PB:
         print("Exporting model as pb extension")
         torch.save(model, "p297")
     else:
         print("Unknown export mode: ", CONFIG_EXPORT_MODE)  
+
+'''
+
+model=MLP()
+model.load_state_dict(torch.load("output/p297.pt"))
 
 # evaluate the model
 
