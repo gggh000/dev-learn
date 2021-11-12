@@ -13,10 +13,10 @@
 #define N 536870912 
 #define MAX_THREAD_PER_BLOCK 1024
 
-__global__ void add( int * a, int * b, int * c ) {
+__global__ void kernel1( int * a, int * b, int * c ) {
     int tid = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x ;
     if (tid < N) 
-        c[tid] = a[tid] + b[tid];
+        c[tid] = tid;
 }    
 
 int main (void) {
@@ -49,10 +49,12 @@ int main (void) {
 
 	// copy the initialized local memory values to device memory. 
 
+    /*
     printf("\nCopy host to device...");
 	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
 	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
 	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
+    */
 
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
@@ -61,9 +63,10 @@ int main (void) {
 	// block count: (N+127)/128
 	// thread count: 128
     
-    hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
-    hipDeviceSynchronize();
-    
+    hipLaunchKernelGGL(kernel1, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    //hipDeviceSynchronize();
+
+    /*    
     hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
@@ -72,11 +75,15 @@ int main (void) {
 	for (int i = 0; i < N; i+=stepSize) {
 		printf("%d + %d = %d\n", a[i], b[i], c[i]);
 	}
+    */
 
 	hipFree(dev_a);
 	hipFree(dev_b);
 	hipFree(dev_c);
+    
+    /*
     free(a);
     free(b);
     free(c);
+    */
 }
