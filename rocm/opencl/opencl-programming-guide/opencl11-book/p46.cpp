@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>  
 #define ARRAY_SIZE 256
-#define BUILD_FROM_FILE 0
+#define BUILD_FROM_FILE 1
 
 using namespace std;
 // A simple kernelfcn kernel
