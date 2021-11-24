@@ -2,13 +2,11 @@
 #include <stdio.h>
 #include <thread>
 #include <iostream>
-#include <chrono>
-#include <fstream>
-#include <iomanip>
+#include <fstream>  
 #define ARRAY_SIZE 256
-#define BUILD_FROM_FILE 1
-using namespace std;
+#define BUILD_FROM_FILE 0
 
+using namespace std;
 // A simple kernelfcn kernel
 const char *source =
 
@@ -16,7 +14,7 @@ const char *source =
 "{                                                                      \n"
 " uint tid = get_global_id(0);                                          \n"
 " dev_c[tid] = dev_a[tid] + dev_b[tid];                                 \n"
-//" dev_c[tid] = tid;                                 \n"
+" dev_c[tid] = tid;                                 \n"
 "}                                                                      \n";
 
 int main(int argc, char ** argv) {
@@ -39,17 +37,20 @@ int main(int argc, char ** argv) {
     for (int i = 0 ; i < platforms_available; i ++ ) {
         printf("Platform %d: %d.\n", i, platforms[i]);
     }
-
+	
     // 2. Find a gpu/cpu device.
 
-    cl_uint CONFIG_MAX_DEVICES=10;
+    cl_uint CONFIG_MAX_DEVICES=4;
     cl_uint devices_available;
     cl_device_id devices[CONFIG_MAX_DEVICES];
 
-    ret  = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_ALL, CONFIG_MAX_DEVICES, devices, &devices_available);
+    printf("platforms[0], CL_DEVICE_TYPE_GPU, CONFIG_MAX_DEVICES, devices, devices available: \
+	%u, %u, %u, %u, %u", \
+	platforms[0], CL_DEVICE_TYPE_GPU, CONFIG_MAX_DEVICES, devices, devices_available);
+    ret  = clGetDeviceIDs( platforms[0], CL_DEVICE_TYPE_GPU, CONFIG_MAX_DEVICES, devices, &devices_available);
     printf("No. of devices available: %d.\n", devices_available);
-    // device = devices[0];
-
+    device = devices[0];
+	
     cout << "device ID 1st device: " << device << endl;
 
     // Create an opencl context on first available platform
@@ -57,7 +58,7 @@ int main(int argc, char ** argv) {
     context = clCreateContext(NULL, 1, (const cl_device_id* )&devices[0], NULL, NULL, &ret);
 
     if (context == NULL ) {
-        cerr << "Failed to create opencl context: errCode: " << ret << endl;
+        cout << "Failed to create opencl context: errCode: " << ret << endl;
         return 1;
     }
 
@@ -95,7 +96,7 @@ int main(int argc, char ** argv) {
     kernel = clCreateKernel(program, "kernelfcn", &ret);
 
     if (kernel == NULL) {
-        cerr << "Failed to create a kernel: errCode: " << ret << endl;
+        cout << "Failed to create a kernel: errCode: " << ret << endl;
         return 1;    
     }
 
@@ -124,7 +125,7 @@ int main(int argc, char ** argv) {
     errNum |= clSetKernelArg(kernel, 2, sizeof(dev_b), &dev_b);
 
     if (errNum != CL_SUCCESS)  {
-        cerr << "Error setting kernel arguments" << endl;
+        cout << "Error setting kernel arguments" << endl;
         return 1;
     }
 
@@ -138,7 +139,7 @@ int main(int argc, char ** argv) {
     errNum |= clFinish(commandQueue);
     
     if (errNum != CL_SUCCESS) { 
-        cerr << "Error queueing kernel for execution. errNum: " << errNum << endl;
+        cout << "Error queueing kernel for execution. errNum: " << errNum << endl;
         return 1;
     }
 
@@ -147,21 +148,20 @@ int main(int argc, char ** argv) {
     errNum = clEnqueueReadBuffer(commandQueue, dev_c, CL_TRUE, 0, ARRAY_SIZE * sizeof(int), c, 0, NULL, NULL);
 
     if (errNum != CL_SUCCESS) { 
-        cerr << "Error reading results buffer. errNum: " << errNum << endl;
+        cout << "Error reading results buffer. errNum: " << errNum << endl;
         return 1;
     }
 
     // Output the result buffer.
 
     for (int i = 0; i < ARRAY_SIZE; i ++ ) {
-        i % 8 == 0 ? cout << endl : cout << setw(3) << " ";
-        cout << setw(8) << i << ": " << c[i];
+        i % 8 == 0 ? cout << endl : cout  << " ";
+        cout << i << ": " << c[i];
     }
 
     cout << endl;    
     cout << "Executed program successfully." << endl;
     return 0;
-    
 }
 
 
