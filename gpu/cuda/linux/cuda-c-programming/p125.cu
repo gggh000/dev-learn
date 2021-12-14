@@ -28,8 +28,7 @@ int main(int argc, char **argv)
     int blocksize = 8;   // initial block size
     int igrid = 1;
 
-    if(argc > 1)
-    {
+    if(argc > 1) {
         igrid = atoi(argv[1]);
         size = igrid * blocksize;
     }

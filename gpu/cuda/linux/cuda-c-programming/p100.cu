@@ -3,7 +3,9 @@
 #include <cuda_runtime.h>
 #include <stdio.h>
 #include <sys/time.h>
-#define DEBUG 0
+#define DEBUG 1
+#define DEBUGL2 0
+
 void checkResult(float * hostRef, float * gpuRef, const int N) {
     double epsilon = 1.0E-8;
     bool match = 1;
@@ -18,6 +20,7 @@ void checkResult(float * hostRef, float * gpuRef, const int N) {
     }
     if (match) printf("Arrays match OK.\n");
 }
+
 void sumMatrixOnHost ( float * A, float * B, float *C, const int nx, const int ny) {
     float *ia = A;
     float *ib = B;
@@ -33,6 +36,7 @@ void sumMatrixOnHost ( float * A, float * B, float *C, const int nx, const int n
     } 
 
 }
+
 __global__ void sumMatrixOnGPU2D(float *MatA, float *MatB, float *MatC, const int nx, const int ny) {
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -41,7 +45,7 @@ __global__ void sumMatrixOnGPU2D(float *MatA, float *MatB, float *MatC, const in
     if (ix < nx && iy < ny) 
         MatC[idx] = MatA[idx] + MatB[idx];
 
-    if (DEBUG ==1 ) { 
+    if (DEBUGL2 == 1 ) { 
     int printBoundary = 3;
         if ((threadIdx.x <  printBoundary && threadIdx.y < printBoundary && blockIdx.x < printBoundary && blockIdx.y < printBoundary) || \
             (threadIdx.x == blockDim.x && threadIdx.y - 1 == blockDim.y - 1 && blockIdx.x == gridDim.x - 1 && blockIdx.y == gridDim.y)) {
@@ -102,6 +106,7 @@ int main(int argc, char ** argv) {
     iStart = cpuSecond();
     initialData (h_A, nxy);
     initialData (h_B, nxy);
+
     iElaps = cpuSecond() - iStart;
     if (DEBUG == 1)
         printf("initialData: Time Elapsed %f sec\n", iElaps);
@@ -135,19 +140,28 @@ int main(int argc, char ** argv) {
 
     // invoke kernel at host side.
 
-    int dimx = atoi(argv[1]);
-    int dimy = atoi(argv[2]);
+    int dimx, dimy;
+    if (argc <= 1 ) {
+        printf("block/thread size input not specified. Defaulting to 32, 32.\n");
+        dimx = 32;
+        dimy = 32;
+    } else {
+        dimx = atoi(argv[1]);
+        dimy = atoi(argv[2]);
+    }
     dim3 block(dimx, dimy);
     dim3 grid ((nx + block.x-1) / block.x, (ny + block.y-1) / block.y);
 
-    //printf("block.x %d, block.y %d, block.z %d\n", block.x, block.y, block.z);
-    //printf("grid.x %d grid.y %d grid.z %d.\n", grid.x, grid.y, grid.z);
+    printf("block.x %d, block.y %d, block.z %d\n", block.x, block.y, block.z);
+    printf("grid.x %d grid.y %d grid.z %d.\n", grid.x, grid.y, grid.z);
     
     iStart = cpuSecond();
  
     sumMatrixOnGPU2D <<< grid, block >>>(d_MatA, d_MatB, d_MatC, nx, ny);
     cudaDeviceSynchronize();
     iElaps = cpuSecond() - iStart;
+    printf("grid.x/y: No. of block/grid, block.x/y: No. of threads/block");
+    printf("sumArrayOnGPU2D: <<<(grid.x, grid.y, (block.x, block.y)>>> Time Elapsed ?? msec\n");
     printf("sumArrayOnGPU2D: <<<(%d,%d), (%d, %d)>>> Time Elapsed %f msec\n", \
         grid.x, \
         grid.y, \

@@ -25,7 +25,7 @@ do
 done
 
 echo "running with ${x[$i]} : ${y[$i]}" | tee -a $LOGFILE
-printWithBar "achived_occupancy" | tee -a $LOGFILE
+printWithBar "achieved_occupancy = average active warps / maximum number of warps on SM" | tee -a $LOGFILE
 for i in $(seq 0 $size)
 do
     nvprof --metrics achieved_occupancy ./$OUTPUT ${x[$i]} ${y[$i]}  | tee -a $LOGFILE
