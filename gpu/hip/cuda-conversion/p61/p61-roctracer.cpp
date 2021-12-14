@@ -34,6 +34,7 @@ static inline uint32_t GetPid() { return syscall(__NR_getpid); }
 // (1+127) / 128.
 
 #define N 4194304
+#define N 2048
 #define MAX_THREAD_PER_BLOCK 1024
 
 #ifdef __cplusplus
@@ -252,8 +253,9 @@ int main (void) {
 	// allocate dev memory for N size for pointers declared earlier.
 
     printf("\nAllocating memory...(size %u array size of INT).\n", N );
-    init_tracing();
-    start_tracing();
+    roctxMark("Allocating memory");
+    //init_tracing();
+    //start_tracing();
 
     a = (int*)malloc(N * sizeof(int));
     b = (int*)malloc(N * sizeof(int));
@@ -268,12 +270,15 @@ int main (void) {
 		c[i] = 999;
 	}
 
+    roctxMark("Copy");
 	// copy the initialized local memory values to device memory. 
 
     printf("\nCopy host to device...");
+    roctxRangePush("Memcopy host to dev");
 	hipMemcpy(dev_a, a, N * sizeof(int), hipMemcpyHostToDevice);
 	hipMemcpy(dev_b, b, N * sizeof(int), hipMemcpyHostToDevice);
 	hipMemcpy(dev_c, c, N * sizeof(int), hipMemcpyHostToDevice);
+    roctxRangePop();
 
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
@@ -282,10 +287,14 @@ int main (void) {
 	// block count: (N+127)/128
 	// thread count: 128
     
+    roctxRangePush("Launch kernel");
     hipLaunchKernelGGL(add, blocks, threadsPerBlock, 0, 0, dev_a, dev_b, dev_c);
+    roctxRangePop();
+    roctxRangePush("Memcopy dev to host");
     hipMemcpy(a, dev_a, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(b, dev_b, N * sizeof(int), hipMemcpyDeviceToHost);
     hipMemcpy(c, dev_c, N * sizeof(int), hipMemcpyDeviceToHost);
+    roctxRangePop();
 
     stepSize =  N /20 ;	
 	for (int i = 0; i < N; i+=stepSize) {
@@ -298,6 +307,6 @@ int main (void) {
     free(a);
     free(b);
     free(c);
-    stop_tracing();
+    //stop_tracing();
     return 0;
 }

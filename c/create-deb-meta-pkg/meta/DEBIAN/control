@@ -1,0 +1,7 @@
+Package: metapackage
+Maintainer: Guyen Gn
+Version: 0.1
+Architecture: all
+Depends: fluxbox, abiword, tint2
+Description: This is a metapackage to make program installation easier
+

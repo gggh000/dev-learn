@@ -9,7 +9,8 @@
 // The trick is describe in p65 to use formula (N+127) / 128 for blocknumbers so that when block number starts from 1, it is 
 // (1+127) / 128.
 
-#define N 4194304
+#define N 2048
+#define N 536870912 
 #define MAX_THREAD_PER_BLOCK 1024
 
 __global__ void add( int * a, int * b, int * c ) {
@@ -22,6 +23,12 @@ int main (void) {
     int *a, *b, *c;
     int *dev_a, *dev_b, *dev_c;
     int stepSize;
+
+    int count = 0;
+
+    hipGetDeviceCount(&count);
+
+    printf("\nDevice count: %d.", count);
 
 	// allocate dev memory for N size for pointers declared earlier.
 
