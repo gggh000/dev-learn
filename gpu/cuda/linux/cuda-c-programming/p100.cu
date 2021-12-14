@@ -22,7 +22,7 @@ void sumMatrixOnHost ( float * A, float * B, float *C, const int nx, const int n
     float *ia = A;
     float *ib = B;
     float *ic = C;
-    
+
     for (int iy = 0; iy < ny; iy++ ) {
         for (int ix = 0; ix < nx; ix++ ) {
             ic[ix] = ia[ix] + ib[ix];
@@ -40,6 +40,15 @@ __global__ void sumMatrixOnGPU2D(float *MatA, float *MatB, float *MatC, const in
 
     if (ix < nx && iy < ny) 
         MatC[idx] = MatA[idx] + MatB[idx];
+
+    if (DEBUG ==1 ) { 
+    int printBoundary = 3;
+        if ((threadIdx.x <  printBoundary && threadIdx.y < printBoundary && blockIdx.x < printBoundary && blockIdx.y < printBoundary) || \
+            (threadIdx.x == blockDim.x && threadIdx.y - 1 == blockDim.y - 1 && blockIdx.x == gridDim.x - 1 && blockIdx.y == gridDim.y)) {
+            printf("threadIdx: (%d, %d, %d, blockIdx: (%d, %d, %d), blockDim: (%d, %d, %d), \
+            gridDim: (%d, %d, %d).\n", threadIdx.x, threadIdx.y, threadIdx.z, blockIdx.x, blockIdx.y, blockIdx.z, blockDim.x, blockDim.y, blockDim.z, gridDim.x, gridDim.y, gridDim.z);
+        }
+    }
 }
 
 void initialData(float *ip, int size ) {
@@ -130,6 +139,9 @@ int main(int argc, char ** argv) {
     int dimy = atoi(argv[2]);
     dim3 block(dimx, dimy);
     dim3 grid ((nx + block.x-1) / block.x, (ny + block.y-1) / block.y);
+
+    //printf("block.x %d, block.y %d, block.z %d\n", block.x, block.y, block.z);
+    //printf("grid.x %d grid.y %d grid.z %d.\n", grid.x, grid.y, grid.z);
     
     iStart = cpuSecond();
  

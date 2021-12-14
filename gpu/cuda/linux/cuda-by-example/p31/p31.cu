@@ -19,6 +19,8 @@ int main ( void ) {
 	cudaDeviceProp prop;
 	int count, i;
 	cudaGetDeviceCount ( &count);
+  
+    printf("No. of cuda devices: %u.\n", count);
 
 	for (i = 0 ; i < count ; i ++ ) {	
 		cudaGetDeviceProperties ( &prop, i);
@@ -35,6 +37,11 @@ int main ( void ) {
 		printf("\ncanMapHostMem: 	0x%0x", prop.canMapHostMemory);
 		printf("\ncomputeMode: 		0x%0x", prop.computeMode);
 		printf("\nconcurrentKernels: 	0x%0x", prop.concurrentKernels);
+		printf("\nmaxThreadsPerMultiProcessor: 	0x%0x", prop.maxThreadsPerMultiProcessor);
+		printf("\nsharedMemPerMultiprocessor: 	0x%0x", prop.sharedMemPerMultiprocessor);
+		printf("\nregsPerMultiprocessor: 	0x%0x", prop.regsPerMultiprocessor);
+		printf("\nregsPerBlock: 	0x%0x", prop.regsPerBlock);
+        printf("\nmultiProcessorCount: 0x%5x", prop.multiProcessorCount);
 	}
 
 	printf("\n");
