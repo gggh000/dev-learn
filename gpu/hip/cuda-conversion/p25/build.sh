@@ -18,3 +18,6 @@ hipcc p25.o p25-device.o -o a.out
 echo "clang offload bundler --list:"
 clang-offload-bundler --list --inputs=offload_bundle.hipfb  --type=o
 
+# this is not working:
+clang-offload-bundler --unbundle --inputs=offload_bundle.hipfb  --type=s --outputs=test,test1,test2 --targets=host-x86_64-unknown-linux,hip-amdgcn-amd-amdhsa-908,hip-amdgcn-amd-amdhsa-90a
+
