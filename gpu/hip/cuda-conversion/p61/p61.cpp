@@ -44,7 +44,7 @@ int main (void) {
 	for (int i = 0; i < N; i++) {
 		a[i] = i;
 		b[i] = i+2;
-		c[i] = 999;
+		c[i] = 555;
 	}
 
 	// copy the initialized local memory values to device memory. 

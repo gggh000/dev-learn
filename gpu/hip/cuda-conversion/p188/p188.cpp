@@ -8,12 +8,13 @@
 #define SIZE (10*1024*1024)
 
 float hip_mem_alloc_test(int size, bool up, int allocType) {
-    int debug = 0;
+    int debug = 1;
     hipEvent_t start, stop;
     int *a, *dev_a, devId;
     float elapsedTime;
 
    int device, i, count, stat;
+    device = 0;
     hipDeviceProp_t props;
     hipGetDeviceCount(&count);
 
@@ -83,7 +84,7 @@ int main()
     printf("Time using hipMalloc: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
 
-	/*
+	
     elapsedTime = hip_mem_alloc_test(SIZE, true, ALLOC_PAGE_LOCKED);
     printf("Time using hipHostMalloc: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy up: %3.1f.\n", MB / (elapsedTime / 1000));
@@ -91,6 +92,4 @@ int main()
     elapsedTime = hip_mem_alloc_test(SIZE, false, ALLOC_PAGE_LOCKED);
     printf("Time using hipHostMalloc: %3.1f ms.\n", elapsedTime);
     printf("\tMB/s during copy down: %3.1f.\n", MB / (elapsedTime / 1000));
-	*/
-    
 }
