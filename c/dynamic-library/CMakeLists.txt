@@ -34,20 +34,14 @@ include_directories("${PROJECT_BINARY_DIR}")
 #add the executable
 
 add_executable(test test.c)
-target_link_libraries(test PUBLIC lib1)
-target_link_libraries(test PUBLIC lib2)
-target_link_libraries(test PUBLIC lib3)
+target_link_libraries(test PUBLIC all)
 
 if(DYN_BUILD)
   message("Building shared library...")
-  add_library(lib1 SHARED libfile1.c)
-  add_library(lib2 SHARED libfile2.c)
-  add_library(lib3 SHARED libfile3.c)
+  add_library(all SHARED libfile1.c libfile2.c libfile3.c)
 else (DYN_BUILD)
   message("Building static library...")
-  add_library(lib1 STATIC libfile1.c)
-  add_library(lib2 STATIC libfile2.c)
-  add_library(lib3 STATIC libfile3.c)
+  add_library(lib1 STATIC libfile1.c libfile2.c libfile3.c)
 endif (DYN_BUILD)
 
 add_custom_command(OUTPUT output1 COMMAND gcc *.o -shared -o liball.so)
